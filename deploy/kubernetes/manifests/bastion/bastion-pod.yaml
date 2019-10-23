@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bastion
+  labels:
+    name: bastion
+spec:
+  containers:
+    - name: bastion
+      image: ubuntu:trusty
+      command: [ "bin/bash", "-c", "while true; do echo 'hello world'; sleep 60; done" ]
+      ports:
+        - name: ssh
+          protocol: TCP
+          containerPort: 22

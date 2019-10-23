@@ -1,0 +1,10 @@
+@import url("default.css");
+
+#logo a {
+/*background-image: url('chrome/pg-logo.png')*/
+background-image: url('chrome/server-logo.png')
+}
+
+#sidebar .section {
+display: none;
+}

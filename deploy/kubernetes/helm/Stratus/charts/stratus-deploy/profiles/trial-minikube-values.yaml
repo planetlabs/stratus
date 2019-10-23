@@ -1,0 +1,40 @@
+# spec for something like F8 v2 vCPU 8, RAM 16 GiB
+redis:
+  implementation: "jedis"
+  type: "manual"
+  cache:
+    enabled: "true"
+    parallel: "true"
+stratus:
+  secretKey: "mydockerkey"
+  version: 1.1.0
+  container:
+    repo: "docker.io/gsstratus"
+    image: "stratus-trial"
+    tag: "latest"
+  ogc:
+    rootPath: "/geoserver/"
+    readinessPath: "/geoserver/rest/manage/health"
+    resources:
+      minReplicas: 1
+      maxReplicas: 4
+      mem: "0.5G"
+      maxMem: "4.0G"
+      cpu: "0.25"
+      maxCpu: "2.0"
+    pullPolicy: Never
+  ui:
+    enabled: "true"
+    rootPath: "/geoserver/"
+    readinessPath: "/geoserver/rest/manage/health"
+    resources:
+      minReplicas: 1
+      maxReplicas: 1
+      mem: "0.5G"
+      maxMem: "4.0G"
+      cpu: "0.25"
+      maxCpu: "2.0"
+    pullPolicy: IfNotPresent
+  debug: "false"
+  gwc:
+    enabled: "false"

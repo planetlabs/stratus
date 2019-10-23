@@ -1,0 +1,28 @@
+<project name="docs.geowebcache" default="build">
+
+    <import file="../common.xml"/>
+
+    <target name="destroy-sources">
+        <delete dir="src"/>
+    </target>
+
+    <target name="clean" depends="destroy-target, destroy-sources"
+        description="Build project"/>
+
+    <target name="init-sources">
+        <copy todir="src">
+          <fileset dir="../externals/geowebcache/documentation/en/user/source" includes="**/*"/>
+        </copy>
+        <!-- remove this copy when gwc #153 is fixed -->
+        <copy file="conf.py" todir="src" overwrite="true"/>
+    </target>
+
+    <target name="build" depends="init, init-sources"
+        description="Build project">
+        <antcall target="sphinx">
+            <param name="dir" value="src"/>
+            <param name="flags" value="-q"/>
+        </antcall>
+    </target>
+
+</project>

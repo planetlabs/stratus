@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Stratus Status</title>
+        <script src="webjars/jquery/jquery.min.js"></script>
+        <link rel='stylesheet' href='webjars/bootstrap/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='webjars/font-awesome/css/font-awesome.min.css'>
+        
+        <style>
+            body {
+                background-color:#222;
+                color:#cfcfcf;
+                font-size:140%;
+            }
+            th {
+                padding-right:15px;
+                font-weight: normal;
+            }
+            td {
+                padding-right: 15px;
+            }
+            #pageHeader {
+                width:100%;
+                background-color:#29728c;
+                padding-top: 10px;
+                padding-bottom:10px;
+            }
+            #pageHeaderWrapper {
+                padding-left:20px;
+                color:white;
+                font-size:180%;
+            }
+            #mainBody {
+                margin: 25px;
+            }
+            .headerBox {
+                background-color: #333;
+                border-bottom: 1px solid #424242;
+                padding: 5px;
+                font-size: 120%;
+            }
+            .infoBox {
+                border: 1px solid #424242;
+                float: left;
+                width: 200px;
+                height: 100px;
+            }
+            .infoBoxContent {
+                padding: 5px;
+            }
+            .subtext {
+                font-size: 75%;
+            }
+            #systemMetrics {
+                border: 1px solid #424242;
+                display: inline-block;
+                margin-top:25px;
+            }
+            #systemMetrics th {
+                padding-right: 16px;
+            }
+            #systemMetrics td {
+                padding-right: 16px;
+            }
+            .floatingMetricContainer {
+                float: left;
+                margin-right: 35px;
+            }
+            .progress {
+                position: relative;
+                margin-bottom: 0;
+            }
+            .progress span {
+                position: absolute;
+                display: block;
+                width: 100%;
+                color: black;
+                text-align: -webkit-center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="pageHeader">
+            <div id="pageHeaderWrapper">
+                <div>Stratus Status</div>
+            </div>
+        </div>
+
+        <div id="mainBody">
+
+            <div class="infoBox">
+                <div class="headerBox">
+                    <i class="fa fa-genderless"></i> name
+                </div>
+                <div class="infoBoxContent">
+                    <div id="applicationName"></div>
+                    <div class="subtext"><span id="ip"></span>:<span id="port"></span></div>
+                    <div id="hostname" style="font-size:75%"></div>
+                </div>
+            </div>
+
+            <div class="infoBox">
+                <div class="headerBox">
+                    <i class="fa fa-database"></i> disk
+                </div>
+                <div class="infoBoxContent">
+                    <div><span id="freeDiskSpace"></span><span> GB free</span></div>
+                    <div class="subtext"><span id="usedDiskSpace"></span><span> GB used</span></div>
+                    <div class="subtext"><span id="totalDiskSpace"></span><span> GB total</span></div>
+
+                </div>
+            </div>
+
+            <div class="infoBox">
+                <div class="headerBox">
+                    <i class="fa fa-heartbeat"></i> health
+                </div>
+                <div class="infoBoxContent">
+                    <div><span>service: </span><span id="serviceHealth"></span></div>
+                    <div><span>consul: </span><span id="consulHealth"></span></div>
+                    <div><span>redis: </span><span id="redisHealth"></span></div>
+                    <!--<div class="subtext"><span>hystrix: </span><span id="hystrixHealth"></span></div>-->
+                </div>
+            </div>
+
+            <div class="infoBox">
+                <div class="headerBox">
+                    <i class="fa fa-coffee"></i> jvm
+                </div>
+                <div class="infoBoxContent">
+                    <div id="javaVendor"></div>
+                    <!--<div id="javaName"></div>-->
+                    <div id="javaVersion" class="subtext"></div>
+                </div>
+            </div>
+
+            <div style="clear:both"></div>
+
+            <div id="systemMetrics">
+                <div class="headerBox">
+                    <i class="fa fa-area-chart"></i> metrics
+                </div>
+                <div class="infoBoxContent">
+
+                    <table>
+                        <tr>
+                            <th>memory:</th>
+                            <td><span id="memory"></span> MB</td>
+                            <th>heap committed:</th>
+                            <td><span id="heapCommitted"></span> MB</td>
+                            <th>non-heap committed:</th>
+                            <td><span id="nonHeapCommitted"></span> MB</td>
+                            <th>threads peak:</th>
+                            <td><span id="threadsPeak"></span></td>
+                        </tr>
+                        <tr>
+                            <th>memory free:</th>
+                            <td><span id="memoryFree"></span> MB</td>
+                            <th>heap init:</th>
+                            <td><span id="heapInit"></span> MB</td>
+                            <th>non-heap init:</th>
+                            <td><span id="nonHeapInit"></span> MB</td>
+                            <th>threads daemon:</th>
+                            <td><span id="threadsDaemon"></span></td>
+                        </tr>
+                        <tr>
+                            <th>processors:</th>
+                            <td><span id="processors"></span></td>
+                            <th>heap used:</th>
+                            <td><span id="heapUsed"></span> MB</td>
+                            <th>non-heap used:</th>
+                            <td><span id="nonHeapUsed"></span> MB</td>
+                            <th>total threads started:</th>
+                            <td><span id="threadsTotalStarted"></span></td>
+                        </tr>
+                        <tr>
+                            <th>uptime:</th>
+                            <td><span id="uptime"></span></td>
+                            <th>heap:</th>
+                            <td><span id="heap"></span> MB</td>
+                            <th>non-heap:</th>
+                            <td><span id="nonHeap"></span> MB</td>
+                            <th>threads:</th>
+                            <td><span id="threads"></span></td>
+                        </tr>
+                        <tr>
+                            <th>avg load:</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+                                    <span id="load"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+
+                function getHealth() {
+                    $.get("/geoserver/manage/health")
+                            .done(function (data) {
+                                var total = bytesToGb(data.diskSpace.total);
+                                var free = bytesToGb(data.diskSpace.free);
+                                var used = Math.round((total - free) * 100) / 100;
+
+                                $("#freeDiskSpace").html(free);
+                                $("#usedDiskSpace").html(used);
+                                $("#totalDiskSpace").html(total);
+
+
+                                $("#serviceHealth").html(data.status);
+                                $("#redisHealth").html(data.redis.status);
+                                $("#consulHealth").html(data.consul.status);
+                                $("#hystrixHealth").html(data.hystrix.status);
+                            });
+                }
+
+                function getEnv() {
+                    $.get("/geoserver/manage/env")
+                            .done(function (data) {
+                                console.info("Data: ", data);
+                                $("#applicationName").html(data.systemProperties["@appId"]);
+                                $("#ip").html(data.springCloudClientHostInfo["spring.cloud.client.ipAddress"]);
+                                $("#port").html(data["server.ports"]["local.server.port"]);
+                                $("#hostname").html(data.springCloudClientHostInfo["spring.cloud.client.hostname"]);
+
+                                $("#javaVendor").html(data.systemProperties["java.vm.vendor"]);
+                                //$("#javaName").html(data.systemProperties["java.vm.name"]);
+                                $("#javaVersion").html(data.systemProperties["java.runtime.version"]);
+                            });
+                }
+
+                function getMetrics() {
+                    $.get("/geoserver/manage/metrics")
+                            .done(function (data) {
+
+                                var mem = bytesToMb(data.mem);
+                                var memFree = bytesToMb(data["mem.free"]);
+                                $("#memory").html(mem);
+                                $("#memoryFree").html(memFree);
+
+                                var uptime = Math.round(data.uptime / 10 / 60) / 100;
+                                $("#uptime").html(msToTime(data.uptime));
+                                $("#processors").html(data.processors);
+                                var load = Math.round(data["systemload.average"] * 100) / 100;
+                                $("#load").html(load + "%");
+                                $('.progress-bar').css('width', load + '%').attr('aria-valuenow', load);
+                                //$("#load").attr("aria-valuenow", load);
+
+                                $("#heapCommitted").html(bytesToMb(data["heap.committed"]));
+                                $("#heapInit").html(bytesToMb(data["heap.init"]));
+                                $("#heapUsed").html(bytesToMb(data["heap.used"]));
+                                $("#heap").html(bytesToMb(data["heap"]));
+
+                                $("#nonHeapCommitted").html(bytesToMb(data["nonheap.committed"]));
+                                $("#nonHeapInit").html(bytesToMb(data["nonheap.init"]));
+                                $("#nonHeapUsed").html(bytesToMb(data["nonheap.used"]));
+                                $("#nonHeap").html(bytesToMb(data["nonheap"]));
+
+                                $("#threadsPeak").html(data["threads.peak"]);
+                                $("#threadsDaemon").html(data["threads.daemon"]);
+                                $("#threadsTotalStarted").html(data["threads.totalStarted"]);
+                                $("#threads").html(data["threads"]);
+                            });
+                }
+
+                function bytesToMb(bytes) {
+                    var bytesToMbRatio = 1048576;
+                    return Math.round(bytes / bytesToMbRatio * 100) / 100;
+                }
+
+                function bytesToGb(bytes) {
+                    var bytesToGbRatio = 1073741824;
+                    return Math.round(bytes / bytesToGbRatio * 100) / 100;
+                }
+
+                function msToTime(duration) {
+                    var milliseconds = parseInt((duration % 1000) / 100)
+                            , seconds = parseInt((duration / 1000) % 60)
+                            , minutes = parseInt((duration / (1000 * 60)) % 60)
+                            , hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+                    hours = (hours < 10) ? "0" + hours : hours;
+                    minutes = (minutes < 10) ? "0" + minutes : minutes;
+                    seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+                    return hours + "h " + minutes + "m " + seconds + "s";
+                }
+
+                $(document).ready(function () {
+                    getHealth();
+                    getEnv();
+                    getMetrics();
+                });
+            </script>
+            <div style='clear:both'></div>
+        </div>
+    </body>
+</html>

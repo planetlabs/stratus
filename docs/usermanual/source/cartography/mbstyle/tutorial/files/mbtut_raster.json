@@ -1,0 +1,16 @@
+{
+    "version": 8,
+    "name": "dem",
+    "layers": [
+        {
+            "id": "dem",
+            "source-layer": "dem",
+            "type": "raster",
+            "paint": {
+                "raster-opacity": 1,
+                "raster-contrast": 0.5,
+                "raster-brighness-max": 0.25
+            }
+        }
+    ]
+}

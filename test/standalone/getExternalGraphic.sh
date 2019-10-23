@@ -1,0 +1,2 @@
+#!/bin/bash
+curl -u admin:geoserver -XGET "http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=acme:ne_10m_roads_north_america" -o externalGraphic.png

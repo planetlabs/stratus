@@ -1,0 +1,11 @@
+<dataStore>
+  <name>sierpinski</name>
+  <connectionParameters>
+    <host>localhost</host>
+    <port>5432</port>
+    <database>sierpinski</database>
+    <user>docker</user>
+    <passwd>docker</passwd>
+    <dbtype>postgis</dbtype>
+  </connectionParameters>
+</dataStore>

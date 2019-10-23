@@ -1,0 +1,4 @@
+mercantile
+locustio==0.8a3
+pyzmq==15.2
+lxml

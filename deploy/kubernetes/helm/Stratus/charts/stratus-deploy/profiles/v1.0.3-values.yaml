@@ -1,0 +1,44 @@
+redis:
+  # lettuce | jedis
+  implementation: "lettuce"
+  # sentinel | cluster | manual
+  type: "manual"
+
+  # only for sentinel
+  sentinel:
+    minReplicas: 1
+    maxReplicas: 3
+  cache:
+    enabled: "true"
+    parallel: "true"
+
+stratus:
+  version: 1.0.3
+  ogc:
+    container:
+      repo: "docker.io/gsstratus"
+      image: "stratus"
+      tag: "1.0.3"
+    resources:
+      minReplicas: 1
+      maxReplicas: 3
+      mem: "1.0G"
+      maxMem: "4.0G"
+      cpu: "500m"
+      maxCpu: 4.0
+  ui:
+    enabled: "true"
+    container:
+      repo: "docker.io/gsstratus"
+      image: "stratus"
+      tag: "1.0.3"
+    resources:
+      minReplicas: 1
+      maxReplicas: 1
+      mem: "1.0G"
+      maxMem: "4.0G"
+      cpu: "500m"
+      maxCpu: 4.0
+  debug: "false"
+  gwc:
+    enabled: "false"

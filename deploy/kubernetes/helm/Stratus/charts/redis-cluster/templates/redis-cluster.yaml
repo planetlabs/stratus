@@ -1,0 +1,92 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-cluster-join
+spec:
+  template:
+    metadata:
+      name: redis-cluster-join
+    spec:
+      containers:
+      - name: redis-cluster-join
+        image: docker.io/gsgsstratus/stratus-init-k8s:0.0.6
+        args:
+          - "7" # number of master nodes
+          - "0" # number of replicas
+          - "default.svc.cluster.local" # namespace portion
+      restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: redis
+  labels:
+    app: redis
+spec:
+  ports:
+  - port: 6379
+    name: peer
+  - port: 16379
+    name: cluster
+
+  clusterIP: None
+  selector:
+    app: redis
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 7
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: node
+    spec:
+      containers:
+        - name: redis
+          image: docker.io/gsgsstratus/stratus-cluster-k8s:0.0.6
+          imagePullPolicy: Always
+          args:
+            - "redis-server"
+            - "--cluster-enabled yes"
+            - "--protected-mode no"
+            - "--cluster-node-timeout 5000"
+            - "--cluster-config-file nodes-6379.conf"
+            - "--appendonly yes"
+            - "--port 6379"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: "TCP"
+            - name: cluster
+              containerPort: 16379
+              protocol: "TCP"
+          volumeMounts:
+            - name: "data"
+              mountPath: "/data"
+      volumes:
+        - name: "data"
+          persistentVolumeClaim:
+            claimName: "data"
+  volumeClaimTemplates:
+  - metadata:
+      name: "data"
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: 20Gi

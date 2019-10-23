@@ -1,0 +1,38 @@
+<project name="docs.geoserver" default="build">
+
+    <import file="../common.xml"/>
+
+    <target name="destroy-sources">
+        <delete dir="src"/>
+    </target>
+
+    <target name="clean" depends="destroy-target, destroy-sources"
+        description="Clean project"/>
+
+    <target name="init-sources">
+        <mkdir dir="src"/>
+        <copy todir="src">
+          <fileset dir="../externals/geoserver/doc/en/user/source" includes="**/*"/>
+        </copy>
+        <!-- Update relative links within the GeoServer docs -->
+        <replace dir="src" token="/../../../../src/"
+          value="/../../externals/geoserver/src/">
+          <include name="**/*.rst" />
+        </replace>
+        <replace dir="src" token="../../../../../../../data/"
+          value="../../../../../externals/geoserver/data/">
+          <include name="**/*.rst" />
+        </replace>
+        
+        <copy file="conf.py" tofile="src/conf.py" overwrite="true"/>
+    </target>
+
+    <target name="build" depends="init, init-sources"
+        description="Build project">
+        <antcall target="sphinx">
+            <param name="dir" value="src"/>
+            <param name="flags" value="-q"/>
+        </antcall>
+    </target>
+
+</project>

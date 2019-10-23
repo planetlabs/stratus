@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        h3, h4 {
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid #333333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+<h3 th:text="${data.title}"></h3>
+
+<ol th:if="${data.type == T(org.springframework.data.redis.connection.DataType).SET}">
+    <h4 th:text="${data.key}"></h4>
+    <li th:each="key : ${data.set}">
+        <!--
+          Some sets only contain the ID of the targeted hash, without the hash key prefix.  The model tracks the
+          prefix value of the current key.  The code below will append the prefix if it isn't null and the item in the
+          list does not already start with the prefix.
+        -->
+        <a th:if="${data.keyPrefix != null and not #strings.startsWith(key,data.keyPrefix + ':')}"
+           th:with="keyParam=${data.keyPrefix} + ':' + ${key}"
+           th:href="@{/rest/redis/data(key=${keyParam})}" th:text="${key}"></a>
+        <a th:if="${data.keyPrefix == null or #strings.startsWith(key,data.keyPrefix + ':')}" th:with="keyParam=${key}"
+           th:href="@{/rest/redis/data(key=${keyParam})}" th:text="${key}"></a>
+    </li>
+</ol>
+
+<table th:if="${data.type == T(org.springframework.data.redis.connection.DataType).HASH}">
+    <h4 th:text="${data.key}"></h4>
+    <thead>
+    <tr>
+        <th>Field</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="entry :${data.hash}">
+        <tr>
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value}"></td>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+
+<p th:if="${data.type == T(org.springframework.data.redis.connection.DataType).STRING}">
+    <h4 th:text="${data.key}"></h4>
+    <div th:text="${data.value}"></div>
+</p>
+
+
+</body>
+</html>

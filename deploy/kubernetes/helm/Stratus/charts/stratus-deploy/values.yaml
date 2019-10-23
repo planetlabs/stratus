@@ -1,0 +1,50 @@
+redis:
+  implementation: "lettuce"
+  # sentinel, cluster, or manual
+  type: "sentinel"
+
+  # only for sentinel
+  sentinel:
+    minReplicas: 1
+    maxReplicas: 3
+  cache:
+    enabled: "true"
+    parallel: "true"
+
+stratus:
+  trial:
+    key: ""
+  container:
+    repo: "docker.io/gsstratus"
+    image: "stratus"
+    tag: "latest"
+  persistentVolume:
+    localPath: "/data"
+  ogc:
+    rootPath: "/geoserver"
+    readinessPath: "/geoserver/rest/manage/health"
+    resources:
+      minReplicas: 1
+      maxReplicas: 3
+      mem: 1.0
+      maxMem: 4.0
+      cpu: "500m"
+      maxCpu: 4.0
+    hpa:
+      cpu: 70
+  ui:
+    enabled: "true"
+    rootPath: "/geoserver"
+    readinessPath: "/geoserver/rest/manage/health"
+    pullPolicy: "Always"
+    resources:
+      minReplicas: 1
+      maxReplicas: 1
+      mem: 1.0
+      maxMem: 4.0
+      cpu: "500m"
+      maxCpu: 4.0
+  webAdmin: "false"
+  debug: "false"
+  gwc:
+    enabled: "false"

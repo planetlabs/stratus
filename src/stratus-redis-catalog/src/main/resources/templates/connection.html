@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        h3 {
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid #333333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+<h3 th:text="${title}"></h3>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Address/Port</th>
+        <th>Database</th>
+        <th>Age</th>
+        <th>Channel Subscriptions</th>
+        <th>Flags</th>
+        <th>Buffer Length</th>
+        <th>Buffer Free Space</th>
+        <th>Output Buffer Length</th>
+        <th>Output Buffer Mem Usage</th>
+        <th>Events</th>
+        <th>Idle</th>
+        <th>Last Command</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="client : ${clients}">
+        <tr>
+            <td th:text="${client.id}"></td>
+            <td th:text="${client.addressAndPort}"></td>
+            <td th:text="${client.database}"></td>
+            <td th:text="${client.age}"></td>
+            <td th:text="${client.channelSubscriptions}"></td>
+            <td th:text="${client.flags}"></td>
+            <td th:text="${client.bufferLength}"></td>
+            <td th:text="${client.bufferFreeSpace}"></td>
+            <td th:text="${client.outputBufferLength}"></td>
+            <td th:text="${client.outputBufferMemUsage}"></td>
+            <td th:text="${client.events}"></td>
+            <td th:text="${client.idle}"></td>
+            <td th:text="${client.lastCommand}"></td>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+
+<h3 th:text="${poolStatus.title}"></h3>
+<ul>
+    <li th:text="'Active connections: ' + ${poolStatus.activeConnections}"></li>
+    <li th:text="'Max connections: ' + ${poolStatus.maxTotalConnections}"></li>
+    <li th:text="'Idle connections: ' + ${poolStatus.idleConnections}"></li>
+    <li th:text="'Min idle connections: ' + ${poolStatus.minIdleConnections}"></li>
+    <li th:text="'Max idle connections: ' + ${poolStatus.maxIdleConnections}"></li>
+</ul>
+
+<h3 th:text="${poolConfig.title}"></h3>
+<ul>
+    <li th:text="'LIFO: ' + ${poolConfig.LIFO}"></li>
+    <li th:text="'testOnBorrow: ' + ${poolConfig.testOnBorrow}"></li>
+    <li th:text="'testOnReturn: ' + ${poolConfig.testOnReturn}"></li>
+    <li th:text="'testWhileIdle: ' + ${poolConfig.testWhileIdle}"></li>
+    <li th:text="'testOnCreate: ' + ${poolConfig.testOnCreate}"></li>
+    <li th:text="'fairness: ' + ${poolConfig.fairness}"></li>
+    <li th:text="'blockWhenExhausted: ' + ${poolConfig.blockWhenExhausted}"></li>
+    <li th:text="'minIdle: ' + ${poolConfig.minIdle}"></li>
+    <li th:text="'maxIdle: ' + ${poolConfig.maxIdle}"></li>
+    <li th:text="'maxTotal: ' + ${poolConfig.maxTotal}"></li>
+    <li th:text="'numTestsPerEvictionRun: ' + ${poolConfig.numTestsPerEvictionRun}"></li>
+    <li th:text="'maxWaitMillis: ' + ${poolConfig.maxWaitMillis}"></li>
+    <li th:text="'timeBetweenEvictionRunsMillis: ' + ${poolConfig.timeBetweenEvictionRunsMillis}"></li>
+    <li th:text="'minEvictableIdleTimeMillis: ' + ${poolConfig.minEvictableIdleTimeMillis}"></li>
+    <li th:text="'softMinEvictableIdleTimeMillis: ' + ${poolConfig.softMinEvictableIdleTimeMillis}"></li>
+</ul>
+
+</body>
+</html>

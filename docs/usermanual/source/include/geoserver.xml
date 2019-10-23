@@ -1,0 +1,17 @@
+<Context docBase="geoserver.war">
+  <Parameter name="GEOSERVER_DATA_DIR"
+             value="/var/opt/stratus/geoserver/data"
+             override="false"/>
+  <Parameter name="GEOSERVER_REQUIRE_FILE"
+             value="/var/opt/stratus/geoserver/data/global.xml"
+             override="false"/>
+  <Parameter name="GEOSERVER_LOG_LOCATION"
+             value="/var/opt/stratus/geoserver/data/logs"
+            override="false"/> -->
+  <Parameter name="GEOSERVER_GWC_CONFIG_DIR"
+             value="/var/opt/stratus/geoserver/gwc"
+             override="false"/>
+  <Parameter name="GEOWEBCACHE_CACHE_DIR"
+             value="/var/opt/stratus/geoserver/tilecache"
+             override="false"/>
+</Context>

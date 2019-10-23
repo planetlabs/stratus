@@ -1,0 +1,53 @@
+{% extends "opengeo/layout.html" %}
+
+{% set rootpath = pathto(master_doc) | replace('index.html','') | replace('#','') %}
+{%- macro sidebar() %}
+ {%- if builder != 'htmlhelp' %}
+
+        {%- block sidebartoc %}
+
+          <div id="sidebar">
+           <div id="toc" class="pgClass">
+            <h4 class="disclaimer">Disclaimer</h4>
+            <div id="distxt">
+
+              <p class="distxtbold">This documentation is from an open source community project.</p>
+              <p>While every reasonable effort is made to ensure it is correct, it is provided "as is" for reference only, with no guarantees that it is complete, accurate, or current.</p>
+            </div>
+
+             <h3>GeoServer <br> User Manual Contents</h3>
+               {{ toctree() }}
+             <br>
+             <div class="comman">
+             <h3>Stratus</h3>
+              <ul>
+               <li> <a href="{{ rootpath }}index.html">User Manual</a> </li>
+              </ul>
+              <br>
+              <br>
+              <h3>Component User Manuals</h3>
+              <ul class="simple">
+              <li> <a class="abs-link" href="{{ rootpath }}postgis/index.html">PostGIS</a> </li>
+              <li> <a class="abs-link" href="{{ rootpath }}geoserver/index.html">GeoServer</a> </li>
+              <li> <a class="abs-link" href="{{ rootpath }}geowebcache/index.html">GeoWebCache</a> </li>
+              </ul>
+           </div> <!-- comman -->
+          </div> <!-- TOC -->
+         </div> <!-- end sidebar -->
+      {%- endblock %}
+
+  {%- endif %}
+{%- endmacro -%}
+
+  {%- block quicksearch %}
+        <form id="quick-search" action="{{ pathto('search') }}" method="get">
+          <fieldset>
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+            <input id="quick-search-query" type="text" name="q" accessKey="q" size="25" value="Search Documentation &hellip;" size="20" tabindex="3" onblur="if(this.value=='') this.value='Search Documentation &hellip;';" onfocus="if(this.value=='Search Documentation &hellip;') this.value='';" />
+            <input id="quick-search-submit" type="image" value="Search" src="{{ pathto('_static/chrome/search_icon_blue.png', 1)}}" />
+          </fieldset>
+        </form>
+  {%- endblock %}
+
+

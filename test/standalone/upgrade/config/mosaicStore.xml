@@ -1,0 +1,9 @@
+<coverageStore>
+  <name>mosaic</name>
+  <type>ImageMosaic</type>
+  <enabled>true</enabled>
+  <url>/data/mosaic</url>
+  <workspace>
+    <name>test</name>
+  </workspace>
+</coverageStore>

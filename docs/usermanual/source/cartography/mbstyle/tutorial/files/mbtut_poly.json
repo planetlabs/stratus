@@ -1,0 +1,52 @@
+{
+    "version": 8,
+    "name": "countries",
+    "layers": [
+        {
+            "type": "fill",
+            "id": "countries-fill",
+            "source-layer": "countries",
+            "paint": {
+                "fill-color": {
+                    "property": "mapcolor7",
+                    "type": "categorical",
+                    "stops": [
+                        [1, "#FFC3C3"],
+                        [2, "#FFE3C3"],
+                        [3, "#FFFFC3"],
+                        [4, "#C3FFE3"],
+                        [5, "#C3FFFF"],
+                        [6, "#C3C3FF"],
+                        [7, "#FFC3FF"]
+                    ]
+                },
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "type": "line",
+            "id": "countries-line",
+            "source-layer": "countries",
+            "paint": {
+                "line-color": "#777777",
+                "line-width": 0.5,
+                "line-dasharray": [4, 4]
+            }
+        },
+        {
+            "type": "symbol",
+            "id": "countries-symbol",
+            "source-layer": "countries",
+            "layout": {
+                "text-field": "{name}",
+                "text-transform": "uppercase",
+                "text-size": 14,
+                "text-font": ["Padauk"],
+                "text-max-width": 100
+            },
+            "paint": {
+                "text-color": "#333333"
+            }
+        }
+    ]
+}

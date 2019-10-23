@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis
+spec:
+  # replicas: {{ .Values.redis.}}
+  selector:
+    name: redis
+  template:
+    metadata:
+      labels:
+        name: redis
+        role: redis-node
+    spec:
+      containers:
+      - name: redis
+        image: kubernetes/redis:v1
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            cpu: {{ .Values.redis.cpu | default "0.1" }}
+        volumeMounts:
+        - mountPath: /redis-master-data
+          name: data
+      volumes:
+        - name: data
+{{- if .Values.redis.persistentVolume }}
+          persistentVolumeClaim:
+            claimName: pvc-efs-redis
+{{- else }}
+          emptyDir: {}
+{{- end }}

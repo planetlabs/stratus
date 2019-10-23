@@ -1,0 +1,15 @@
+stratus:
+  jndi:
+    sources:
+      -
+        name: jdbc/josh
+        properties:
+          url: jdbc:postgresql://localhost:5432/na_roads
+          username: docker
+          password: docker
+      -
+        name: jdbc/josh2
+        properties:
+          url: jdbc:postgresql://localhost:5432/na_roads
+          username: docker
+          password: docker

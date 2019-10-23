@@ -1,0 +1,26 @@
+<dataStore>
+  <name>roads</name>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <name>test</name>
+  </workspace>
+  <connectionParameters>
+    <entry key="Estimated extends">false</entry>
+    <entry key="encode functions">false</entry>
+    <entry key="Support on the fly geometry simplification">false</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="validate connections">false</entry>
+    <entry key="create database">false</entry>
+    <entry key="preparedStatements">false</entry>
+    <entry key="database">na_roads</entry>
+    <entry key="passwd">docker</entry>
+    <entry key="port">5432</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="namespace">http://test</entry>
+    <entry key="host">localhost</entry>
+    <entry key="Loose bbox">false</entry>
+    <entry key="Test while idle">false</entry>
+    <entry key="user">docker</entry>
+  </connectionParameters>
+</dataStore>

@@ -1,0 +1,25 @@
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    {% if project != "Stratus" %}
+      <li><a href="{{ pathto(master_doc) | replace('index.html','') | replace('#','') }}../index.html"> Stratus </a> &raquo;</li>
+      <li><a href="{{ pathto(master_doc) }}"> {{ shorttitle }} </a> &raquo;</li>
+    {% else %}
+      <li><a href="{{ pathto(master_doc) }}">Stratus </a> &raquo;</li>
+    {% endif %}
+
+    {% for doc in parents %}
+        <li><a href="{{ doc.link|e }}">{{ doc.title }}</a> &raquo;</li>
+    {% endfor %}
+    <li>{{ title }}</li>
+  </ul>
+  {# Copied from footer to have buttons at top #}
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    {% if next %}
+      <a href="{{ next.link|e }}" class="btn btn-neutral float-right" title="{{ next.title|striptags|e }}">Next <span class="fa fa-arrow-circle-right"></span></a>
+    {% endif %}
+    {% if prev %}
+      <a href="{{ prev.link|e }}" class="btn btn-neutral" title="{{ prev.title|striptags|e }}"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+    {% endif %}
+  </div>
+  <hr/>
+</div>

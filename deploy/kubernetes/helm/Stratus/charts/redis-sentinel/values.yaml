@@ -1,0 +1,9 @@
+redis:
+  slave:
+    minReplicas: 1
+    maxReplicas: 3
+  sentinel:
+    minReplicas: 1
+    maxReplicas: 3
+  resources:
+    maxCpu: "500m"

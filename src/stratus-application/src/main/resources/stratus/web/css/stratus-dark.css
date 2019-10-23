@@ -1,0 +1,372 @@
+/*-----------------------
+Stratus Dark Theme
+
+List of color changes:
+
+Light      Dark
+#FFFFFF    #222222
+#4D5055    #dee1e5
+#28bce0    #28bce0, #83c7ef (links)
+#CECECE    #333333
+#00A78D    #006a5a
+#ccede8    #394140
+#fffaeb    #66604c
+#7EB5D3    #639ebc
+#fafbfc    #4e565e
+#cfdbe2    #778b96
+#AAAAAA    #424242
+#000000    #e3e3e3
+#262523    #e5e5e5
+#222222    #c8c8c8
+-----------------------*/
+
+/*-----------------------
+Color Overrides
+-----------------------*/
+
+h1, h2, h3, h4, h5, h6 {
+  color: #dee1e5;
+}
+
+a:link, a:visited {
+  color: #83c7ef;
+}
+
+body.help ol, ul ul {
+  color: #e3e3e3;
+}
+body.help p {
+  color: #e3e3e3;
+}
+
+#header {
+  background-color: #28bce0;
+  color: #222222;
+  padding-top: 7.5px;
+  padding-bottom: 7.5px;
+}
+
+#header label {
+  color: #333333;
+}
+
+thead th {
+  background: #28bce0;
+  color: #222222;
+  border-color: #006a5a;
+}
+
+thead th a:link, 
+thead th a:visited {
+  color: #222222;
+}
+
+tr.even td, tr.even th {
+  background: #394140;
+}
+
+tr:hover td,
+tr.even:hover td,
+tr.even:hover th,
+tbody tr:hover th {
+  background: #66604c;
+}
+
+.alternating-rows tr:nth-child(even) {
+  background-color: #394140;
+}
+
+.feedbackPanelINFO {
+  background-color: #5bc0ff;
+}
+
+input.text:focus, input.title:focus, textarea:focus {
+  background-color: #6684c1;
+  color: #ffffff !important;
+}
+
+input.text, input.file, textarea.textarea, select.select {
+  color: #ffffff !important;;
+}
+
+select:focus {
+  background-color: #6684c1;
+  color: #ffffff;
+}
+
+.paginator a,
+.paginator em {
+  background-color: #222222;
+  border: 1px solid #28bce0;
+}
+
+.paginator a:hover {
+  background: #394140;
+}
+
+.tab-row a {
+  background: #394140;
+}
+
+.tab-row .selected a:link, .tab-row .selected a:visited {
+  background: #222222;
+  border-bottom: 1px solid #222222;
+}
+
+.tab-row a:hover, .tab-row a:active {
+  background: #222222;
+}
+
+.button-group a,
+.button-group button,
+input.btnTxt {
+  background-color: #222222;
+  background-image: none;
+  color: #8cd4ff;
+  border-color: #28bce0;
+}
+
+.button-group a:hover,
+.button-group button:hover,
+input.btnTxt:hover {
+  background: #639ebc url('../img_stratus/button-gradient.png') repeat-x scroll left top;
+}
+
+file-upload-button, button {
+  background-color: #222222;
+  background-image: none;
+  color: #8cd4ff;
+  border: 1px solid #8cd4ff;
+  border-radius: 5px;
+}
+
+.status-bar span, 
+.mini-bar span, 
+div.progress-bar span.bar {
+  background-image: url('../img_stratus/status-bar-bg.png');
+}
+
+label, span.fieldname, label.choice, ul.choiceList>li label, *.choiceItem label {
+  color: #c8c8c8;
+}
+
+input.text, input.file, textarea.textarea, select.select {
+  color: #c8c8c8;
+  border-color: #7c7c7c #7c7c7c #666666;
+}
+
+option:checked { 
+  background-color: #394140;
+}
+
+fieldset {
+  border-top: 1px solid #6684c1;
+}
+/*-----------------------
+Themed Layout
+-----------------------*/
+body {
+  background-color: #222222;
+  font-family: Helvetica, Arial, FreeSans, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica, Arial, FreeSans, sans-serif;
+  font-weight: bold;
+  color: #eff1f4;
+}
+
+input, textarea, select {
+  background-color: #222222;
+  color: #e3e3e3;
+  border-color: #555;
+}
+
+#main {
+  background-color: #4e565e;
+  border-bottom: 1px solid #778b96;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  margin: 0 -25px 0 -25px;
+  padding: 10px 10px 10px 15px;
+  height: 20px;
+}
+
+#header h2 a {
+  background-image: url('../img_stratus/logo2-basic.png');
+  margin-left: 15px;
+  height: 87px;
+  width: 330px;
+}
+
+#header .button-group {
+  padding-top: 1.5em;
+}
+
+#main {
+  border-top: 1px solid #28bce0;
+  background-image: none;
+}
+
+#main .wrap {
+  background-image: none;
+}
+
+#sidebar {
+  padding: 30px 20px 0;
+}
+
+#page {
+  background-color: #222222;
+  color: #e5e5e5;
+  background-image: none;
+  zoom: 1;
+  margin: 0 -20px -250px 19em;
+  padding: 0 20px 250px 19px;
+  -webkit-box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+  -moz-box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+  box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+}
+
+#page::before {
+  content: " ";
+  background: 
+  	url("../img_stratus/content-shadow.png") 0 -271px no-repeat,
+  	url("../img_stratus/content-shadow.png") right 0 no-repeat;
+  position: absolute;
+  top: 0;
+  left: 217px;
+  right: -11px;
+  display: block;
+  height: 270px;
+  z-index: -1;
+}
+
+.page-header {
+  background-color: #222222;
+  background-image: none;
+}
+
+.page-pane {
+  background-color: #222222;
+}
+
+.navigation-tab {
+	border-width: 1px;
+	border-color: #28bce0;
+}
+.navigation-tab-single, .navigation-tab-header,
+.navigation-tab-single a, .navigation-tab-header a, .navigation-tab-content a {
+  color: #8cd4ff;
+}
+
+.common-mime-types li a:hover, .uncommon-mime-types li a:hover {
+  background-color: #222222;
+}
+
+div.wicket-aa {
+    background-color: #222222;
+    color: #e3e3e3;
+}
+
+/*---------------------------------
+Extras needed only in the Suite
+----------------------------------*/
+
+/* 
+  Note, the resource pointed is a copy of the one in the GeoServer web-core jar. However, I could
+  not find any working way of referencing it from there, so I ended up just copying the resource
+*/
+.srs-link {
+background: transparent url(../silk/shape_square_blue.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+form div.group {
+overflow: auto;
+} 
+
+div.group li:first-child{
+clear: both;
+float: left;
+}
+div.group li:last-child{
+display:block;
+float:right;
+margin:0 0 0.3em;
+padding:4px 5px 2px 0;
+width:35%;
+}
+div.group li:last-child input.text{
+width:10em;
+}
+
+form a.expanded {
+background-image: url(../silk/bullet_arrow_down.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
+
+form a.collapsed {
+background-image: url(../silk/bullet_arrow_right.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
+
+.button-group.inactive a, .button-group.inactive button, input.btnTxt {
+  border-color: #424242; 
+  color: #424242;
+  background: none; 
+  font-weight: normal; 
+  font-style: italic;
+  cursor: default;
+}
+
+#id2b {
+  background-color: #333333 !important;
+}
+
+.cm-s-default {
+  line-height: 1.3em;
+}
+.cm-s-default.CodeMirror { background: #262626; color: #EBEFE7; text-shadow: 0 -1px 1px #262626; }
+.cm-s-default div.CodeMirror-selected {background: #45443B !important;} /* 33322B*/
+.cm-s-default .CodeMirror-cursor { border-left: 1px solid white !important; }
+.cm-s-default pre { padding: 0 8px; }/*editable code holder*/
+
+.cm-s-default.CodeMirror span.CodeMirror-matchingbracket { color: #7EFC7E; }/*65FC65*/
+
+.cm-s-default .CodeMirror-gutters { background: #262626; border-right:1px solid #aaa; }
+.cm-s-default .CodeMirror-linenumber { color: #777; }
+
+.cm-s-default span.cm-keyword { color: #599eff; }
+.cm-s-default span.cm-atom { color: #C2B470; }
+.cm-s-default span.cm-number { color: #B35E4D; }
+.cm-s-default span.cm-def {color: white;}
+.cm-s-default span.cm-variable { color:#D9BF8C; }
+.cm-s-default span.cm-variable-2 { color: #669199; }
+.cm-s-default span.cm-variable-3 { color: white; }
+.cm-s-default span.cm-property {color: #92A75C;}
+.cm-s-default span.cm-operator {color: #92A75C;}
+.cm-s-default span.cm-comment { color: #666; }
+.cm-s-default span.cm-string { color: #BCD279; }
+.cm-s-default span.cm-string-2 {color: #f50;}
+.cm-s-default span.cm-meta { color: #738C73; }
+.cm-s-default span.cm-qualifier {color: #555;}
+.cm-s-default span.cm-builtin { color: #ff9e59; }
+.cm-s-default span.cm-bracket { color: #EBEFE7; }
+.cm-s-default span.cm-tag { color: #669199; }
+.cm-s-default span.cm-attribute {color: #00c;}
+.cm-s-default span.cm-header {color: #a0a;}
+.cm-s-default span.cm-quote {color: #090;}
+.cm-s-default span.cm-hr {color: #999;}
+.cm-s-default span.cm-link {color: #00c;}
+.cm-s-default span.cm-error { color: #9d1e15; }
+
+.cm-s-default .CodeMirror-activeline-background {background: #3C3A3A !important;}
+.cm-s-default .CodeMirror-matchingbracket {outline:1px solid grey; color:white !important;}

@@ -1,0 +1,25 @@
+@CHARSET "UTF-8";
+
+body, td, th {
+  font-family: Verdana,Arial,\'Bitstream Vera Sans\',Helvetica,sans-serif;
+  font-size: 0.85em;
+  vertical-align: top;
+  }
+table.stats tbody + tbody tr * {padding-top: 1em;}
+table.stats tbody + tbody tr + tr * {padding-top: inherit;}
+table.stats th[scope=row] {text-align: right;}
+table.stats th[scope=col] {text-align: left;}
+
+body {padding-top: 75px;}
+
+#pageHeader {
+	background-color: #28bce0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 80px;
+	padding-left: 20px;
+}
+
+#logo img {border-width: 0; height: 60px; width: 209px; padding-top: 8px;}

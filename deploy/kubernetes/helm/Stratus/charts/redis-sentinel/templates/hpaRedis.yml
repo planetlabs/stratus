@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: ReplicationController
+    name: redis
+  minReplicas: {{ .Values.redis.sentinel.minReplicas | default "3" }}
+  maxReplicas: {{ .Values.redis.sentinel.maxReplicas | default "3" }}
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-sentinel-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: ReplicationController
+    name: redis-sentinel
+  minReplicas: {{ .Values.redis.sentinel.minReplicas | default "3" }}
+  maxReplicas: {{ .Values.redis.sentinel.maxReplicas | default "3" }}
+  targetCPUUtilizationPercentage: 50

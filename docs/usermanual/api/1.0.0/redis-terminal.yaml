@@ -1,0 +1,24 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Terminal
+  description: Provides a terminal for executing redis commands
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/terminal:
+    get:
+      operationId: terminalGet
+      summary: Provides a terminal for executing redis commands
+      description: |
+        This endpoint provides a terminal-like web application for executing arbitrary redis commands as if you were connected directly to the redis instance via redis-cli.
+        
+        **WARNING**: You can change the contents of redis with this endpoint, which may corrupt the Stratus catalog or configuration. Use with **extreme** caution.
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK

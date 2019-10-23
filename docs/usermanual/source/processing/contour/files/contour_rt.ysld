@@ -1,0 +1,68 @@
+feature-styles:
+- transform:
+    name: ras:Contour
+    params:
+      interval: 100
+      simplify: true
+  rules:
+  - name: rule 1
+    title: Contour Line (100)
+    scale: [min, 250000]
+    symbolizers:
+    - line:
+        stroke-color: '#662200'
+        stroke-width: 0.4
+  - name: rule 2
+    title: Contour Line (500)
+    filter: ${IEEEremainder(int2ddouble(value),parseDouble('500.0')) = '0'}
+    symbolizers:
+    - line:
+        stroke-color: '#662200'
+        stroke-width: 1
+  - name: rule 3
+    title: Label (100)
+    scale: [min, 250000]
+    symbolizers:
+    - text:
+        label: ${round(value)}
+        priority: 2000
+        fill-color: '#662200'
+        halo:
+          fill-color: '#FFFFFF'
+          fill-opacity: 0.6
+          radius: 2
+        font-family: Arial
+        font-size: 10
+        font-style: normal
+        font-weight: Normal
+        placement: line
+        offset: 0.0
+        x-followLine: true
+        x-repeat: 300
+        x-maxDisplacement: 50
+        x-maxAngleDelta: 30
+        x-spaceAround: 20
+  - name: rule 4
+    title: Label (500)
+    filter: ${IEEEremainder(int2ddouble(value),parseDouble('500.0')) = '0'}
+    scale: [min, max]
+    symbolizers:
+    - text:
+        label: ${round(value)}
+        priority: 3000
+        fill-color: '#662200'
+        halo:
+          fill-color: '#FFFFFF'
+          fill-opacity: 0.6
+          radius: 2
+        font-family: Arial
+        font-size: 10
+        font-style: normal
+        font-weight: Bold
+        placement: line
+        offset: 0.0
+        x-followLine: true
+        x-repeat: 300
+        x-maxDisplacement: 50
+        x-maxAngleDelta: 30
+        x-spaceAround: 20

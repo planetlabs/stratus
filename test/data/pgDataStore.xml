@@ -1,0 +1,11 @@
+<dataStore>
+  <name>na_roads</name>
+  <connectionParameters>
+    <host>localhost</host>
+    <port>5432</port>
+    <database>na_roads</database>
+    <user>docker</user>
+    <passwd>docker</passwd>
+    <dbtype>postgis</dbtype>
+  </connectionParameters>
+</dataStore>

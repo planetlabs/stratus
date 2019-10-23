@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    version: latest
+    tier: stratus-ui-frontend
+  name: stratus-ui-lb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600"
+spec:
+  type: LoadBalancer
+  selector:
+    tier: stratus-ui-backend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8080
+  # - name: https
+  #   protocol: TCP
+  #   port: 443
+  #   targetPort: 8443

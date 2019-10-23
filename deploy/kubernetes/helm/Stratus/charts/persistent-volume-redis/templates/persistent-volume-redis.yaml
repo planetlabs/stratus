@@ -1,0 +1,31 @@
+{{- if .Values.redis.persistentVolume }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv-redis
+  labels:
+    type: {{ .Values.redis.persistentVolume.type | default "efs" }}
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    server: {{ .Values.redis.persistentVolume.host }} 
+    path: {{ .Values.redis.persistentVolume.path | default "/" }}
+{{- end }}
+---
+{{- if .Values.redis.persistentVolume }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-redis
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+{{- end }}

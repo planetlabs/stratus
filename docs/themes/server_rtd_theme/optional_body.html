@@ -1,0 +1,39 @@
+   {% if pagename == "introduction" %}
+        {% set html_pagename = 'postgis_introduction' %}
+   {% elif pagename == "installation" %}
+        {% set html_pagename = 'postgis_installation' %}
+   {% elif pagename == "faq" %}
+        {% set html_pagename = 'PostGIS_FAQ' %}
+   {% elif pagename == "using_postgis_dataman" %}
+        {% set html_pagename = 'using_postgis_dbmanagement' %}
+   {% elif pagename == "using_raster_dataman" %}
+        {% set html_pagename = 'using_raster_dataman' %}
+   {% elif pagename == "using_postgis_app" %}
+        {% set html_pagename = 'ch06' %}
+   {% elif pagename == "performance_tips" %}
+        {% set html_pagename = 'performance_tips' %}
+   {% elif pagename == "reference" %}
+        {% set html_pagename = 'reference' %}
+   {% elif pagename == "reference_raster" %}
+        {% set html_pagename = 'RT_reference' %}
+   {% elif pagename == "faq_raster" %}
+        {% set html_pagename = 'RT_FAQ' %}
+   {% elif pagename == "topology" %}
+        {% set html_pagename = 'Topology' %}
+   {% elif pagename == "extras" %}
+        {% set html_pagename = 'Extras' %}
+   {% elif pagename == "postgis_aggs_mm" %}
+        {% set html_pagename = 'PostGIS_Special_Functions_Index' %}
+   {% elif pagename == "address_standardizer" %}
+        {% set html_pagename = 'Address_Standardizer' %}
+   {% elif pagename == "reporting" %}
+        {% set html_pagename = 'ch15' %}
+   {% elif pagename == "release_notes" %}
+        {% set html_pagename = 'release_notes' %}
+   {% else %}
+        {% set html_pagename = 'index' %}
+   {% endif %}
+
+   <iframe src="postgis/html/{{ html_pagename }}.html" width="100%" height="600px" style="border:0;">
+	Your browser does not support iframes.
+   </iframe>

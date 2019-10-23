@@ -1,0 +1,19 @@
+<wmtsStore>
+  <name>vectorCascade</name>
+  <type>WMTS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <name>test</name>
+  </workspace>
+  <metadata>
+    <entry key="useConnectionPooling">true</entry>
+  </metadata>
+  <__default>false</__default>
+  <capabilitiesURL>http://localhost:8080/geoserver/test/roads/gwc/service/wmts?REQUEST=getcapabilities</capabilitiesURL>
+  <maxConnections>6</maxConnections>
+  <readTimeout>60</readTimeout>
+  <connectTimeout>30</connectTimeout>
+  <store class="wmtsStore">
+    <name>test:vectorCascade</name>
+  </store>
+</wmtsStore>

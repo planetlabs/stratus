@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgis
+  labels:
+    name: postgis
+spec:
+  containers:
+  - name: postgis
+    image: kartoza/postgis:10.0-2.4
+    ports:
+      - containerPort: 5432
+    env:
+      - name: POSTGRES_USER
+        value: postgres
+      - name: POSTGRES_PASS
+        value: postgres
+      - name: POSTGRES_DBNAME
+        value: stratus
+    #   - name: ALLOW_IP_RANGE
+    #     value: "<0.0.0.0/0>"
+    volumeMounts:
+      - name: pg-hba-conf-volume
+        mountPath: /etc/postgresql/10/main/pg_hba.conf
+        subPath: pg_hba.conf
+      - name: postgresql-conf-volume
+        mountPath: /etc/postgresql/10/main/postgresql.conf
+        subPath: postgresql.conf
+  volumes: 
+    - name: pg-hba-conf-volume
+      configMap: 
+        name: pg-hba-conf-configmap
+    - name: postgresql-conf-volume
+      configMap: 
+        name: postgresql-conf-configmap
+
+# kubectl create configmap pg-hba-conf-configmap --from-file=pg_hba.conf

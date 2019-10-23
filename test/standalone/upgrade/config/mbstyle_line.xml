@@ -1,0 +1,10 @@
+<style>
+  <name>mbstyle_line</name>
+  <format>mbstyle</format>
+  <legend>
+    <width>32</width>
+    <height>32</height>
+    <format>image/png</format>
+    <onlineResource>legend.png</onlineResource>
+  </legend>
+</style>

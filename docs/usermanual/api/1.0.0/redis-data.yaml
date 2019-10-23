@@ -1,0 +1,37 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Data
+  description: Shows redis keys and values
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/data:
+    get:
+      operationId: dataGet
+      summary: Shows redis keys and values
+      description: |
+        Returns a list of all keys in redis. If the key parameter is provided, instead returns the value of that key. There are three types of values: 
+
+         * Set: A list of keys, typically used for indices.
+
+         * Hash: An object value in redis, including catalog info objects, configuration, and resources.
+
+         * Value: A simple string value in redis, such as the GeoServer:Initialized flag.
+
+        Each key in a list of keys links to the appropriate value.
+      parameters:
+        - name: key
+          description: |
+            The key parameter is used to control the category of value returned. If it is not provided, all keys are returned. Otherwise, only the requested key is returned.
+          in: query
+          required: false
+          type: string
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK

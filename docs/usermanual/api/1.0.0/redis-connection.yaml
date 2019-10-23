@@ -1,0 +1,21 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Connection
+  description: Shows redis connection details
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/connection:
+    get:
+      operationId: connectionGet
+      summary: Shows redis connection details
+      description: Provides a list of all active redis connections, with details on each connection including ID, Address/Port, Age, Idle time, and Last Command. Also provides detals about the local connection pool status and configuration.
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK

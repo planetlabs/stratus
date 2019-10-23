@@ -1,0 +1,49 @@
+Environment variables as values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is a common situation that the output image dimensions be determined by the client at rendering time, to allow for variable window sizes.
+
+In these cases, it is possible to read in special environment variables to the rendering transformation.
+
+There are three environment variables that will be useful to us, which can be used as values for the following input parameters:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Environment variable
+     - Description
+     - Input parameter
+   * - ``wms_bbox``
+     - WMS request extent
+     - ``outputBBOX``
+   * - ``wms_width``
+     - Width of resulting image
+     - ``outputWidth``
+   * - ``wms_height``
+     - Height of resulting image
+     - ``outputHeight``
+
+The following SLD syntax for employing environment variables must be explicitly declared:
+
+.. code-block:: xml
+
+  <ogc:Function name="parameter">
+    <ogc:Literal>outputBBOX</ogc:Literal>
+    <ogc:Function name="env">
+      <ogc:Literal>wms_bbox</ogc:Literal>
+    </ogc:Function>
+  </ogc:Function>
+
+  <ogc:Function name="parameter">
+    <ogc:Literal>outputWidth</ogc:Literal>
+    <ogc:Function name="env">
+      <ogc:Literal>wms_width</ogc:Literal>
+    </ogc:Function>
+  </ogc:Function>
+
+  <ogc:Function name="parameter">
+    <ogc:Literal>outputHeight</ogc:Literal>
+    <ogc:Function name="env">
+      <ogc:Literal>wms_height</ogc:Literal>
+    </ogc:Function>
+  </ogc:Function>

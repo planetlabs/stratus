@@ -1,0 +1,10 @@
+ogc_instance_type = "t2.medium"
+ui_instance_type = "t2.medium"
+min_instance_count = 1
+#db_instance_type = "db.t2.small"
+#db_create_instance = true
+#efs_create_file_system = true
+cache_instance_type = "cache.t2.small"
+cache_snapshot_retention_days = 0
+bastion_instance_type = "t2.small"
+#key_name = "arahav"

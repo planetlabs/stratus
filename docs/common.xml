@@ -1,0 +1,149 @@
+<project name="common" default="build">
+
+  <!-- first load settings defined by system property -->
+  <property file="${build.settings}"/>
+
+  <!-- next load module relative settings -->
+  <property file="local.properties"/>
+  <property file="build.properties"/>
+
+  <!-- in order to load properties in this directory we need to store the 
+       path to this file, so that build.properties can be resolved -->
+  <dirname property="common.basedir" file="${ant.file.common}"/>
+
+  <!-- finally load settings defined in build directory -->
+  <property file="${common.basedir}/local.properties"/>
+  <property file="${common.basedir}/build.properties"/>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+      <classpath>
+        <pathelement location="${common.basedir}/ant-contrib-1.0b3.jar"/>
+      </classpath>
+    </taskdef>
+  
+  <target name="check-pdf">
+    <property environment="env"/>
+    <condition property="pdflatex.isPresent">
+      <or>
+        <available file="pdflatex" filepath="${env.PATH}"/>
+        <available file="pdflatex.exe" filepath="${env.Path}"/>
+        <available file="pdflatex.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+  </target>
+
+  <!--
+    Initialization
+  -->
+  <!--
+     Initializes ant executable.
+     -->
+    <target name="init-ant">
+      <condition property="ant.exe" value="ant.bat" else="ant">
+        <os family="windows"></os>
+      </condition>
+    </target>
+
+    <!--
+    Creates the target directory.
+    -->
+    <target name="init-target">
+      <mkdir dir="target"/>
+    </target>
+
+    <!--
+    Creates the target/version.ini file.
+    -->
+    <target name="init-buildinfo" depends="init-target">
+      <echo message="server_version=${stratus.version}${line.separator}" 
+          file="target/version.ini"/>
+    </target>
+
+    <!-- 
+    Initialization task. Every build file should call this.
+    -->
+    <target name="init" depends="init-buildinfo,init-ant"/>
+
+ <!-- 
+  Runs a sphinx build html
+
+  @param flags Additional sphinx build flags (defaults to -t=basic)
+  -->
+  <target name="build-html"
+    description="Build html docs">
+    <antcall target="sphinx">
+      <param name="dir" value="source"/>
+      <param name="flags" value="-q"/>
+    </antcall>
+  </target>
+
+  <target name="build-text"
+    description="Build text docs">
+    <antcall target="sphinx">
+      <param name="dir" value="source"/>
+      <param name="builder" value="text"/>
+      <param name="flags" value="-q"/>
+    </antcall>
+  </target>
+
+  <target name="build-pdf" depends="check-pdf"
+    description="Build pdf docs">
+    <if>
+        <equals arg1="${pdflatex.isPresent}" arg2="true"/>
+        <then>
+          <sequential>
+            <antcall target="sphinx">
+              <param name="dir" value="source"/>
+              <param name="builder" value="latex"/>
+              <param name="flags" value="-q"/>
+            </antcall>
+            <exec executable="make" failonerror="true" dir="target/latex">
+              <arg line="all-pdf"/>
+            </exec>
+          </sequential>
+        </then>
+        <else>
+            <echo message="No PDF generated because pdflatex is not on PATH.  This may make installer assembly fail."/>
+        </else>
+    </if>
+  </target>
+
+  <!-- 
+  Runs a sphinx build.
+
+  @param builder Doc builder, default is "html"
+  @param doctrees Directory to store doctrees, default is "target/doctrees"
+  @param srcdir The source directory, the default is ".".
+  @param outdir The output directory, the default is target/{builder}
+  @param flags Additional sphinx build flags.
+  -->
+  <target name="sphinx">
+      <property name="builder" value="html"/>
+      <property name="doctrees" value="${basedir}/target/doctrees"/>
+      <property name="srcdir" value="."/>
+      <property name="outdir" value="${basedir}/target/${builder}"/>
+      <property name="flags" value=""/>
+      
+      <echo message="sphinx-build -A server_version=${stratus.version} ${sphinx.flags} ${flags} -b ${builder} -d ${doctrees} ${srcdir} ${outdir}"/>
+      <exec executable="sphinx-build" dir="${dir}" failonerror="true">
+        <arg line="-A server_version=${server.version} ${sphinx.flags} ${flags} -b ${builder} -d ${doctrees} ${srcdir} ${outdir}"/>
+      </exec>
+  </target>
+
+  <target name="assemble"/>
+  <target name="publish"/>
+
+  <!--
+    Destroys the target directory.
+    -->
+    <target name="destroy-target">
+        <delete dir="target"/>
+    </target>
+
+    <target name="destroy" depends="destroy-target"/>
+
+    <!--
+  Psudeo task that calls the main life cycle tasks in order.  
+  -->
+  <target name="all" depends="clean,build,assemble,publish"/>
+</project>

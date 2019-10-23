@@ -1,0 +1,12051 @@
+Raster Reference
+================
+
+The functions given below are the ones which a user of PostGIS Raster is
+likely to need and which are currently available in PostGIS Raster.
+There are other functions which are required support functions to the
+raster objects which are not of use to a general user.
+
+``raster`` is a new PostGIS type for storing and analyzing raster data.
+
+For loading rasters from raster files please refer to ?
+
+For the examples in this reference we will be using a raster table of
+dummy rasters - Formed with the following code
+
+::
+
+    CREATE TABLE dummy_rast(rid integer, rast raster);
+    INSERT INTO dummy_rast(rid, rast)
+    VALUES (1,
+    ('01' -- little endian (uint8 ndr)
+    || 
+    '0000' -- version (uint16 0)
+    ||
+    '0000' -- nBands (uint16 0)
+    ||
+    '0000000000000040' -- scaleX (float64 2)
+    ||
+    '0000000000000840' -- scaleY (float64 3)
+    ||
+    '000000000000E03F' -- ipX (float64 0.5)
+    ||
+    '000000000000E03F' -- ipY (float64 0.5)
+    ||
+    '0000000000000000' -- skewX (float64 0)
+    ||
+    '0000000000000000' -- skewY (float64 0)
+    ||
+    '00000000' -- SRID (int32 0)
+    ||
+    '0A00' -- width (uint16 10)
+    ||
+    '1400' -- height (uint16 20)
+    )::raster
+    ),
+    -- Raster: 5 x 5 pixels, 3 bands, PT_8BUI pixel type, NODATA = 0
+    (2,  ('01000003009A9999999999A93F9A9999999999A9BF000000E02B274A' ||
+    '41000000007719564100000000000000000000000000000000FFFFFFFF050005000400FDFEFDFEFEFDFEFEFDF9FAFEF' ||
+    'EFCF9FBFDFEFEFDFCFAFEFEFE04004E627AADD16076B4F9FE6370A9F5FE59637AB0E54F58617087040046566487A1506CA2E3FA5A6CAFFBFE4D566DA4CB3E454C5665')::raster);
+
+Raster Support Data types
+=========================
+
+geomval
+A spatial datatype with two fields - geom (holding a geometry object)
+and val (holding a double precision pixel value from a raster band).
+Description
+-----------
+
+geomval is a compound data type consisting of a geometry object
+referenced by the .geom field and val, a double precision value that
+represents the pixel value at a particular geometric location in a
+raster band. It is used by the ST\_DumpAsPolygon and Raster intersection
+family of functions as an output type to explode a raster band into
+geometry polygons.
+
+See Also
+--------
+
+?
+
+addbandarg
+A composite type used as input into the ST\_AddBand function defining
+the attributes and initial value of the new band.
+Description
+-----------
+
+A composite type used as input into the ST\_AddBand function defining
+the attributes and initial value of the new band.
+
+``index `` ``integer``
+    1-based value indicating the position where the new band will be
+    added amongst the raster's bands. If NULL, the new band will be
+    added at the end of the raster's bands.
+
+``pixeltype `` ``text``
+    Pixel type of the new band. One of defined pixel types as described
+    in ?.
+
+``initialvalue `` ``double precision``
+    Initial value that all pixels of new band will be set to.
+
+``nodataval `` ``double precision``
+    NODATA value of the new band. If NULL, the new band will not have a
+    NODATA value assigned.
+
+See Also
+--------
+
+?
+
+rastbandarg
+A composite type for use when needing to express a raster and a band
+index of that raster.
+Description
+-----------
+
+A composite type for use when needing to express a raster and a band
+index of that raster.
+
+``rast `` ``raster``
+    The raster in question/
+
+``nband `` ``integer``
+    1-based value indicating the band of raster
+
+See Also
+--------
+
+?
+
+raster
+raster spatial data type.
+Description
+-----------
+
+raster is a spatial data type used to represent raster data such as
+those imported from jpegs, tiffs, pngs, digital elevation models. Each
+raster has 1 or more bands each having a set of pixel values. Rasters
+can be georeferenced.
+
+    **Note**
+
+    Requires PostGIS be compiled with GDAL support. Currently rasters
+    can be implicitly converted to geometry type, but the conversion
+    returns the ? of the raster. This auto casting may be removed in the
+    near future so don't rely on it.
+
+Casting Behavior
+----------------
+
+This section lists the automatic as well as explicit casts allowed for
+this data type
+
++------------+-------------+
+| Cast To    | Behavior    |
++------------+-------------+
+| geometry   | automatic   |
++------------+-------------+
+
+See Also
+--------
+
+?
+
+reclassarg
+A composite type used as input into the ST\_Reclass function defining
+the behavior of reclassification.
+Description
+-----------
+
+A composite type used as input into the ST\_Reclass function defining
+the behavior of reclassification.
+
+``nband ``\ ``integer``
+    The band number of band to reclassify.
+
+``reclassexpr ``\ ``text``
+    range expression consisting of comma delimited range:map\_range
+    mappings. : to define mapping that defines how to map old band
+    values to new band values. ( means >, ) means less than, ] < or
+    equal, [ means > or equal
+
+    ::
+
+        1. [a-b] = a <= x <= b
+
+        2. (a-b] = a < x <= b
+
+        3. [a-b) = a <= x < b
+
+        4. (a-b) = a < x < b
+
+    ( notation is optional so a-b means the same as (a-b)
+
+``pixeltype ``\ ``text``
+    One of defined pixel types as described in ?
+
+``nodataval ``\ ``double precision``
+    Value to treat as no data. For image outputs that support
+    transparency, these will be blank.
+
+Example: Reclassify band 2 as an 8BUI where 255 is nodata value
+---------------------------------------------------------------
+
+::
+
+    SELECT ROW(2, '0-100:1-10, 101-500:11-150,501 - 10000: 151-254', '8BUI', 255)::reclassarg;
+
+Example: Reclassify band 1 as an 1BB and no nodata value defined
+----------------------------------------------------------------
+
+::
+
+    SELECT ROW(1, '0-100]:0, (100-255:1', '1BB', NULL)::reclassarg;
+
+See Also
+--------
+
+?
+
+unionarg
+A composite type used as input into the ST\_Union function defining the
+bands to be processed and behavior of the UNION operation.
+Description
+-----------
+
+A composite type used as input into the ST\_Union function defining the
+bands to be processed and behavior of the UNION operation.
+
+``nband `` ``integer``
+    1-based value indicating the band of each input raster to be
+    processed.
+
+``uniontype `` ``text``
+    Type of UNION operation. One of defined types as described in ?.
+
+See Also
+--------
+
+?
+
+Raster Management
+=================
+
+AddRasterConstraints
+Adds raster constraints to a loaded raster table for a specific column
+that constrains spatial ref, scaling, blocksize, alignment, bands, band
+type and a flag to denote if raster column is regularly blocked. The
+table must be loaded with data for the constraints to be inferred.
+Returns true of the constraint setting was accomplished and if issues a
+notice.
+boolean
+AddRasterConstraints
+name
+rasttable
+name
+rastcolumn
+boolean
+srid
+boolean
+scale\_x
+boolean
+scale\_y
+boolean
+blocksize\_x
+boolean
+blocksize\_y
+boolean
+same\_alignment
+boolean
+regular\_blocking
+boolean
+num\_bands=true
+boolean
+pixel\_types=true
+boolean
+nodata\_values=true
+boolean
+out\_db=true
+boolean
+extent=true
+boolean
+AddRasterConstraints
+name
+rasttable
+name
+rastcolumn
+text[]
+VARIADIC constraints
+boolean
+AddRasterConstraints
+name
+rastschema
+name
+rasttable
+name
+rastcolumn
+text[]
+VARIADIC constraints
+boolean
+AddRasterConstraints
+name
+rastschema
+name
+rasttable
+name
+rastcolumn
+boolean
+srid=true
+boolean
+scale\_x=true
+boolean
+scale\_y=true
+boolean
+blocksize\_x=true
+boolean
+blocksize\_y=true
+boolean
+same\_alignment=true
+boolean
+regular\_blocking=false
+boolean
+num\_bands=true
+boolean
+pixel\_types=true
+boolean
+nodata\_values=true
+boolean
+out\_db=true
+boolean
+extent=true
+Description
+-----------
+
+Generates constraints on a raster column that are used to display
+information in the ``raster_columns`` raster catalog. The ``rastschema``
+is the name of the table schema the table resides in. The ``srid`` must
+be an integer value reference to an entry in the SPATIAL\_REF\_SYS
+table.
+
+``raster2pgsql`` loader uses this function to register raster tables
+
+Valid constraint names to pass in: refer to ? for more details.
+
+-  ``blocksize`` sets both X and Y blocksize
+
+-  ``blocksize_x`` sets X tile (width in pixels of each tile)
+
+-  ``blocksize_y`` sets Y tile (height in pixels of each tile)
+
+-  ``extent`` computes extent of whole table and applys constraint all
+   rasters must be within that extent
+
+-  ``num_bands`` number of bands
+
+-  ``pixel_types`` reads array of pixel types for each band ensure all
+   band n have same pixel type
+
+-  ``regular_blocking`` sets spatially unique (no two rasters can be
+   spatially the same) and coverage tile (raster is aligned to a
+   coverage) constraints
+
+-  ``same_alignment`` ensures they all have same alignment meaning any
+   two tiles you compare will return true for. Refer to ?
+
+-  ``srid`` ensures all have same srid
+
+-  More -- any listed as inputs into the above functions
+
+    **Note**
+
+    This function infers the constraints from the data already present
+    in the table. As such for it to work, you must create the raster
+    column first and then load it with data.
+
+    **Note**
+
+    If you need to load more data in your tables after you have already
+    applied constraints, you may want to run the DropRasterConstraints
+    if the extent of your data has changed.
+
+Availability: 2.0.0
+
+Examples: Apply all possible constraints on column based on data
+----------------------------------------------------------------
+
+::
+
+    CREATE TABLE myrasters(rid SERIAL primary key, rast raster);
+    INSERT INTO myrasters(rast)
+    SELECT ST_AddBand(ST_MakeEmptyRaster(1000, 1000, 0.3, -0.3, 2, 2, 0, 0,4326), 1, '8BSI'::text, -129, NULL);
+
+    SELECT AddRasterConstraints('myrasters'::name, 'rast'::name);
+
+
+    -- verify if registered correctly in the raster_columns view --
+    SELECT srid, scale_x, scale_y, blocksize_x, blocksize_y, num_bands, pixel_types, nodata_values
+        FROM raster_columns
+        WHERE r_table_name = 'myrasters';
+        
+     srid | scale_x | scale_y | blocksize_x | blocksize_y | num_bands | pixel_types| nodata_values
+    ------+---------+---------+-------------+-------------+-----------+-------------+---------------
+     4326 |       2 |       2 |        1000 |        1000 |         1 | {8BSI}      | {0}
+            
+
+Examples: Apply single constraint
+---------------------------------
+
+::
+
+    CREATE TABLE public.myrasters2(rid SERIAL primary key, rast raster);
+    INSERT INTO myrasters2(rast)
+    SELECT ST_AddBand(ST_MakeEmptyRaster(1000, 1000, 0.3, -0.3, 2, 2, 0, 0,4326), 1, '8BSI'::text, -129, NULL);
+
+    SELECT AddRasterConstraints('public'::name, 'myrasters2'::name, 'rast'::name,'regular_blocking', 'blocksize');
+    -- get notice--
+    NOTICE:  Adding regular blocking constraint
+    NOTICE:  Adding blocksize-X constraint
+    NOTICE:  Adding blocksize-Y constraint
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+DropRasterConstraints
+Drops PostGIS raster constraints that refer to a raster table column.
+Useful if you need to reload data or update your raster column data.
+boolean
+DropRasterConstraints
+name
+rasttable
+name
+rastcolumn
+boolean
+srid
+boolean
+scale\_x
+boolean
+scale\_y
+boolean
+blocksize\_x
+boolean
+blocksize\_y
+boolean
+same\_alignment
+boolean
+regular\_blocking
+boolean
+num\_bands=true
+boolean
+pixel\_types=true
+boolean
+nodata\_values=true
+boolean
+out\_db=true
+boolean
+extent=true
+boolean
+DropRasterConstraints
+name
+rastschema
+name
+rasttable
+name
+rastcolumn
+boolean
+srid=true
+boolean
+scale\_x=true
+boolean
+scale\_y=true
+boolean
+blocksize\_x=true
+boolean
+blocksize\_y=true
+boolean
+same\_alignment=true
+boolean
+regular\_blocking=false
+boolean
+num\_bands=true
+boolean
+pixel\_types=true
+boolean
+nodata\_values=true
+boolean
+out\_db=true
+boolean
+extent=true
+boolean
+DropRasterConstraints
+name
+rastschema
+name
+rasttable
+name
+rastcolumn
+text[]
+constraints
+Description
+-----------
+
+Drops PostGIS raster constraints that refer to a raster table column
+that were added by ?. Useful if you need to load more data or update
+your raster column data. You do not need to do this if you want to get
+rid of a raster table or a raster column.
+
+To drop a raster table use the standard
+
+::
+
+    DROP TABLE mytable
+
+To drop just a raster column and leave the rest of the table, use
+standard SQL
+
+::
+
+    ALTER TABLE mytable DROP COLUMN rast
+
+the table will disappear from the ``raster_columns`` catalog if the
+column or table is dropped. However if only the constraints are dropped,
+the raster column will still be listed in the ``raster_columns``
+catalog, but there will be no other information about it aside from the
+column name and table.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    SELECT DropRasterConstraints ('myrasters','rast');
+    ----RESULT output ---
+    t
+
+    -- verify change in raster_columns --
+    SELECT srid, scale_x, scale_y, blocksize_x, blocksize_y, num_bands, pixel_types, nodata_values
+        FROM raster_columns
+        WHERE r_table_name = 'myrasters';
+        
+     srid | scale_x | scale_y | blocksize_x | blocksize_y | num_bands | pixel_types| nodata_values
+    ------+---------+---------+-------------+-------------+-----------+-------------+---------------
+        0 |         |         |             |             |           |             |
+            
+
+See Also
+--------
+
+?
+
+PostGIS\_Raster\_Lib\_Build\_Date
+Reports full raster library build date.
+text
+PostGIS\_Raster\_Lib\_Build\_Date
+Description
+-----------
+
+Reports raster build date
+
+Examples
+--------
+
+::
+
+    SELECT PostGIS_Raster_Lib_Build_Date();
+    postgis_raster_lib_build_date
+    -----------------------------
+    2010-04-28 21:15:10
+
+See Also
+--------
+
+?
+
+PostGIS\_Raster\_Lib\_Version
+Reports full raster version and build configuration infos.
+text
+PostGIS\_Raster\_Lib\_Version
+Description
+-----------
+
+Reports full raster version and build configuration infos.
+
+Examples
+--------
+
+::
+
+    SELECT PostGIS_Raster_Lib_Version();
+    postgis_raster_lib_version
+    -----------------------------
+     2.0.0
+
+See Also
+--------
+
+?
+
+ST\_GDALDrivers
+Returns a list of raster formats supported by your lib gdal. These are
+the formats you can output your raster using ST\_AsGDALRaster.
+setof record
+ST\_GDALDrivers
+integer
+OUT idx
+text
+OUT short\_name
+text
+OUT long\_name
+text
+OUT create\_options
+Description
+-----------
+
+Returns a list of raster formats short\_name,long\_name and creator
+options of each format supported by your lib gdal. Use the short\_name
+as input in the ``format`` parameter of ?. Options vary depending on
+what drivers your libgdal was compiled with. ``create_options`` returns
+an xml formatted set of CreationOptionList/Option consisting of name and
+optional ``type``, ``description`` and set of ``VALUE`` for each creator
+option for the specific driver.
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+Examples: List of Drivers
+-------------------------
+
+::
+
+    SELECT short_name, long_name
+    FROM st_gdaldrivers()
+    ORDER BY short_name;
+      short_name    |              long_name
+    ----------------+--------------------------------------
+    AAIGrid         | Arc/Info ASCII Grid
+    DTED            | DTED Elevation Raster
+    EHdr            | ESRI .hdr Labelled
+    FIT             | FIT Image
+    GIF             | Graphics Interchange Format (.gif)
+    GSAG            | Golden Software ASCII Grid (.grd)
+    GSBG            | Golden Software Binary Grid (.grd)
+    GTiff           | GeoTIFF
+    HF2             | HF2/HFZ heightfield raster
+    HFA             | Erdas Imagine Images (.img)
+    ILWIS           | ILWIS Raster Map
+    INGR            | Intergraph Raster
+    JPEG            | JPEG JFIF
+    KMLSUPEROVERLAY | Kml Super Overlay
+    NITF            | National Imagery Transmission Format
+    PNG             | Portable Network Graphics
+    R               | R Object Data Store
+    SAGA            | SAGA GIS Binary Grid (.sdat)
+    SRTMHGT         | SRTMHGT File Format
+    USGSDEM         | USGS Optional ASCII DEM (and CDED)
+    VRT             | Virtual Raster
+    XPM             | X11 PixMap Format
+
+Example: List of options for each driver
+----------------------------------------
+
+::
+
+    -- Output the create options XML column of JPEG as a table  --
+    -- Note you can use these creator options in ST_AsGDALRaster options argument
+    SELECT (xpath('@name', g.opt))[1]::text As oname,
+           (xpath('@type', g.opt))[1]::text As otype,
+           (xpath('@description', g.opt))[1]::text As descrip
+    FROM (SELECT unnest(xpath('/CreationOptionList/Option', create_options::xml)) As opt
+    FROM  st_gdaldrivers()
+    WHERE short_name = 'JPEG') As g;
+
+        oname    |  otype  |           descrip
+    -------------+---------+-----------------------------
+     PROGRESSIVE | boolean |
+     QUALITY     | int     | good=100, bad=0, default=75
+     WORLDFILE   | boolean |
+
+::
+
+    -- raw xml output for creator options for GeoTiff --
+    SELECT create_options
+    FROM st_gdaldrivers()
+    WHERE short_name = 'GTiff';
+
+    <CreationOptionList>
+        <Option name="COMPRESS" type="string-select">
+            <Value>NONE</Value>
+            <Value>LZW</Value>
+            <Value>PACKBITS</Value>
+            <Value>JPEG</Value>
+            <Value>CCITTRLE</Value>
+            <Value>CCITTFAX3</Value>
+            <Value>CCITTFAX4</Value>
+            <Value>DEFLATE</Value>
+        </Option>
+        <Option name="PREDICTOR" type="int" description="Predictor Type"/>
+        <Option name="JPEG_QUALITY" type="int" description="JPEG quality 1-100" default="75"/>
+        <Option name="ZLEVEL" type="int" description="DEFLATE compression level 1-9" default="6"/>
+        <Option name="NBITS" type="int" description="BITS for sub-byte files (1-7), sub-uint16 (9-15), sub-uint32 (17-31)"/>
+        <Option name="INTERLEAVE" type="string-select" default="PIXEL">
+            <Value>BAND</Value>
+            <Value>PIXEL</Value>
+        </Option>
+        <Option name="TILED" type="boolean" description="Switch to tiled format"/>
+        <Option name="TFW" type="boolean" description="Write out world file"/>
+        <Option name="RPB" type="boolean" description="Write out .RPB (RPC) file"/>
+        <Option name="BLOCKXSIZE" type="int" description="Tile Width"/>
+        <Option name="BLOCKYSIZE" type="int" description="Tile/Strip Height"/>
+        <Option name="PHOTOMETRIC" type="string-select">
+            <Value>MINISBLACK</Value>
+            <Value>MINISWHITE</Value>
+            <Value>PALETTE</Value>
+            <Value>RGB</Value>
+            <Value>CMYK</Value>
+            <Value>YCBCR</Value>
+            <Value>CIELAB</Value>
+            <Value>ICCLAB</Value>
+            <Value>ITULAB</Value>
+        </Option>
+        <Option name="SPARSE_OK" type="boolean" description="Can newly created files have missing blocks?" default="FALSE"/>
+        <Option name="ALPHA" type="boolean" description="Mark first extrasample as being alpha"/>
+        <Option name="PROFILE" type="string-select" default="GDALGeoTIFF">
+            <Value>GDALGeoTIFF</Value>
+            <Value>GeoTIFF</Value>
+            <Value>BASELINE</Value>
+        </Option>
+        <Option name="PIXELTYPE" type="string-select">
+            <Value>DEFAULT</Value>
+            <Value>SIGNEDBYTE</Value>
+        </Option>
+        <Option name="BIGTIFF" type="string-select" description="Force creation of BigTIFF file">
+            <Value>YES</Value>
+            <Value>NO</Value>
+            <Value>IF_NEEDED</Value>
+            <Value>IF_SAFER</Value>
+        </Option>
+        <Option name="ENDIANNESS" type="string-select" default="NATIVE" description="Force endianness of created file. For DEBUG purpose mostly">
+            <Value>NATIVE</Value>
+            <Value>INVERTED</Value>
+            <Value>LITTLE</Value>
+            <Value>BIG</Value>
+        </Option>
+        <Option name="COPY_SRC_OVERVIEWS" type="boolean" default="NO" description="Force copy of overviews of source dataset (CreateCopy())"/>
+    </CreationOptionList>
+
+    -- Output the create options XML column for GTiff as a table  --
+    SELECT (xpath('@name', g.opt))[1]::text As oname,
+           (xpath('@type', g.opt))[1]::text As otype,
+           (xpath('@description', g.opt))[1]::text As descrip,
+           array_to_string(xpath('Value/text()', g.opt),', ') As vals 
+    FROM (SELECT unnest(xpath('/CreationOptionList/Option', create_options::xml)) As opt
+    FROM  st_gdaldrivers()
+    WHERE short_name = 'GTiff') As g;
+
+           oname        |     otype     |                               descrip                                |                                   vals                                    
+    --------------------+---------------+----------------------------------------------------------------------+---------------------------------------------------------------------------
+     COMPRESS           | string-select |                                                                      | NONE, LZW, PACKBITS, JPEG, CCITTRLE, CCITTFAX3, CCITTFAX4, DEFLATE
+     PREDICTOR          | int           | Predictor Type                                                       | 
+     JPEG_QUALITY       | int           | JPEG quality 1-100                                                   | 
+     ZLEVEL             | int           | DEFLATE compression level 1-9                                        | 
+     NBITS              | int           | BITS for sub-byte files (1-7), sub-uint16 (9-15), sub-uint32 (17-31) | 
+     INTERLEAVE         | string-select |                                                                      | BAND, PIXEL
+     TILED              | boolean       | Switch to tiled format                                               | 
+     TFW                | boolean       | Write out world file                                                 | 
+     RPB                | boolean       | Write out .RPB (RPC) file                                            | 
+     BLOCKXSIZE         | int           | Tile Width                                                           | 
+     BLOCKYSIZE         | int           | Tile/Strip Height                                                    | 
+     PHOTOMETRIC        | string-select |                                                                      | MINISBLACK, MINISWHITE, PALETTE, RGB, CMYK, YCBCR, CIELAB, ICCLAB, ITULAB
+     SPARSE_OK          | boolean       | Can newly created files have missing blocks?                         | 
+     ALPHA              | boolean       | Mark first extrasample as being alpha                                | 
+     PROFILE            | string-select |                                                                      | GDALGeoTIFF, GeoTIFF, BASELINE
+     PIXELTYPE          | string-select |                                                                      | DEFAULT, SIGNEDBYTE
+     BIGTIFF            | string-select | Force creation of BigTIFF file                                       | YES, NO, IF_NEEDED, IF_SAFER
+     ENDIANNESS         | string-select | Force endianness of created file. For DEBUG purpose mostly           | NATIVE, INVERTED, LITTLE, BIG
+     COPY_SRC_OVERVIEWS | boolean       | Force copy of overviews of source dataset (CreateCopy())             | 
+    (19 rows)
+
+See Also
+--------
+
+?, ?
+
+UpdateRasterSRID
+Change the SRID of all rasters in the user-specified column and table.
+raster
+UpdateRasterSRID
+name
+schema\_name
+name
+table\_name
+name
+column\_name
+integer
+new\_srid
+raster
+UpdateRasterSRID
+name
+table\_name
+name
+column\_name
+integer
+new\_srid
+Description
+-----------
+
+Change the SRID of all rasters in the user-specified column and table.
+The function will drop all appropriate column constraints (extent,
+alignment and SRID) before changing the SRID of the specified column's
+rasters.
+
+    **Note**
+
+    The data (band pixel values) of the rasters are not touched by this
+    function. Only the raster's metadata is changed.
+
+Availability: 2.1.0
+
+Raster Constructors
+===================
+
+ST\_AddBand
+Returns a raster with the new band(s) of given type added with given
+initial value in the given index location. If no index is specified, the
+band is added to the end.
+(1) raster
+ST\_AddBand
+raster
+rast
+addbandarg[]
+addbandargset
+(2) raster
+ST\_AddBand
+raster
+rast
+integer
+index
+text
+pixeltype
+double precision
+initialvalue=0
+double precision
+nodataval=NULL
+(3) raster
+ST\_AddBand
+raster
+rast
+text
+pixeltype
+double precision
+initialvalue=0
+double precision
+nodataval=NULL
+(4) raster
+ST\_AddBand
+raster
+torast
+raster
+fromrast
+integer
+fromband=1
+integer
+torastindex=at\_end
+(5) raster
+ST\_AddBand
+raster
+torast
+raster[]
+fromrasts
+integer
+fromband=1
+integer
+torastindex=at\_end
+(6) raster
+ST\_AddBand
+raster
+rast
+integer
+index
+text
+outdbfile
+integer[]
+outdbindex
+double precision
+nodataval=NULL
+(7) raster
+ST\_AddBand
+raster
+rast
+text
+outdbfile
+integer[]
+outdbindex
+integer
+index=at\_end
+double precision
+nodataval=NULL
+Description
+-----------
+
+Returns a raster with a new band added in given position (index), of
+given type, of given initial value, and of given nodata value. If no
+index is specified, the band is added to the end. If no ``fromband`` is
+specified, band 1 is assumed. Pixel type is a string representation of
+one of the pixel types specified in ?. If an existing index is specified
+all subsequent bands >= that index are incremented by 1. If an initial
+value greater than the max of the pixel type is specified, then the
+initial value is set to the highest value allowed by the pixel type.
+
+For the variant that takes an array of ? (Variant 1), a specific
+addbandarg's index value is relative to the raster at the time when the
+band described by that addbandarg is being added to the raster. See the
+Multiple New Bands example below.
+
+For the variant that takes an array of rasters (Variant 5), if
+``torast`` is NULL then the ``fromband`` band of each raster in the
+array is accumulated into a new raster.
+
+For the variants that take ``outdbfile`` (Variants 6 and 7), the value
+must include the full path to the raster file. The file must also be
+accessible to the postgres server process.
+
+Enhanced: 2.1.0 support for addbandarg added.
+
+Enhanced: 2.1.0 support for new out-db bands added.
+
+Examples: Single New Band
+-------------------------
+
+::
+
+    -- Add another band of type 8 bit unsigned integer with pixels initialized to 200
+    UPDATE dummy_rast
+        SET rast = ST_AddBand(rast,'8BUI'::text,200)  
+    WHERE rid = 1;
+                    
+
+::
+
+    -- Create an empty raster 100x100 units, with upper left  right at 0, add 2 bands (band 1 is 0/1 boolean bit switch, band2 allows values 0-15)
+    -- uses addbandargs
+    INSERT INTO dummy_rast(rid,rast)
+        VALUES(10, ST_AddBand(ST_MakeEmptyRaster(100, 100, 0, 0, 1, -1, 0, 0, 0), 
+        ARRAY[
+            ROW(1, '1BB'::text, 0, NULL),
+            ROW(2, '4BUI'::text, 0, NULL)
+                ]::addbandarg[]
+         )
+        );
+        
+    -- output meta data of raster bands to verify all is right --
+    SELECT  (bmd).*
+    FROM (SELECT ST_BandMetaData(rast,generate_series(1,2)) As bmd 
+        FROM dummy_rast WHERE rid = 10) AS foo;
+     --result --   
+     pixeltype | nodatavalue | isoutdb | path
+    -----------+----------------+-------------+---------+------
+     1BB       |             | f       |
+     4BUI      |             | f       |
+     
+     
+    -- output meta data of raster -
+    SELECT  (rmd).width, (rmd).height, (rmd).numbands
+    FROM (SELECT ST_MetaData(rast) As rmd 
+        FROM dummy_rast WHERE rid = 10) AS foo;
+    -- result --
+     upperleftx | upperlefty | width | height | scalex | scaley | skewx | skewy | srid | numbands
+    ------------+------------+-------+--------+------------+------------+-------+-------+------+----------
+              0 |          0 |   100 |    100 |      1 |     -1 |     0 |     0 |   0 |        2
+                    
+
+Examples: Multiple New Bands
+----------------------------
+
+::
+
+    SELECT
+        *
+    FROM ST_BandMetadata(
+        ST_AddBand(
+            ST_MakeEmptyRaster(10, 10, 0, 0, 1, -1, 0, 0, 0),
+            ARRAY[
+                ROW(NULL, '8BUI', 255, 0),
+                ROW(NULL, '16BUI', 1, 2),
+                ROW(2, '32BUI', 100, 12),
+                ROW(2, '32BF', 3.14, -1)
+            ]::addbandarg[]
+        ),
+        ARRAY[]::integer[]
+    );
+
+     bandnum | pixeltype | nodatavalue | isoutdb | path 
+    ---------+-----------+-------------+---------+------
+           1 | 8BUI      |           0 | f       | 
+           2 | 32BF      |          -1 | f       | 
+           3 | 32BUI     |          12 | f       | 
+           4 | 16BUI     |           2 | f       | 
+                    
+
+::
+
+    -- Aggregate the 1st band of a table of like rasters into a single raster 
+    -- with as many bands as there are test_types and as many rows (new rasters) as there are mice
+    -- NOTE: The ORDER BY test_type is only supported in PostgreSQL 9.0+
+    -- for 8.4 and below it usually works to order your data in a subselect (but not guaranteed)
+    -- The resulting raster will have a band for each test_type alphabetical by test_type
+    -- For mouse lovers: No mice were harmed in this exercise
+    SELECT
+        mouse,
+        ST_AddBand(NULL, array_agg(rast ORDER BY test_type), 1) As rast 
+    FROM mice_studies
+    GROUP BY mouse;
+                    
+
+Examples: New Out-db band
+-------------------------
+
+::
+
+    SELECT
+        *
+    FROM ST_BandMetadata(
+        ST_AddBand(
+            ST_MakeEmptyRaster(10, 10, 0, 0, 1, -1, 0, 0, 0),
+            '/home/raster/mytestraster.tif'::text, NULL::int[]
+        ),
+        ARRAY[]::integer[]
+    );
+
+     bandnum | pixeltype | nodatavalue | isoutdb | path 
+    ---------+-----------+-------------+---------+------
+           1 | 8BUI      |             | t       | /home/raster/mytestraster.tif
+           2 | 8BUI      |             | t       | /home/raster/mytestraster.tif
+           3 | 8BUI      |             | t       | /home/raster/mytestraster.tif
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+ST\_AsRaster
+Converts a PostGIS geometry to a PostGIS raster.
+raster
+ST\_AsRaster
+geometry
+geom
+raster
+ref
+text
+pixeltype
+double precision
+value=1
+double precision
+nodataval=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+raster
+ref
+text[]
+pixeltype=ARRAY['8BUI']
+double precision[]
+value=ARRAY[1]
+double precision[]
+nodataval=ARRAY[0]
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+double precision
+scalex
+double precision
+scaley
+double precision
+gridx
+double precision
+gridy
+text
+pixeltype
+double precision
+value=1
+double precision
+nodataval=0
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+double precision
+scalex
+double precision
+scaley
+double precision
+gridx=NULL
+double precision
+gridy=NULL
+text[]
+pixeltype=ARRAY['8BUI']
+double precision[]
+value=ARRAY[1]
+double precision[]
+nodataval=ARRAY[0]
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+double precision
+scalex
+double precision
+scaley
+text
+pixeltype
+double precision
+value=1
+double precision
+nodataval=0
+double precision
+upperleftx=NULL
+double precision
+upperlefty=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+double precision
+scalex
+double precision
+scaley
+text[]
+pixeltype
+double precision[]
+value=ARRAY[1]
+double precision[]
+nodataval=ARRAY[0]
+double precision
+upperleftx=NULL
+double precision
+upperlefty=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+integer
+width
+integer
+height
+double precision
+gridx
+double precision
+gridy
+text
+pixeltype
+double precision
+value=1
+double precision
+nodataval=0
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+integer
+width
+integer
+height
+double precision
+gridx=NULL
+double precision
+gridy=NULL
+text[]
+pixeltype=ARRAY['8BUI']
+double precision[]
+value=ARRAY[1]
+double precision[]
+nodataval=ARRAY[0]
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+integer
+width
+integer
+height
+text
+pixeltype
+double precision
+value=1
+double precision
+nodataval=0
+double precision
+upperleftx=NULL
+double precision
+upperlefty=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+raster
+ST\_AsRaster
+geometry
+geom
+integer
+width
+integer
+height
+text[]
+pixeltype
+double precision[]
+value=ARRAY[1]
+double precision[]
+nodataval=ARRAY[0]
+double precision
+upperleftx=NULL
+double precision
+upperlefty=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+boolean
+touched=false
+Description
+-----------
+
+Converts a PostGIS geometry to a PostGIS raster. The many variants
+offers three groups of possibilities for setting the alignment and
+pixelsize of the resulting raster.
+
+The first group, composed of the two first variants, produce a raster
+having the same alignment (``scalex``, ``scaley``, ``gridx`` and
+``gridy``), pixel type and nodata value as the provided reference
+raster. You generally pass this reference raster by joining the table
+containing the geometry with the table containing the reference raster.
+
+The second group, composed of four variants, let you set the dimensions
+of the raster by providing the parameters of a pixel size (``scalex`` &
+``scaley`` and ``skewx`` & ``skewy``). The ``width`` & ``height`` of the
+resulting raster will be adjusted to fit the extent of the geometry. In
+most cases, you must cast integer ``scalex`` & ``scaley`` arguments to
+double precision so that PostgreSQL choose the right variant.
+
+The third group, composed of four variants, let you fix the dimensions
+of the raster by providing the dimensions of the raster (``width`` &
+``height``). The parameters of the pixel size (``scalex`` & ``scaley``
+and ``skewx`` & ``skewy``) of the resulting raster will be adjusted to
+fit the extent of the geometry.
+
+The two first variants of each of those two last groups let you specify
+the alignment with an arbitrary corner of the alignment grid (``gridx``
+& ``gridy``) and the two last variants takes the upper left corner
+(``upperleftx`` & ``upperlefty``).
+
+Each group of variant allows producing a one band raster or a multiple
+bands raster. To produce a multiple bands raster, you must provide an
+array of pixel types (``pixeltype[]``), an array of initial values
+(``value``) and an array of nodata values (``nodataval``). If not
+provided pixeltyped defaults to 8BUI, values to 1 and nodataval to 0.
+
+The output raster will be in the same spatial reference as the source
+geometry. The only exception is for variants with a reference raster. In
+this case the resulting raster will get the same SRID as the reference
+raster.
+
+The optional ``touched`` parameter defaults to false and maps to the
+GDAL ALL\_TOUCHED rasterization option, which determines if pixels
+touched by lines or polygons will be burned. Not just those on the line
+render path, or whose center point is within the polygon.
+
+This is particularly useful for rendering jpegs and pngs of geometries
+directly from the database when using in combination with ? and other ?
+family of functions.
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+    **Note**
+
+    Not yet capable of rendering complex geometry types such as curves,
+    TINS, and PolyhedralSurfaces, but should be able too once GDAL can.
+
+Examples: Output geometries as PNG files
+----------------------------------------
+
+black circle
+
+::
+
+    -- this will output a black circle taking up 150 x 150 pixels --
+    SELECT ST_AsPNG(ST_AsRaster(ST_Buffer(ST_Point(1,5),10),150, 150, '2BUI'));
+
+example from buffer rendered with just PostGIS
+
+::
+
+    -- the bands map to RGB bands - the value (118,154,118) - teal  --
+    SELECT ST_AsPNG(
+        ST_AsRaster(
+            ST_Buffer(
+                ST_GeomFromText('LINESTRING(50 50,150 150,150 50)'), 10,'join=bevel'), 
+                200,200,ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[118,154,118], ARRAY[0,0,0]));
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, ?
+
+ST\_Band
+Returns one or more bands of an existing raster as a new raster. Useful
+for building new rasters from existing rasters.
+raster
+ST\_Band
+raster
+rast
+integer[]
+nbands = ARRAY[1]
+raster
+ST\_Band
+raster
+rast
+text
+nbands
+character
+delimiter=,
+raster
+ST\_Band
+raster
+rast
+integer
+nband
+Description
+-----------
+
+Returns a single band of an existing raster as a new raster. Useful for
+building new rasters from existing rasters or export of only selected
+bands of a raster. If no band is specified, band 1 is assumed. Used as a
+helper function in various functions such as for deleting a band.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    -- Make 2 new rasters: 1 containing band 1 of dummy, second containing band 2 of dummy and then reclassified as a 2BUI
+    SELECT ST_NumBands(rast1) As numb1, ST_BandPixelType(rast1) As pix1, 
+     ST_NumBands(rast2) As numb2,  ST_BandPixelType(rast2) As pix2
+    FROM (
+        SELECT ST_Band(rast) As rast1, ST_Reclass(ST_Band(rast,3), '100-200):1, [200-254:2', '2BUI') As rast2
+            FROM dummy_rast
+            WHERE rid = 2) As foo;
+            
+     numb1 | pix1 | numb2 | pix2
+    -------+------+-------+------
+         1 | 8BUI |     1 | 2BUI
+                        
+
+::
+
+    -- Return bands 2 and 3. Use text to define bands
+    SELECT ST_NumBands(ST_Band(rast, '2,3')) As num_bands
+        FROM dummy_rast WHERE rid=2;
+        
+    num_bands
+    ----------
+    2
+        
+    -- Return bands 2 and 3. Use array to define bands
+    SELECT ST_NumBands(ST_Band(rast, ARRAY[2,3])) As num_bands
+        FROM dummy_rast 
+    WHERE rid=2;
+                        
+
++--------------------------+--------------+--------------+
+| original (column rast)   | dupe\_band   | sing\_band   |
++--------------------------+--------------+--------------+
+
+::
+
+    --Make a new raster with 2nd band of original and 1st band repeated twice,
+    and another with just the third band
+    SELECT rast, ST_Band(rast, ARRAY[2,1,1]) As dupe_band,  
+        ST_Band(rast, 3) As sing_band 
+    FROM samples.than_chunked 
+    WHERE rid=35;                           
+                        
+
+See Also
+--------
+
+?, ?, , ?
+
+ST\_MakeEmptyRaster
+Returns an empty raster (having no bands) of given dimensions (width &
+height), upperleft X and Y, pixel size and rotation (scalex, scaley,
+skewx & skewy) and reference system (srid). If a raster is passed in,
+returns a new raster with the same size, alignment and SRID. If srid is
+left out, the spatial ref is set to unknown (0).
+raster
+ST\_MakeEmptyRaster
+raster
+rast
+raster
+ST\_MakeEmptyRaster
+integer
+width
+integer
+height
+float8
+upperleftx
+float8
+upperlefty
+float8
+scalex
+float8
+scaley
+float8
+skewx
+float8
+skewy
+integer
+srid=unknown
+raster
+ST\_MakeEmptyRaster
+integer
+width
+integer
+height
+float8
+upperleftx
+float8
+upperlefty
+float8
+pixelsize
+Description
+-----------
+
+Returns an empty raster (having no band) of given dimensions (width &
+height) and georeferenced in spatial (or world) coordinates with upper
+left X (upperleftx), upper left Y (upperlefty), pixel size and rotation
+(scalex, scaley, skewx & skewy) and reference system (srid).
+
+The last version use a single parameter to specify the pixel size
+(pixelsize). scalex is set to this argument and scaley is set to the
+negative value of this argument. skewx and skewy are set to 0.
+
+If an existing raster is passed in, it returns a new raster with the
+same meta data settings (without the bands).
+
+If no srid is specified it defaults to 0. After you create an empty
+raster you probably want to add bands to it and maybe edit it. Refer to
+? to define bands and ? to set initial pixel values.
+
+Examples
+--------
+
+::
+
+    INSERT INTO dummy_rast(rid,rast)
+    VALUES(3, ST_MakeEmptyRaster( 100, 100, 0.0005, 0.0005, 1, 1, 0, 0, 4326) );
+
+    --use an existing raster as template for new raster
+    INSERT INTO dummy_rast(rid,rast)
+    SELECT 4, ST_MakeEmptyRaster(rast)
+    FROM dummy_rast WHERE rid = 3;
+
+    -- output meta data of rasters we just added
+    SELECT rid, (md).*
+    FROM (SELECT rid, ST_MetaData(rast) As md 
+        FROM dummy_rast
+        WHERE rid IN(3,4)) As foo;
+        
+    -- output --
+     rid | upperleftx | upperlefty | width | height | scalex | scaley | skewx | skewy | srid | numbands
+    -----+------------+------------+-------+--------+------------+------------+-------+-------+------+----------
+       3 |     0.0005 |     0.0005 |   100 |    100 |          1 |          1 |    0  |     0 | 4326 |        0
+       4 |     0.0005 |     0.0005 |   100 |    100 |          1 |          1 |    0  |     0 | 4326 |        0
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, , ?
+
+ST\_Tile
+Returns a set of rasters resulting from the split of the input raster
+based upon the desired dimensions of the output rasters.
+setof raster
+ST\_Tile
+raster
+rast
+int[]
+nband
+integer
+width
+integer
+height
+boolean
+padwithnodata=FALSE
+double precision
+nodataval=NULL
+setof raster
+ST\_Tile
+raster
+rast
+integer
+nband
+integer
+width
+integer
+height
+boolean
+padwithnodata=FALSE
+double precision
+nodataval=NULL
+setof raster
+ST\_Tile
+raster
+rast
+integer
+width
+integer
+height
+boolean
+padwithnodata=FALSE
+double precision
+nodataval=NULL
+Description
+-----------
+
+Returns a set of rasters resulting from the split of the input raster
+based upon the desired dimensions of the output rasters.
+
+If ``padwithnodata`` = FALSE, edge tiles on the right and bottom sides
+of the raster may have different dimensions than the rest of the tiles.
+If ``padwithnodata`` = TRUE, all tiles will have the same dimensions
+with the possibilty that edge tiles being padded with NODATA values. If
+raster band(s) do not have NODATA value(s) specified, one can be
+specified by setting ``nodataval``.
+
+    **Note**
+
+    If a specified band of the input raster is out-of-db, the
+    corresponding band in the output rasters will also be out-of-db.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    WITH foo AS (
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 1, 0), 2, '8BUI', 10, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, 0, 1, -1, 0, 0, 0), 1, '8BUI', 2, 0), 2, '8BUI', 20, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, 0, 1, -1, 0, 0, 0), 1, '8BUI', 3, 0), 2, '8BUI', 30, 0) AS rast UNION ALL
+
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, -3, 1, -1, 0, 0, 0), 1, '8BUI', 4, 0), 2, '8BUI', 40, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, -3, 1, -1, 0, 0, 0), 1, '8BUI', 5, 0), 2, '8BUI', 50, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, -3, 1, -1, 0, 0, 0), 1, '8BUI', 6, 0), 2, '8BUI', 60, 0) AS rast UNION ALL
+
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, -6, 1, -1, 0, 0, 0), 1, '8BUI', 7, 0), 2, '8BUI', 70, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, -6, 1, -1, 0, 0, 0), 1, '8BUI', 8, 0), 2, '8BUI', 80, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, -6, 1, -1, 0, 0, 0), 1, '8BUI', 9, 0), 2, '8BUI', 90, 0) AS rast
+    ), bar AS (
+        SELECT ST_Union(rast) AS rast FROM foo
+    ), baz AS (
+        SELECT ST_Tile(rast, 3, 3, TRUE) AS rast FROM bar
+    )
+    SELECT
+        ST_DumpValues(rast)
+    FROM baz;
+
+                  st_dumpvalues               
+    ------------------------------------------
+     (1,"{{1,1,1},{1,1,1},{1,1,1}}")
+     (2,"{{10,10,10},{10,10,10},{10,10,10}}")
+     (1,"{{2,2,2},{2,2,2},{2,2,2}}")
+     (2,"{{20,20,20},{20,20,20},{20,20,20}}")
+     (1,"{{3,3,3},{3,3,3},{3,3,3}}")
+     (2,"{{30,30,30},{30,30,30},{30,30,30}}")
+     (1,"{{4,4,4},{4,4,4},{4,4,4}}")
+     (2,"{{40,40,40},{40,40,40},{40,40,40}}")
+     (1,"{{5,5,5},{5,5,5},{5,5,5}}")
+     (2,"{{50,50,50},{50,50,50},{50,50,50}}")
+     (1,"{{6,6,6},{6,6,6},{6,6,6}}")
+     (2,"{{60,60,60},{60,60,60},{60,60,60}}")
+     (1,"{{7,7,7},{7,7,7},{7,7,7}}")
+     (2,"{{70,70,70},{70,70,70},{70,70,70}}")
+     (1,"{{8,8,8},{8,8,8},{8,8,8}}")
+     (2,"{{80,80,80},{80,80,80},{80,80,80}}")
+     (1,"{{9,9,9},{9,9,9},{9,9,9}}")
+     (2,"{{90,90,90},{90,90,90},{90,90,90}}")
+    (18 rows)
+                    
+
+::
+
+    WITH foo AS (
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 1, 0), 2, '8BUI', 10, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, 0, 1, -1, 0, 0, 0), 1, '8BUI', 2, 0), 2, '8BUI', 20, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, 0, 1, -1, 0, 0, 0), 1, '8BUI', 3, 0), 2, '8BUI', 30, 0) AS rast UNION ALL
+
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, -3, 1, -1, 0, 0, 0), 1, '8BUI', 4, 0), 2, '8BUI', 40, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, -3, 1, -1, 0, 0, 0), 1, '8BUI', 5, 0), 2, '8BUI', 50, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, -3, 1, -1, 0, 0, 0), 1, '8BUI', 6, 0), 2, '8BUI', 60, 0) AS rast UNION ALL
+
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, -6, 1, -1, 0, 0, 0), 1, '8BUI', 7, 0), 2, '8BUI', 70, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 3, -6, 1, -1, 0, 0, 0), 1, '8BUI', 8, 0), 2, '8BUI', 80, 0) AS rast UNION ALL
+        SELECT ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 6, -6, 1, -1, 0, 0, 0), 1, '8BUI', 9, 0), 2, '8BUI', 90, 0) AS rast
+    ), bar AS (
+        SELECT ST_Union(rast) AS rast FROM foo
+    ), baz AS (
+        SELECT ST_Tile(rast, 3, 3, 2) AS rast FROM bar
+    )
+    SELECT
+        ST_DumpValues(rast)
+    FROM baz;
+
+                  st_dumpvalues               
+    ------------------------------------------
+     (1,"{{10,10,10},{10,10,10},{10,10,10}}")
+     (1,"{{20,20,20},{20,20,20},{20,20,20}}")
+     (1,"{{30,30,30},{30,30,30},{30,30,30}}")
+     (1,"{{40,40,40},{40,40,40},{40,40,40}}")
+     (1,"{{50,50,50},{50,50,50},{50,50,50}}")
+     (1,"{{60,60,60},{60,60,60},{60,60,60}}")
+     (1,"{{70,70,70},{70,70,70},{70,70,70}}")
+     (1,"{{80,80,80},{80,80,80},{80,80,80}}")
+     (1,"{{90,90,90},{90,90,90},{90,90,90}}")
+    (9 rows)
+                    
+
+See Also
+--------
+
+?
+
+ST\_FromGDALRaster
+Returns a raster from a supported GDAL raster file.
+raster
+ST\_FromGDALRaster
+bytea
+gdaldata
+integer
+srid=NULL
+Description
+-----------
+
+Returns a raster from a supported GDAL raster file. ``gdaldata`` is of
+type bytea and should be the contents of the GDAL raster file.
+
+If ``srid`` is NULL, the function will try to autmatically assign the
+SRID from the GDAL raster. If ``srid`` is provided, the value provided
+will override any automatically assigned SRID.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    WITH foo AS (
+        SELECT ST_AsPNG(ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 0.1, -0.1, 0, 0, 4326), 1, '8BUI', 1, 0), 2, '8BUI', 2, 0), 3, '8BUI', 3, 0)) AS png
+    ),
+    bar AS (
+        SELECT 1 AS rid, ST_FromGDALRaster(png) AS rast FROM foo
+        UNION ALL
+        SELECT 2 AS rid, ST_FromGDALRaster(png, 3310) AS rast FROM foo
+    )
+    SELECT
+        rid,
+        ST_Metadata(rast) AS metadata,
+        ST_SummaryStats(rast, 1) AS stats1,
+        ST_SummaryStats(rast, 2) AS stats2,
+        ST_SummaryStats(rast, 3) AS stats3
+    FROM bar
+    ORDER BY rid;
+
+     rid |         metadata          |    stats1     |    stats2     |     stats3     
+    -----+---------------------------+---------------+---------------+----------------
+       1 | (0,0,2,2,1,-1,0,0,0,3)    | (4,4,1,0,1,1) | (4,8,2,0,2,2) | (4,12,3,0,3,3)
+       2 | (0,0,2,2,1,-1,0,0,3310,3) | (4,4,1,0,1,1) | (4,8,2,0,2,2) | (4,12,3,0,3,3)
+    (2 rows)
+                    
+
+See Also
+--------
+
+?
+
+Raster Accessors
+================
+
+ST\_GeoReference
+Returns the georeference meta data in GDAL or ESRI format as commonly
+seen in a world file. Default is GDAL.
+text
+ST\_GeoReference
+raster
+rast
+text
+format=GDAL
+Description
+-----------
+
+Returns the georeference meta data including carriage return in GDAL or
+ESRI format as commonly seen in a `world
+file <http://en.wikipedia.org/wiki/World_file>`__. Default is GDAL if no
+type specified. type is string 'GDAL' or 'ESRI'.
+
+Difference between format representations is as follows:
+
+``GDAL``:
+
+::
+
+    scalex 
+    skewy 
+    skewx
+    scaley
+    upperleftx
+    upperlefty
+
+``ESRI``:
+
+::
+
+    scalex 
+    skewy 
+    skewx
+    scaley
+    upperleftx + scalex*0.5
+    upperlefty + scaley*0.5
+
+Examples
+--------
+
+::
+
+    SELECT ST_GeoReference(rast, 'ESRI') As esri_ref, ST_GeoReference(rast, 'GDAL') As gdal_ref
+     FROM dummy_rast WHERE rid=1;
+
+       esri_ref   |   gdal_ref
+    --------------+--------------
+     2.0000000000 | 2.0000000000
+     0.0000000000 : 0.0000000000
+     0.0000000000 : 0.0000000000
+     3.0000000000 : 3.0000000000
+     1.5000000000 : 0.5000000000
+     2.0000000000 : 0.5000000000
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_Height
+Returns the height of the raster in pixels.
+integer
+ST\_Height
+raster
+rast
+Description
+-----------
+
+Returns the height of the raster.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_Height(rast) As rastheight
+    FROM dummy_rast;
+
+     rid | rastheight
+    -----+------------
+       1 |         20
+       2 |          5
+                    
+
+See Also
+--------
+
+?
+
+ST\_IsEmpty
+Returns true if the raster is empty (width = 0 and height = 0).
+Otherwise, returns false.
+boolean
+ST\_IsEmpty
+raster
+rast
+Description
+-----------
+
+Returns true if the raster is empty (width = 0 and height = 0).
+Otherwise, returns false.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    SELECT ST_IsEmpty(ST_MakeEmptyRaster(100, 100, 0, 0, 0, 0, 0, 0))
+    st_isempty |
+    -----------+
+    f          |
+                           
+                            
+    SELECT ST_IsEmpty(ST_MakeEmptyRaster(0, 0, 0, 0, 0, 0, 0, 0))
+    st_isempty |
+    -----------+
+    t          |
+
+                    
+
+See Also
+--------
+
+?
+
+ST\_MetaData
+Returns basic meta data about a raster object such as pixel size,
+rotation (skew), upper, lower left, etc.
+record
+ST\_MetaData
+raster
+rast
+Description
+-----------
+
+Returns basic meta data about a raster object such as pixel size,
+rotation (skew), upper, lower left, etc. Columns returned: upperleftx \|
+upperlefty \| width \| height \| scalex \| scaley \| skewx \| skewy \|
+srid \| numbands
+
+Examples
+--------
+
+::
+
+    SELECT rid, (foo.md).*  
+     FROM (SELECT rid, ST_MetaData(rast) As md
+    FROM dummy_rast) As foo;
+
+     rid | upperleftx | upperlefty | width | height | scalex | scaley | skewx | skewy | srid | numbands
+     ----+------------+------------+-------+--------+--------+-----------+-------+-------+------+-------
+       1 |        0.5 |        0.5 |    10 |     20 |      2 |      3 |     0 |     0 |    0 |        0
+       2 | 3427927.75 |    5793244 |     5 |      5 |   0.05 |  -0.05 |     0 |     0 |    0 |        3
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_NumBands
+Returns the number of bands in the raster object.
+integer
+ST\_NumBands
+raster
+rast
+Description
+-----------
+
+Returns the number of bands in the raster object.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_NumBands(rast) As numbands
+    FROM dummy_rast;
+
+    rid | numbands
+    ----+----------
+      1 |        0
+      2 |        3
+                    
+
+See Also
+--------
+
+?
+
+ST\_PixelHeight
+Returns the pixel height in geometric units of the spatial reference
+system.
+double precision
+ST\_PixelHeight
+raster
+rast
+Description
+-----------
+
+Returns the height of a pixel in geometric units of the spatial
+reference system. In the common case where there is no skew, the pixel
+height is just the scale ratio between geometric coordinates and raster
+pixels.
+
+Refer to ? for a diagrammatic visualization of the relationship.
+
+Examples: Rasters with no skew
+------------------------------
+
+::
+
+    SELECT ST_Height(rast) As rastheight, ST_PixelHeight(rast) As pixheight,
+     ST_ScaleX(rast) As scalex, ST_ScaleY(rast) As scaley, ST_SkewX(rast) As skewx,
+            ST_SkewY(rast) As skewy
+    FROM dummy_rast;
+
+     rastheight | pixheight | scalex | scaley | skewx | skewy
+    ------------+-----------+--------+--------+-------+----------
+             20 |         3 |      2 |      3 |     0 |        0
+              5 |      0.05 |   0.05 |  -0.05 |     0 |        0
+                
+
+Examples: Rasters with skew different than 0
+--------------------------------------------
+
+::
+
+    SELECT ST_Height(rast) As rastheight, ST_PixelHeight(rast) As pixheight,
+     ST_ScaleX(rast) As scalex, ST_ScaleY(rast) As scaley, ST_SkewX(rast) As skewx,
+            ST_SkewY(rast) As skewy
+    FROM (SELECT ST_SetSKew(rast,0.5,0.5) As rast
+            FROM dummy_rast) As skewed;
+
+    rastheight |     pixheight     | scalex | scaley | skewx | skewy
+    -----------+-------------------+--------+--------+-------+----------
+            20 |  3.04138126514911 |      2 |      3 |   0.5 |      0.5
+             5 | 0.502493781056044 |   0.05 |  -0.05 |   0.5 |      0.5
+                
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_PixelWidth
+Returns the pixel width in geometric units of the spatial reference
+system.
+double precision
+ST\_PixelWidth
+raster
+rast
+Description
+-----------
+
+Returns the width of a pixel in geometric units of the spatial reference
+system. In the common case where there is no skew, the pixel width is
+just the scale ratio between geometric coordinates and raster pixels.
+
+The following diagram demonstrates the relationship:
+
+Pixel Width: Pixel size in the i directionPixel Height: Pixel size in
+the j direction
+
+Examples: Rasters with no skew
+------------------------------
+
+::
+
+    SELECT ST_Width(rast) As rastwidth, ST_PixelWidth(rast) As pixwidth,
+        ST_ScaleX(rast) As scalex, ST_ScaleY(rast) As scaley, ST_SkewX(rast) As skewx,
+        ST_SkewY(rast) As skewy
+        FROM dummy_rast;
+        
+        rastwidth | pixwidth | scalex | scaley | skewx | skewy
+        -----------+----------+--------+--------+-------+----------
+        10 |        2 |      2 |      3 |     0 |        0
+         5 |     0.05 |   0.05 |  -0.05 |     0 |        0
+            
+
+Examples: Rasters with skew different than 0
+--------------------------------------------
+
+::
+
+    SELECT ST_Width(rast) As rastwidth, ST_PixelWidth(rast) As pixwidth,
+        ST_ScaleX(rast) As scalex, ST_ScaleY(rast) As scaley, ST_SkewX(rast) As skewx,
+        ST_SkewY(rast) As skewy
+        FROM (SELECT ST_SetSkew(rast,0.5,0.5) As rast
+        FROM dummy_rast) As skewed;
+        
+        rastwidth |     pixwidth      | scalex | scaley | skewx | skewy
+        -----------+-------------------+--------+--------+-------+----------
+        10 |  2.06155281280883 |      2 |      3 |   0.5 |      0.5
+         5 | 0.502493781056044 |   0.05 |  -0.05 |   0.5 |      0.5
+            
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_ScaleX
+Returns the X component of the pixel width in units of coordinate
+reference system.
+float8
+ST\_ScaleX
+raster
+rast
+Description
+-----------
+
+Returns the X component of the pixel width in units of coordinate
+reference system. Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Changed: 2.0.0. In WKTRaster versions this was called ST\_PixelSizeX.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_ScaleX(rast) As rastpixwidth
+    FROM dummy_rast;
+
+     rid | rastpixwidth
+    -----+--------------
+       1 |            2
+       2 |         0.05
+                    
+
+See Also
+--------
+
+?
+
+ST\_ScaleY
+Returns the Y component of the pixel height in units of coordinate
+reference system.
+float8
+ST\_ScaleY
+raster
+rast
+Description
+-----------
+
+Returns the Y component of the pixel height in units of coordinate
+reference system. May be negative. Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Changed: 2.0.0. In WKTRaster versions this was called ST\_PixelSizeY.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_ScaleY(rast) As rastpixheight
+    FROM dummy_rast;
+
+     rid | rastpixheight
+    -----+---------------
+       1 |             3
+       2 |         -0.05
+                    
+
+See Also
+--------
+
+?
+
+ST\_RasterToWorldCoord
+Returns the raster's upper left corner as geometric X and Y (longitude
+and latitude) given a column and row. Column and row starts at 1.
+record
+ST\_RasterToWorldCoord
+raster
+rast
+integer
+xcolumn
+integer
+yrow
+Description
+-----------
+
+Returns the upper left corner as geometric X and Y (longitude and
+latitude) given a column and row. Returned X and Y are in geometric
+units of the georeferenced raster. Numbering of column and row starts at
+1 but if either parameter is passed a zero, a negative number or a
+number greater than the respective dimension of the raster, it will
+return coordinates outside of the raster assuming the raster's grid is
+applicable outside the raster's bounds.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    -- non-skewed raster
+    SELECT
+        rid,
+        (ST_RasterToWorldCoord(rast,1, 1)).*,
+        (ST_RasterToWorldCoord(rast,2, 2)).*
+    FROM dummy_rast
+
+     rid | longitude  | latitude | longitude |  latitude  
+    -----+------------+----------+-----------+------------
+       1 |        0.5 |      0.5 |       2.5 |        3.5
+       2 | 3427927.75 |  5793244 | 3427927.8 | 5793243.95
+                    
+
+::
+
+    -- skewed raster
+    SELECT
+        rid,
+        (ST_RasterToWorldCoord(rast, 1, 1)).*,
+        (ST_RasterToWorldCoord(rast, 2, 3)).*
+    FROM (
+        SELECT
+            rid,
+            ST_SetSkew(rast, 100.5, 0) As rast
+        FROM dummy_rast
+    ) As foo
+
+     rid | longitude  | latitude | longitude | latitude  
+    -----+------------+----------+-----------+-----------
+       1 |        0.5 |      0.5 |     203.5 |       6.5
+       2 | 3427927.75 |  5793244 | 3428128.8 | 5793243.9
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_RasterToWorldCoordX
+Returns the geometric X coordinate upper left of a raster, column and
+row. Numbering of columns and rows starts at 1.
+float8
+ST\_RasterToWorldCoordX
+raster
+rast
+integer
+xcolumn
+float8
+ST\_RasterToWorldCoordX
+raster
+rast
+integer
+xcolumn
+integer
+yrow
+Description
+-----------
+
+Returns the upper left X coordinate of a raster column row in geometric
+units of the georeferenced raster. Numbering of columns and rows starts
+at 1 but if you pass in a negative number or number higher than number
+of columns in raster, it will give you coordinates outside of the raster
+file to left or right with the assumption that the skew and pixel sizes
+are same as selected raster.
+
+    **Note**
+
+    For non-skewed rasters, providing the X column is sufficient. For
+    skewed rasters, the georeferenced coordinate is a function of the
+    ST\_ScaleX and ST\_SkewX and row and column. An error will be raised
+    if you give just the X column for a skewed raster.
+
+Changed: 2.1.0 In prior versions, this was called ST\_Raster2WorldCoordX
+
+Examples
+--------
+
+::
+
+    -- non-skewed raster providing column is sufficient                 
+    SELECT rid, ST_RasterToWorldCoordX(rast,1) As x1coord, 
+        ST_RasterToWorldCoordX(rast,2) As x2coord,
+        ST_ScaleX(rast) As pixelx
+    FROM dummy_rast;
+
+     rid |  x1coord   |  x2coord  | pixelx
+    -----+------------+-----------+--------
+       1 |        0.5 |       2.5 |      2
+       2 | 3427927.75 | 3427927.8 |   0.05
+                    
+
+::
+
+    -- for fun lets skew it             
+    SELECT rid, ST_RasterToWorldCoordX(rast, 1, 1) As x1coord, 
+        ST_RasterToWorldCoordX(rast, 2, 3) As x2coord,
+        ST_ScaleX(rast) As pixelx
+    FROM (SELECT rid, ST_SetSkew(rast, 100.5, 0) As rast FROM dummy_rast) As foo;
+
+     rid |  x1coord   |  x2coord  | pixelx
+    -----+------------+-----------+--------
+       1 |        0.5 |     203.5 |      2
+       2 | 3427927.75 | 3428128.8 |   0.05
+                    
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_RasterToWorldCoordY
+Returns the geometric Y coordinate upper left corner of a raster, column
+and row. Numbering of columns and rows starts at 1.
+float8
+ST\_RasterToWorldCoordY
+raster
+rast
+integer
+yrow
+float8
+ST\_RasterToWorldCoordY
+raster
+rast
+integer
+xcolumn
+integer
+yrow
+Description
+-----------
+
+Returns the upper left Y coordinate of a raster column row in geometric
+units of the georeferenced raster. Numbering of columns and rows starts
+at 1 but if you pass in a negative number or number higher than number
+of columns/rows in raster, it will give you coordinates outside of the
+raster file to left or right with the assumption that the skew and pixel
+sizes are same as selected raster tile.
+
+    **Note**
+
+    For non-skewed rasters, providing the Y column is sufficient. For
+    skewed rasters, the georeferenced coordinate is a function of the
+    ST\_ScaleY and ST\_SkewY and row and column. An error will be raised
+    if you give just the Y row for a skewed raster.
+
+Changed: 2.1.0 In prior versions, this was called ST\_Raster2WorldCoordY
+
+Examples
+--------
+
+::
+
+    -- non-skewed raster providing row is sufficient                    
+    SELECT rid, ST_RasterToWorldCoordY(rast,1) As y1coord, 
+        ST_RasterToWorldCoordY(rast,3) As y2coord,
+        ST_ScaleY(rast) As pixely
+    FROM dummy_rast;
+
+     rid | y1coord |  y2coord  | pixely
+    -----+---------+-----------+--------
+       1 |     0.5 |       6.5 |      3
+       2 | 5793244 | 5793243.9 |  -0.05
+                    
+
+::
+
+    -- for fun lets skew it             
+    SELECT rid, ST_RasterToWorldCoordY(rast,1,1) As y1coord, 
+        ST_RasterToWorldCoordY(rast,2,3) As y2coord,
+        ST_ScaleY(rast) As pixely
+    FROM (SELECT rid, ST_SetSkew(rast,0,100.5) As rast FROM dummy_rast) As foo;
+
+     rid | y1coord |  y2coord  | pixely
+    -----+---------+-----------+--------
+       1 |     0.5 |       107 |      3
+       2 | 5793244 | 5793344.4 |  -0.05
+                    
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_Rotation
+Returns the rotation of the raster in radian.
+float8
+ST\_Rotation
+raster
+rast
+Description
+-----------
+
+Returns the uniform rotation of the raster in radian. If a raster does
+not have uniform rotation, NaN is returned. Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_Rotation(ST_SetScale(ST_SetSkew(rast, sqrt(2)), sqrt(2))) as rot FROM dummy_rast;
+
+     rid |        rot 
+    -----+-------------------
+       1 | 0.785398163397448
+       2 | 0.785398163397448
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_SkewX
+Returns the georeference X skew (or rotation parameter).
+float8
+ST\_SkewX
+raster
+rast
+Description
+-----------
+
+Returns the georeference X skew (or rotation parameter). Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_SkewX(rast) As skewx, ST_SkewY(rast) As skewy, 
+        ST_GeoReference(rast) as georef
+    FROM dummy_rast;
+
+     rid | skewx | skewy |       georef
+    -----+-------+-------+--------------------
+       1 |     0 |     0 | 2.0000000000
+                         : 0.0000000000
+                         : 0.0000000000
+                         : 3.0000000000
+                         : 0.5000000000
+                         : 0.5000000000
+                         :
+       2 |     0 |     0 | 0.0500000000
+                         : 0.0000000000
+                         : 0.0000000000
+                         : -0.0500000000
+                         : 3427927.7500000000
+                         : 5793244.0000000000
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_SkewY
+Returns the georeference Y skew (or rotation parameter).
+float8
+ST\_SkewY
+raster
+rast
+Description
+-----------
+
+Returns the georeference Y skew (or rotation parameter). Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_SkewX(rast) As skewx, ST_SkewY(rast) As skewy, 
+        ST_GeoReference(rast) as georef
+    FROM dummy_rast;
+
+     rid | skewx | skewy |       georef
+    -----+-------+-------+--------------------
+       1 |     0 |     0 | 2.0000000000
+                         : 0.0000000000
+                         : 0.0000000000
+                         : 3.0000000000
+                         : 0.5000000000
+                         : 0.5000000000
+                         :
+       2 |     0 |     0 | 0.0500000000
+                         : 0.0000000000
+                         : 0.0000000000
+                         : -0.0500000000
+                         : 3427927.7500000000
+                         : 5793244.0000000000
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_SRID
+Returns the spatial reference identifier of the raster as defined in
+spatial\_ref\_sys table.
+integer
+ST\_SRID
+raster
+rast
+Description
+-----------
+
+Returns the spatial reference identifier of the raster object as defined
+in the spatial\_ref\_sys table.
+
+    **Note**
+
+    From PostGIS 2.0+ the srid of a non-georeferenced raster/geometry is
+    0 instead of the prior -1.
+
+Examples
+--------
+
+::
+
+    SELECT ST_SRID(rast) As srid
+    FROM dummy_rast WHERE rid=1;
+
+    srid
+    ----------------
+    0
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_Summary
+Returns a text summary of the contents of the raster.
+text
+ST\_Summary
+raster
+rast
+Description
+-----------
+
+Returns a text summary of the contents of the raster.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT ST_Summary(
+        ST_AddBand(
+            ST_AddBand(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(10, 10, 0, 0, 1, -1, 0, 0, 0)
+                    , 1, '8BUI', 1, 0
+                )
+                , 2, '32BF', 0, -9999
+            )
+            , 3, '16BSI', 0, NULL
+        )
+    );
+
+                                st_summary                            
+    ------------------------------------------------------------------
+     Raster of 10x10 pixels has 3 bands and extent of BOX(0 -10,10 0)+
+         band 1 of pixtype 8BUI is in-db with NODATA value of 0      +
+         band 2 of pixtype 32BF is in-db with NODATA value of -9999  +
+         band 3 of pixtype 16BSI is in-db with no NODATA value
+    (1 row)
+                    
+
+See Also
+--------
+
+?, ?, ? ?
+
+ST\_UpperLeftX
+Returns the upper left X coordinate of raster in projected spatial ref.
+float8
+ST\_UpperLeftX
+raster
+rast
+Description
+-----------
+
+Returns the upper left X coordinate of raster in projected spatial ref.
+
+Examples
+--------
+
+::
+
+    SELECt rid, ST_UpperLeftX(rast) As ulx
+    FROM dummy_rast;
+
+     rid |    ulx
+    -----+------------
+       1 |        0.5
+       2 | 3427927.75
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_UpperLeftY
+Returns the upper left Y coordinate of raster in projected spatial ref.
+float8
+ST\_UpperLeftY
+raster
+rast
+Description
+-----------
+
+Returns the upper left Y coordinate of raster in projected spatial ref.
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_UpperLeftY(rast) As uly
+    FROM dummy_rast;
+
+     rid |   uly
+    -----+---------
+       1 |     0.5
+       2 | 5793244
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_Width
+Returns the width of the raster in pixels.
+integer
+ST\_Width
+raster
+rast
+Description
+-----------
+
+Returns the width of the raster in pixels.
+
+Examples
+--------
+
+::
+
+    SELECT ST_Width(rast) As rastwidth
+    FROM dummy_rast WHERE rid=1;
+
+    rastwidth
+    ----------------
+    10
+                    
+
+See Also
+--------
+
+?
+
+ST\_WorldToRasterCoord
+Returns the upper left corner as column and row given geometric X and Y
+(longitude and latitude) or a point geometry expressed in the spatial
+reference coordinate system of the raster.
+record
+ST\_WorldToRasterCoord
+raster
+rast
+geometry
+pt
+record
+ST\_WorldToRasterCoord
+raster
+rast
+double precision
+longitude
+double precision
+latitude
+Description
+-----------
+
+Returns the upper left corner as column and row given geometric X and Y
+(longitude and latitude) or a point geometry. This function works
+regardless of whether or not the geometric X and Y or point geometry is
+outside the extent of the raster. Geometric X and Y must be expressed in
+the spatial reference coordinate system of the raster.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT
+        rid,
+        (ST_WorldToRasterCoord(rast,3427927.8,20.5)).*,
+        (ST_WorldToRasterCoord(rast,ST_GeomFromText('POINT(3427927.8 20.5)',ST_SRID(rast)))).*
+    FROM dummy_rast;
+
+     rid | columnx |   rowy    | columnx |   rowy    
+    -----+---------+-----------+---------+-----------
+       1 | 1713964 |         7 | 1713964 |         7
+       2 |       2 | 115864471 |       2 | 115864471
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_WorldToRasterCoordX
+Returns the column in the raster of the point geometry (pt) or a X and Y
+world coordinate (xw, yw) represented in world spatial reference system
+of raster.
+integer
+ST\_WorldToRasterCoordX
+raster
+rast
+geometry
+pt
+integer
+ST\_WorldToRasterCoordX
+raster
+rast
+double precision
+xw
+integer
+ST\_WorldToRasterCoordX
+raster
+rast
+double precision
+xw
+double precision
+yw
+Description
+-----------
+
+Returns the column in the raster of the point geometry (pt) or a X and Y
+world coordinate (xw, yw). A point, or (both xw and yw world coordinates
+are required if a raster is skewed). If a raster is not skewed then xw
+is sufficient. World coordinates are in the spatial reference coordinate
+system of the raster.
+
+Changed: 2.1.0 In prior versions, this was called ST\_World2RasterCoordX
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_WorldToRasterCoordX(rast,3427927.8) As xcoord, 
+            ST_WorldToRasterCoordX(rast,3427927.8,20.5) As xcoord_xwyw, 
+            ST_WorldToRasterCoordX(rast,ST_GeomFromText('POINT(3427927.8 20.5)',ST_SRID(rast))) As ptxcoord
+    FROM dummy_rast;
+
+     rid | xcoord  |  xcoord_xwyw   | ptxcoord
+    -----+---------+---------+----------
+       1 | 1713964 | 1713964 |  1713964
+       2 |       1 |       1 |        1
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_WorldToRasterCoordY
+Returns the row in the raster of the point geometry (pt) or a X and Y
+world coordinate (xw, yw) represented in world spatial reference system
+of raster.
+integer
+ST\_WorldToRasterCoordY
+raster
+rast
+geometry
+pt
+integer
+ST\_WorldToRasterCoordY
+raster
+rast
+double precision
+xw
+integer
+ST\_WorldToRasterCoordY
+raster
+rast
+double precision
+xw
+double precision
+yw
+Description
+-----------
+
+Returns the row in the raster of the point geometry (pt) or a X and Y
+world coordinate (xw, yw). A point, or (both xw and yw world coordinates
+are required if a raster is skewed). If a raster is not skewed then xw
+is sufficient. World coordinates are in the spatial reference coordinate
+system of the raster.
+
+Changed: 2.1.0 In prior versions, this was called ST\_World2RasterCoordY
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_WorldToRasterCoordY(rast,20.5) As ycoord, 
+            ST_WorldToRasterCoordY(rast,3427927.8,20.5) As ycoord_xwyw, 
+            ST_WorldToRasterCoordY(rast,ST_GeomFromText('POINT(3427927.8 20.5)',ST_SRID(rast))) As ptycoord
+    FROM dummy_rast;
+
+     rid |  ycoord   | ycoord_xwyw | ptycoord
+    -----+-----------+-------------+-----------
+       1 |         7 |           7 |         7
+       2 | 115864471 |   115864471 | 115864471
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+Raster Band Accessors
+=====================
+
+ST\_BandMetaData
+Returns basic meta data for a specific raster band. band num 1 is
+assumed if none-specified.
+record
+ST\_BandMetaData
+raster
+rast
+integer
+bandnum=1
+Description
+-----------
+
+Returns basic meta data about a raster band. Columns returned pixeltype
+\| nodatavalue \| isoutdb \| path.
+
+    **Note**
+
+    If raster contains no bands then an error is thrown.
+
+    **Note**
+
+    If band has no NODATA value, nodatavalue will be NULL.
+
+Examples
+--------
+
+::
+
+    SELECT rid, (foo.md).*  
+     FROM (SELECT rid, ST_BandMetaData(rast,1) As md
+    FROM dummy_rast WHERE rid=2) As foo;
+
+     rid | pixeltype | nodatavalue | isoutdb | path
+    -----+-----------+----------------+-------------+---------+------
+       2 | 8BUI      |           0 | f       |
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_BandNoDataValue
+Returns the value in a given band that represents no data. If no band
+num 1 is assumed.
+double precision
+ST\_BandNoDataValue
+raster
+rast
+integer
+bandnum=1
+Description
+-----------
+
+Returns the value that represents no data for the band
+
+Examples
+--------
+
+::
+
+    SELECT ST_BandNoDataValue(rast,1) As bnval1, 
+        ST_BandNoDataValue(rast,2) As bnval2, ST_BandNoDataValue(rast,3) As bnval3
+    FROM dummy_rast
+    WHERE rid = 2;
+
+     bnval1 | bnval2 | bnval3
+    --------+--------+--------
+          0 |      0 |      0
+                    
+
+See Also
+--------
+
+?
+
+ST\_BandIsNoData
+Returns true if the band is filled with only nodata values.
+boolean
+ST\_BandIsNoData
+raster
+rast
+integer
+band
+boolean
+forceChecking=true
+boolean
+ST\_BandIsNoData
+raster
+rast
+boolean
+forceChecking=true
+Description
+-----------
+
+Returns true if the band is filled with only nodata values. Band 1 is
+assumed if not specified. If the last argument is TRUE, the entire band
+is checked pixel by pixel. Otherwise, the function simply returns the
+value of the isnodata flag for the band. The default value for this
+parameter is FALSE, if not specified.
+
+Availability: 2.0.0
+
+    **Note**
+
+    If the flag is dirty (this is, the result is different using TRUE as
+    last parameter and not using it) you should update the raster to set
+    this flag to true, by using ST\_SetBandIsNodata(), or
+    ST\_SetBandNodataValue() with TRUE as last argument. See ?.
+
+Examples
+--------
+
+::
+
+    -- Create dummy table with one raster column
+    create table dummy_rast (rid integer, rast raster);
+
+    -- Add raster with two bands, one pixel/band. In the first band, nodatavalue = pixel value = 3.
+    -- In the second band, nodatavalue = 13, pixel value = 4
+    insert into dummy_rast values(1,
+    (
+    '01' -- little endian (uint8 ndr)
+    || 
+    '0000' -- version (uint16 0)
+    ||
+    '0200' -- nBands (uint16 0)
+    ||
+    '17263529ED684A3F' -- scaleX (float64 0.000805965234044584)
+    ||
+    'F9253529ED684ABF' -- scaleY (float64 -0.00080596523404458)
+    ||
+    '1C9F33CE69E352C0' -- ipX (float64 -75.5533328537098)
+    ||
+    '718F0E9A27A44840' -- ipY (float64 49.2824585505576)
+    ||
+    'ED50EB853EC32B3F' -- skewX (float64 0.000211812383858707)
+    ||
+    '7550EB853EC32B3F' -- skewY (float64 0.000211812383858704)
+    ||
+    'E6100000' -- SRID (int32 4326)
+    ||
+    '0100' -- width (uint16 1)
+    ||
+    '0100' -- height (uint16 1)
+    ||
+    '6' -- hasnodatavalue and isnodata value set to true.
+    ||
+    '2' -- first band type (4BUI) 
+    ||
+    '03' -- novalue==3
+    ||
+    '03' -- pixel(0,0)==3 (same that nodata)
+    ||
+    '0' -- hasnodatavalue set to false
+    ||
+    '5' -- second band type (16BSI)
+    ||
+    '0D00' -- novalue==13
+    ||
+    '0400' -- pixel(0,0)==4
+    )::raster
+    );
+
+    select st_bandisnodata(rast, 1) from dummy_rast where rid = 1; -- Expected true
+    select st_bandisnodata(rast, 2) from dummy_rast where rid = 1; -- Expected false
+                
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_BandPath
+Returns system file path to a band stored in file system. If no bandnum
+specified, 1 is assumed.
+text
+ST\_BandPath
+raster
+rast
+integer
+bandnum=1
+Description
+-----------
+
+Returns system file path to a band. Throws an error if called with an in
+db band.
+
+Examples
+--------
+
+::
+
+                        
+
+See Also
+--------
+
+ST\_BandPixelType
+Returns the type of pixel for given band. If no bandnum specified, 1 is
+assumed.
+text
+ST\_BandPixelType
+raster
+rast
+integer
+bandnum=1
+Description
+-----------
+
+Returns the value that represents no data for the band
+
+There are 11 pixel types. Pixel Types supported are as follows:
+
+-  1BB - 1-bit boolean
+
+-  2BUI - 2-bit unsigned integer
+
+-  4BUI - 4-bit unsigned integer
+
+-  8BSI - 8-bit signed integer
+
+-  8BUI - 8-bit unsigned integer
+
+-  16BSI - 16-bit signed integer
+
+-  16BUI - 16-bit unsigned integer
+
+-  32BSI - 32-bit signed integer
+
+-  32BUI - 32-bit unsigned integer
+
+-  32BF - 32-bit float
+
+-  64BF - 64-bit float
+
+Examples
+--------
+
+::
+
+    SELECT ST_BandPixelType(rast,1) As btype1, 
+        ST_BandPixelType(rast,2) As btype2, ST_BandPixelType(rast,3) As btype3
+    FROM dummy_rast
+    WHERE rid = 2;
+
+     btype1 | btype2 | btype3
+    --------+--------+--------
+     8BUI   | 8BUI   | 8BUI
+                    
+
+See Also
+--------
+
+?
+
+ST\_HasNoBand
+Returns true if there is no band with given band number. If no band
+number is specified, then band number 1 is assumed.
+boolean
+ST\_HasNoBand
+raster
+rast
+integer
+bandnum=1
+Description
+-----------
+
+Returns true if there is no band with given band number. If no band
+number is specified, then band number 1 is assumed.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    SELECT rid, ST_HasNoBand(rast) As hb1, ST_HasNoBand(rast,2) as hb2, 
+    ST_HasNoBand(rast,4) as hb4, ST_NumBands(rast) As numbands 
+    FROM dummy_rast;
+
+    rid | hb1 | hb2 | hb4 | numbands
+    -----+-----+-----+-----+----------
+    1 | t   | t   | t   |        0
+    2 | f   | f   | t   |        3
+                
+
+See Also
+--------
+
+?
+
+Raster Pixel Accessors and Setters
+==================================
+
+ST\_PixelAsPolygon
+Returns the polygon geometry that bounds the pixel for a particular row
+and column.
+geometry
+ST\_PixelAsPolygon
+raster
+rast
+integer
+columnx
+integer
+rowy
+Description
+-----------
+
+Returns the polygon geometry that bounds the pixel for a particular row
+and column.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    -- get raster pixel polygon
+    SELECT i,j, ST_AsText(ST_PixelAsPolygon(foo.rast, i,j)) As b1pgeom
+    FROM dummy_rast As foo 
+        CROSS JOIN generate_series(1,2) As i 
+        CROSS JOIN generate_series(1,1) As j
+    WHERE rid=2;
+
+     i | j |                                                    b1pgeom
+    ---+---+-----------------------------------------------------------------------------
+     1 | 1 | POLYGON((3427927.75 5793244,3427927.8 5793244,3427927.8 5793243.95,...
+     2 | 1 | POLYGON((3427927.8 5793244,3427927.85 5793244,3427927.85 5793243.95, ..
+      
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_PixelAsPolygons
+Returns the polygon geometry that bounds every pixel of a raster band
+along with the value, the X and the Y raster coordinates of each pixel.
+setof record
+ST\_PixelAsPolygons
+raster
+rast
+integer
+band=1
+boolean
+exclude\_nodata\_value=TRUE
+Description
+-----------
+
+Returns the polygon geometry that bounds every pixel of a raster band
+along with the value (double precision), the X and the Y raster
+coordinates (integers) of each pixel.
+
+    **Note**
+
+    ST\_PixelAsPolygons returns one polygon geometry for every pixel.
+    This is different than ST\_DumpAsPolygons where each geometry
+    represents one or more pixels with the same pixel value.
+
+    **Note**
+
+    When exclude\_nodata\_value = TRUE, only those pixels whose values
+    are not NODATA are returned as polygons.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 exclude\_nodata\_value optional argument was added.
+
+Changed: 2.1.1 Changed behavior of exclude\_nodata\_value.
+
+Examples
+--------
+
+::
+
+    -- get raster pixel polygon
+    SELECT (gv).x, (gv).y, (gv).val, ST_AsText((gv).geom) geom
+    FROM (SELECT ST_PixelAsPolygons(
+                     ST_SetValue(ST_SetValue(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 0.001, -0.001, 0.001, 0.001, 4269), 
+                                                        '8BUI'::text, 1, 0), 
+                                             2, 2, 10), 
+                                 1, 1, NULL)
+    ) gv 
+    ) foo;
+
+     x | y | val |                geom
+    ---+---+-----------------------------------------------------------------------------
+     1 | 1 |     | POLYGON((0 0,0.001 0.001,0.002 0,0.001 -0.001,0 0))
+     1 | 2 |   1 | POLYGON((0.001 -0.001,0.002 0,0.003 -0.001,0.002 -0.002,0.001 -0.001))
+     2 | 1 |   1 | POLYGON((0.001 0.001,0.002 0.002,0.003 0.001,0.002 0,0.001 0.001))
+     2 | 2 |  10 | POLYGON((0.002 0,0.003 0.001,0.004 0,0.003 -0.001,0.002 0))
+      
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, ?
+
+ST\_PixelAsPoint
+Returns a point geometry of the pixel's upper-left corner.
+geometry
+ST\_PixelAsPoint
+raster
+rast
+integer
+columnx
+integer
+rowy
+Description
+-----------
+
+Returns a point geometry of the pixel's upper-left corner.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT ST_AsText(ST_PixelAsPoint(rast, 1, 1)) FROM dummy_rast WHERE rid = 1;
+
+       st_astext    
+    ----------------
+     POINT(0.5 0.5)
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+ST\_PixelAsPoints
+Returns a point geometry for each pixel of a raster band along with the
+value, the X and the Y raster coordinates of each pixel. The coordinates
+of the point geometry are of the pixel's upper-left corner.
+geometry
+ST\_PixelAsPoints
+raster
+rast
+integer
+band=1
+boolean
+exclude\_nodata\_value=TRUE
+Description
+-----------
+
+Returns a point geometry for each pixel of a raster band along with the
+value, the X and the Y raster coordinates of each pixel. The coordinates
+of the point geometry are of the pixel's upper-left corner.
+
+    **Note**
+
+    When exclude\_nodata\_value = TRUE, only those pixels whose values
+    are not NODATA are returned as points.
+
+Availability: 2.1.0
+
+Changed: 2.1.1 Changed behavior of exclude\_nodata\_value.
+
+Examples
+--------
+
+::
+
+    SELECT x, y, val, ST_AsText(geom) FROM (SELECT (ST_PixelAsPoints(rast, 1)).* FROM dummy_rast WHERE rid = 2) foo;
+
+     x | y | val |          st_astext           
+    ---+---+-----+------------------------------
+     1 | 1 | 253 | POINT(3427927.75 5793244)
+     2 | 1 | 254 | POINT(3427927.8 5793244)
+     3 | 1 | 253 | POINT(3427927.85 5793244)
+     4 | 1 | 254 | POINT(3427927.9 5793244)
+     5 | 1 | 254 | POINT(3427927.95 5793244)
+     1 | 2 | 253 | POINT(3427927.75 5793243.95)
+     2 | 2 | 254 | POINT(3427927.8 5793243.95)
+     3 | 2 | 254 | POINT(3427927.85 5793243.95)
+     4 | 2 | 253 | POINT(3427927.9 5793243.95)
+     5 | 2 | 249 | POINT(3427927.95 5793243.95)
+     1 | 3 | 250 | POINT(3427927.75 5793243.9)
+     2 | 3 | 254 | POINT(3427927.8 5793243.9)
+     3 | 3 | 254 | POINT(3427927.85 5793243.9)
+     4 | 3 | 252 | POINT(3427927.9 5793243.9)
+     5 | 3 | 249 | POINT(3427927.95 5793243.9)
+     1 | 4 | 251 | POINT(3427927.75 5793243.85)
+     2 | 4 | 253 | POINT(3427927.8 5793243.85)
+     3 | 4 | 254 | POINT(3427927.85 5793243.85)
+     4 | 4 | 254 | POINT(3427927.9 5793243.85)
+     5 | 4 | 253 | POINT(3427927.95 5793243.85)
+     1 | 5 | 252 | POINT(3427927.75 5793243.8)
+     2 | 5 | 250 | POINT(3427927.8 5793243.8)
+     3 | 5 | 254 | POINT(3427927.85 5793243.8)
+     4 | 5 | 254 | POINT(3427927.9 5793243.8)
+     5 | 5 | 254 | POINT(3427927.95 5793243.8)
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+ST\_PixelAsCentroid
+Returns the centroid (point geometry) of the area represented by a
+pixel.
+geometry
+ST\_PixelAsCentroid
+raster
+rast
+integer
+columnx
+integer
+rowy
+Description
+-----------
+
+Returns the centroid (point geometry) of the area represented by a
+pixel.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT ST_AsText(ST_PixelAsCentroid(rast, 1, 1)) FROM dummy_rast WHERE rid = 1;
+
+      st_astext   
+    --------------
+     POINT(1.5 2)
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+ST\_PixelAsCentroids
+Returns the centroid (point geometry) for each pixel of a raster band
+along with the value, the X and the Y raster coordinates of each pixel.
+The point geometry is the centroid of the area represented by a pixel.
+geometry
+ST\_PixelAsCentroids
+raster
+rast
+integer
+band=1
+boolean
+exclude\_nodata\_value=TRUE
+Description
+-----------
+
+Returns the centroid (point geometry) for each pixel of a raster band
+along with the value, the X and the Y raster coordinates of each pixel.
+The point geometry is the centroid of the area represented by a pixel.
+
+    **Note**
+
+    When exclude\_nodata\_value = TRUE, only those pixels whose values
+    are not NODATA are returned as points.
+
+Availability: 2.1.0
+
+Changed: 2.1.1 Changed behavior of exclude\_nodata\_value.
+
+Examples
+--------
+
+::
+
+    SELECT x, y, val, ST_AsText(geom) FROM (SELECT (ST_PixelAsCentroids(rast, 1)).* FROM dummy_rast WHERE rid = 2) foo;
+     x | y | val |           st_astext            
+    ---+---+-----+--------------------------------
+     1 | 1 | 253 | POINT(3427927.775 5793243.975)
+     2 | 1 | 254 | POINT(3427927.825 5793243.975)
+     3 | 1 | 253 | POINT(3427927.875 5793243.975)
+     4 | 1 | 254 | POINT(3427927.925 5793243.975)
+     5 | 1 | 254 | POINT(3427927.975 5793243.975)
+     1 | 2 | 253 | POINT(3427927.775 5793243.925)
+     2 | 2 | 254 | POINT(3427927.825 5793243.925)
+     3 | 2 | 254 | POINT(3427927.875 5793243.925)
+     4 | 2 | 253 | POINT(3427927.925 5793243.925)
+     5 | 2 | 249 | POINT(3427927.975 5793243.925)
+     1 | 3 | 250 | POINT(3427927.775 5793243.875)
+     2 | 3 | 254 | POINT(3427927.825 5793243.875)
+     3 | 3 | 254 | POINT(3427927.875 5793243.875)
+     4 | 3 | 252 | POINT(3427927.925 5793243.875)
+     5 | 3 | 249 | POINT(3427927.975 5793243.875)
+     1 | 4 | 251 | POINT(3427927.775 5793243.825)
+     2 | 4 | 253 | POINT(3427927.825 5793243.825)
+     3 | 4 | 254 | POINT(3427927.875 5793243.825)
+     4 | 4 | 254 | POINT(3427927.925 5793243.825)
+     5 | 4 | 253 | POINT(3427927.975 5793243.825)
+     1 | 5 | 252 | POINT(3427927.775 5793243.775)
+     2 | 5 | 250 | POINT(3427927.825 5793243.775)
+     3 | 5 | 254 | POINT(3427927.875 5793243.775)
+     4 | 5 | 254 | POINT(3427927.925 5793243.775)
+     5 | 5 | 254 | POINT(3427927.975 5793243.775)
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?
+
+ST\_Value
+Returns the value of a given band in a given columnx, rowy pixel or at a
+particular geometric point. Band numbers start at 1 and assumed to be 1
+if not specified. If
+exclude\_nodata\_value
+is set to false, then all pixels include
+nodata
+pixels are considered to intersect and return value. If
+exclude\_nodata\_value
+is not passed in then reads it from metadata of raster.
+double precision
+ST\_Value
+raster
+rast
+geometry
+pt
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_Value
+raster
+rast
+integer
+bandnum
+geometry
+pt
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_Value
+raster
+rast
+integer
+columnx
+integer
+rowy
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_Value
+raster
+rast
+integer
+bandnum
+integer
+columnx
+integer
+rowy
+boolean
+exclude\_nodata\_value=true
+Description
+-----------
+
+Returns the value of a given band in a given columnx, rowy pixel or at a
+given geometry point. Band numbers start at 1 and band is assumed to be
+1 if not specified. If ``exclude_nodata_value`` is set to true, then
+only non ``nodata`` pixels are considered. If ``exclude_nodata_value``
+is set to false, then all pixels are considered.
+
+Enhanced: 2.0.0 exclude\_nodata\_value optional argument was added.
+
+Examples
+--------
+
+::
+
+    -- get raster values at particular postgis geometry points
+    -- the srid of your geometry should be same as for your raster
+    SELECT rid, ST_Value(rast, foo.pt_geom) As b1pval, ST_Value(rast, 2, foo.pt_geom) As b2pval
+    FROM dummy_rast CROSS JOIN (SELECT ST_SetSRID(ST_Point(3427927.77, 5793243.76), 0) As pt_geom) As foo
+    WHERE rid=2;
+
+     rid | b1pval | b2pval
+    -----+--------+--------
+       2 |    252 |     79
+       
+       
+    -- general fictitious example using a real table
+    SELECT rid, ST_Value(rast, 3, sometable.geom) As b3pval
+    FROM sometable
+    WHERE ST_Intersects(rast,sometable.geom);
+                    
+
+::
+
+    SELECT rid, ST_Value(rast, 1, 1, 1) As b1pval, 
+        ST_Value(rast, 2, 1, 1) As b2pval, ST_Value(rast, 3, 1, 1) As b3pval
+    FROM dummy_rast
+    WHERE rid=2;
+
+     rid | b1pval | b2pval | b3pval
+    -----+--------+--------+--------
+       2 |    253 |     78 |     70
+                    
+
+::
+
+    --- Get all values in bands 1,2,3 of each pixel --
+    SELECT x, y, ST_Value(rast, 1, x, y) As b1val, 
+        ST_Value(rast, 2, x, y) As b2val, ST_Value(rast, 3, x, y) As b3val
+    FROM dummy_rast CROSS JOIN
+    generate_series(1, 1000) As x CROSS JOIN generate_series(1, 1000) As y
+    WHERE rid =  2 AND x <= ST_Width(rast) AND y <= ST_Height(rast);
+
+     x | y | b1val | b2val | b3val
+    ---+---+-------+-------+-------
+     1 | 1 |   253 |    78 |    70
+     1 | 2 |   253 |    96 |    80
+     1 | 3 |   250 |    99 |    90
+     1 | 4 |   251 |    89 |    77
+     1 | 5 |   252 |    79 |    62
+     2 | 1 |   254 |    98 |    86
+     2 | 2 |   254 |   118 |   108
+     :
+     :
+                    
+
+::
+
+    --- Get all values in bands 1,2,3 of each pixel same as above but returning the upper left point point of each pixel --
+    SELECT ST_AsText(ST_SetSRID(
+        ST_Point(ST_UpperLeftX(rast) + ST_ScaleX(rast)*x, 
+            ST_UpperLeftY(rast) + ST_ScaleY(rast)*y), 
+            ST_SRID(rast))) As uplpt
+        , ST_Value(rast, 1, x, y) As b1val, 
+        ST_Value(rast, 2, x, y) As b2val, ST_Value(rast, 3, x, y) As b3val
+    FROM dummy_rast CROSS JOIN
+    generate_series(1,1000) As x CROSS JOIN generate_series(1,1000) As y
+    WHERE rid =  2 AND x <= ST_Width(rast) AND y <= ST_Height(rast);
+
+                uplpt            | b1val | b2val | b3val
+    -----------------------------+-------+-------+-------
+     POINT(3427929.25 5793245.5) |   253 |    78 |    70
+     POINT(3427929.25 5793247)   |   253 |    96 |    80
+     POINT(3427929.25 5793248.5) |   250 |    99 |    90
+    :
+                    
+
+::
+
+    --- Get a polygon formed by union of all pixels 
+        that fall in a particular value range and intersect particular polygon --
+    SELECT ST_AsText(ST_Union(pixpolyg)) As shadow
+    FROM (SELECT ST_Translate(ST_MakeEnvelope(
+            ST_UpperLeftX(rast), ST_UpperLeftY(rast), 
+                ST_UpperLeftX(rast) + ST_ScaleX(rast),
+                ST_UpperLeftY(rast) + ST_ScaleY(rast), 0
+                ), ST_ScaleX(rast)*x, ST_ScaleY(rast)*y
+            ) As pixpolyg, ST_Value(rast, 2, x, y) As b2val
+        FROM dummy_rast CROSS JOIN
+    generate_series(1,1000) As x CROSS JOIN generate_series(1,1000) As y
+    WHERE rid =  2 
+        AND x <= ST_Width(rast) AND y <= ST_Height(rast)) As foo
+    WHERE  
+        ST_Intersects(
+            pixpolyg, 
+            ST_GeomFromText('POLYGON((3427928 5793244,3427927.75 5793243.75,3427928 5793243.75,3427928 5793244))',0)
+            ) AND b2val != 254;
+
+
+            shadow
+    ------------------------------------------------------------------------------------
+     MULTIPOLYGON(((3427928 5793243.9,3427928 5793243.85,3427927.95 5793243.85,3427927.95 5793243.9,
+     3427927.95 5793243.95,3427928 5793243.95,3427928.05 5793243.95,3427928.05 5793243.9,3427928 5793243.9)),((3427927.95 5793243.9,3427927.95 579324
+    3.85,3427927.9 5793243.85,3427927.85 5793243.85,3427927.85 5793243.9,3427927.9 5793243.9,3427927.9 5793243.95,
+    3427927.95 5793243.95,3427927.95 5793243.9)),((3427927.85 5793243.75,3427927.85 5793243.7,3427927.8 5793243.7,3427927.8 5793243.75
+    ,3427927.8 5793243.8,3427927.8 5793243.85,3427927.85 5793243.85,3427927.85 5793243.8,3427927.85 5793243.75)),
+    ((3427928.05 5793243.75,3427928.05 5793243.7,3427928 5793243.7,3427927.95 5793243.7,3427927.95 5793243.75,3427927.95 5793243.8,3427
+    927.95 5793243.85,3427928 5793243.85,3427928 5793243.8,3427928.05 5793243.8,
+    3427928.05 5793243.75)),((3427927.95 5793243.75,3427927.95 5793243.7,3427927.9 5793243.7,3427927.85 5793243.7,
+    3427927.85 5793243.75,3427927.85 5793243.8,3427927.85 5793243.85,3427927.9 5793243.85,
+    3427927.95 5793243.85,3427927.95 5793243.8,3427927.95 5793243.75)))
+                    
+
+::
+
+    --- Checking all the pixels of a large raster tile can take a long time.
+    --- You can dramatically improve speed at some lose of precision by orders of magnitude 
+    --  by sampling pixels using the step optional parameter of generate_series.  
+    --  This next example does the same as previous but by checking 1 for every 4 (2x2) pixels and putting in the last checked
+    --  putting in the checked pixel as the value for subsequent 4
+        
+    SELECT ST_AsText(ST_Union(pixpolyg)) As shadow
+    FROM (SELECT ST_Translate(ST_MakeEnvelope(
+            ST_UpperLeftX(rast), ST_UpperLeftY(rast), 
+                ST_UpperLeftX(rast) + ST_ScaleX(rast)*2,
+                ST_UpperLeftY(rast) + ST_ScaleY(rast)*2, 0
+                ), ST_ScaleX(rast)*x, ST_ScaleY(rast)*y
+            ) As pixpolyg, ST_Value(rast, 2, x, y) As b2val
+        FROM dummy_rast CROSS JOIN
+    generate_series(1,1000,2) As x CROSS JOIN generate_series(1,1000,2) As y
+    WHERE rid =  2 
+        AND x <= ST_Width(rast)  AND y <= ST_Height(rast)  ) As foo
+    WHERE  
+        ST_Intersects(
+            pixpolyg, 
+            ST_GeomFromText('POLYGON((3427928 5793244,3427927.75 5793243.75,3427928 5793243.75,3427928 5793244))',0)
+            ) AND b2val != 254;
+
+            shadow
+    ------------------------------------------------------------------------------------
+     MULTIPOLYGON(((3427927.9 5793243.85,3427927.8 5793243.85,3427927.8 5793243.95,
+     3427927.9 5793243.95,3427928 5793243.95,3427928.1 5793243.95,3427928.1 5793243.85,3427928 5793243.85,3427927.9 5793243.85)),
+     ((3427927.9 5793243.65,3427927.8 5793243.65,3427927.8 5793243.75,3427927.8 5793243.85,3427927.9 5793243.85,
+     3427928 5793243.85,3427928 5793243.75,3427928.1 5793243.75,3427928.1 5793243.65,3427928 5793243.65,3427927.9 5793243.65)))
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, , ?, ?, ?, ?, ?, , ?, ?, ?, ?
+
+ST\_NearestValue
+Returns the nearest non-
+NODATA
+value of a given band's pixel specified by a columnx and rowy or a
+geometric point expressed in the same spatial reference coordinate
+system as the raster.
+double precision
+ST\_NearestValue
+raster
+rast
+integer
+bandnum
+geometry
+pt
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_NearestValue
+raster
+rast
+geometry
+pt
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_NearestValue
+raster
+rast
+integer
+bandnum
+integer
+columnx
+integer
+rowy
+boolean
+exclude\_nodata\_value=true
+double precision
+ST\_NearestValue
+raster
+rast
+integer
+columnx
+integer
+rowy
+boolean
+exclude\_nodata\_value=true
+Description
+-----------
+
+Returns the nearest non-\ ``NODATA`` value of a given band in a given
+columnx, rowy pixel or at a specific geometric point. If the columnx,
+rowy pixel or the pixel at the specified geometric point is ``NODATA``,
+the function will find the nearest pixel to the columnx, rowy pixel or
+geometric point whose value is not ``NODATA``.
+
+Band numbers start at 1 and ``bandnum`` is assumed to be 1 if not
+specified. If ``exclude_nodata_value`` is set to false, then all pixels
+include ``nodata`` pixels are considered to intersect and return value.
+If ``exclude_nodata_value`` is not passed in then reads it from metadata
+of raster.
+
+Availability: 2.1.0
+
+    **Note**
+
+    ST\_NearestValue is a drop-in replacement for ST\_Value.
+
+Examples
+--------
+
+::
+
+    -- pixel 2x2 has value
+    SELECT
+        ST_Value(rast, 2, 2) AS value,
+        ST_NearestValue(rast, 2, 2) AS nearestvalue
+    FROM (
+        SELECT
+            ST_SetValue(
+                ST_SetValue(
+                    ST_SetValue(
+                        ST_SetValue(
+                            ST_SetValue(
+                                ST_AddBand(
+                                    ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                                    '8BUI'::text, 1, 0
+                                ),
+                                1, 1, 0.
+                            ),
+                            2, 3, 0.
+                        ),
+                        3, 5, 0.
+                    ),
+                    4, 2, 0.
+                ),
+                5, 4, 0.
+            ) AS rast
+    ) AS foo
+
+     value | nearestvalue 
+    -------+--------------
+         1 |            1
+                    
+
+::
+
+    -- pixel 2x3 is NODATA
+    SELECT
+        ST_Value(rast, 2, 3) AS value,
+        ST_NearestValue(rast, 2, 3) AS nearestvalue
+    FROM (
+        SELECT
+            ST_SetValue(
+                ST_SetValue(
+                    ST_SetValue(
+                        ST_SetValue(
+                            ST_SetValue(
+                                ST_AddBand(
+                                    ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                                    '8BUI'::text, 1, 0
+                                ),
+                                1, 1, 0.
+                            ),
+                            2, 3, 0.
+                        ),
+                        3, 5, 0.
+                    ),
+                    4, 2, 0.
+                ),
+                5, 4, 0.
+            ) AS rast
+    ) AS foo
+
+     value | nearestvalue 
+    -------+--------------
+           |            1
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_Neighborhood
+Returns a 2-D double precision array of the non-
+NODATA
+values around a given band's pixel specified by either a columnX and
+rowY or a geometric point expressed in the same spatial reference
+coordinate system as the raster.
+double precision[][]
+ST\_Neighborhood
+raster
+rast
+integer
+bandnum
+integer
+columnX
+integer
+rowY
+integer
+distanceX
+integer
+distanceY
+boolean
+exclude\_nodata\_value=true
+double precision[][]
+ST\_Neighborhood
+raster
+rast
+integer
+columnX
+integer
+rowY
+integer
+distanceX
+integer
+distanceY
+boolean
+exclude\_nodata\_value=true
+double precision[][]
+ST\_Neighborhood
+raster
+rast
+integer
+bandnum
+geometry
+pt
+integer
+distanceX
+integer
+distanceY
+boolean
+exclude\_nodata\_value=true
+double precision[][]
+ST\_Neighborhood
+raster
+rast
+geometry
+pt
+integer
+distanceX
+integer
+distanceY
+boolean
+exclude\_nodata\_value=true
+Description
+-----------
+
+Returns a 2-D double precision array of the non-\ ``NODATA`` values
+around a given band's pixel specified by either a columnX and rowY or a
+geometric point expressed in the same spatial reference coordinate
+system as the raster. The ``distanceX`` and ``distanceY`` parameters
+define the number of pixels around the specified pixel in the X and Y
+axes, e.g. I want all values within 3 pixel distance along the X axis
+and 2 pixel distance along the Y axis around my pixel of interest. The
+center value of the 2-D array will be the value at the pixel specified
+by the columnX and rowY or the geometric point.
+
+Band numbers start at 1 and ``bandnum`` is assumed to be 1 if not
+specified. If ``exclude_nodata_value`` is set to false, then all pixels
+include ``nodata`` pixels are considered to intersect and return value.
+If ``exclude_nodata_value`` is not passed in then reads it from metadata
+of raster.
+
+    **Note**
+
+    The number of elements along each axis of the returning 2-D array is
+    2 \* (``distanceX``\ \|\ ``distanceY``) + 1. So for a ``distanceX``
+    and ``distanceY`` of 1, the returning array will be 3x3.
+
+    **Note**
+
+    The 2-D array output can be passed to any of the raster processing
+    builtin functions, e.g. ST\_Min4ma, ST\_Sum4ma, ST\_Mean4ma.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    -- pixel 2x2 has value
+    SELECT
+        ST_Neighborhood(rast, 2, 2, 1, 1)
+    FROM (
+        SELECT
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                    '8BUI'::text, 1, 0
+                ),
+                1, 1, 1, ARRAY[
+                    [0, 1, 1, 1, 1],
+                    [1, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 1],
+                    [1, 1, 1, 1, 0],
+                    [1, 1, 0, 1, 1]
+                ]::double precision[],
+                1
+            ) AS rast
+    ) AS foo
+
+             st_neighborhood         
+    ---------------------------------
+     {{NULL,1,1},{1,1,NULL},{1,1,1}}
+                    
+
+::
+
+    -- pixel 2x3 is NODATA
+    SELECT
+        ST_Neighborhood(rast, 2, 3, 1, 1)
+    FROM (
+        SELECT
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                    '8BUI'::text, 1, 0
+                ),
+                1, 1, 1, ARRAY[
+                    [0, 1, 1, 1, 1],
+                    [1, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 1],
+                    [1, 1, 1, 1, 0],
+                    [1, 1, 0, 1, 1]
+                ]::double precision[],
+                1
+            ) AS rast
+    ) AS foo
+
+           st_neighborhood        
+    ------------------------------
+     {{1,1,1},{1,NULL,1},{1,1,1}}
+                    
+
+::
+
+    -- pixel 3x3 has value
+    -- exclude_nodata_value = FALSE
+    SELECT
+        ST_Neighborhood(rast, 3, 3, 1, 1, false)
+    FROM (
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                    '8BUI'::text, 1, 0
+                ),
+                1, 1, 1, ARRAY[
+                    [0, 1, 1, 1, 1],
+                    [1, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 1],
+                    [1, 1, 1, 1, 0],
+                    [1, 1, 0, 1, 1]
+                ]::double precision[],
+                1
+            ) AS rast
+    ) AS foo
+
+          st_neighborhood      
+    ---------------------------
+     {{1,0,1},{1,1,1},{0,1,1}}
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_SetValue
+Returns modified raster resulting from setting the value of a given band
+in a given columnx, rowy pixel or the pixels that intersect a particular
+geometry. Band numbers start at 1 and assumed to be 1 if not specified.
+raster
+ST\_SetValue
+raster
+rast
+integer
+bandnum
+geometry
+geom
+double precision
+newvalue
+raster
+ST\_SetValue
+raster
+rast
+geometry
+geom
+double precision
+newvalue
+raster
+ST\_SetValue
+raster
+rast
+integer
+bandnum
+integer
+columnx
+integer
+rowy
+double precision
+newvalue
+raster
+ST\_SetValue
+raster
+rast
+integer
+columnx
+integer
+rowy
+double precision
+newvalue
+Description
+-----------
+
+Returns modified raster resulting from setting the specified pixels'
+values to new value for the designed band given the raster's row and
+column or a geometry. If no band is specified, then band 1 is assumed.
+
+Enhanced: 2.1.0 Geometry variant of ST\_SetValue() now supports any
+geometry type, not just point. The geometry variant is a wrapper around
+the geomval[] variant of ST\_SetValues()
+
+Examples
+--------
+
+::
+
+                    -- Geometry example
+    SELECT (foo.geomval).val, ST_AsText(ST_Union((foo.geomval).geom))
+    FROM (SELECT ST_DumpAsPolygons(
+            ST_SetValue(rast,1,
+                    ST_Point(3427927.75, 5793243.95),
+                    50)
+                ) As geomval
+    FROM dummy_rast
+    where rid = 2) As foo
+    WHERE (foo.geomval).val < 250
+    GROUP BY (foo.geomval).val;
+
+     val |                                                     st_astext
+    -----+-------------------------------------------------------------------
+      50 | POLYGON((3427927.75 5793244,3427927.75 5793243.95,3427927.8 579324 ...
+     249 | POLYGON((3427927.95 5793243.95,3427927.95 5793243.85,3427928 57932 ...
+     
+                    
+
+::
+
+    -- Store the changed raster --
+        UPDATE dummy_rast SET rast = ST_SetValue(rast,1, ST_Point(3427927.75, 5793243.95),100)
+            WHERE rid = 2   ;
+
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_SetValues
+Returns modified raster resulting from setting the values of a given
+band.
+raster
+ST\_SetValues
+raster
+rast
+integer
+nband
+integer
+columnx
+integer
+rowy
+double precision[][]
+newvalueset
+boolean[][]
+noset=NULL
+boolean
+keepnodata=FALSE
+raster
+ST\_SetValues
+raster
+rast
+integer
+nband
+integer
+columnx
+integer
+rowy
+double precision[][]
+newvalueset
+double precision
+nosetvalue
+boolean
+keepnodata=FALSE
+raster
+ST\_SetValues
+raster
+rast
+integer
+nband
+integer
+columnx
+integer
+rowy
+integer
+width
+integer
+height
+double precision
+newvalue
+boolean
+keepnodata=FALSE
+raster
+ST\_SetValues
+raster
+rast
+integer
+columnx
+integer
+rowy
+integer
+width
+integer
+height
+double precision
+newvalue
+boolean
+keepnodata=FALSE
+raster
+ST\_SetValues
+raster
+rast
+integer
+nband
+geomval[]
+geomvalset
+boolean
+keepnodata=FALSE
+Description
+-----------
+
+Returns modified raster resulting from setting specified pixels to new
+value(s) for the designated band.
+
+If ``keepnodata`` is TRUE, those pixels whose values are NODATA will not
+be set with the corresponding value in ``newvalueset``.
+
+For Variant 1, the specific pixels to be set are determined by the
+``columnx``, ``rowy`` pixel coordinates and the dimensions of the
+``newvalueset`` array. ``noset`` can be used to prevent pixels with
+values present in ``newvalueset`` from being set (due to PostgreSQL not
+permitting ragged/jagged arrays). See example Variant 1.
+
+Variant 2 is like Variant 1 but with a simple double precision
+``nosetvalue`` instead of a boolean ``noset`` array. Elements in
+``newvalueset`` with the ``nosetvalue`` value with be skipped. See
+example Variant 2.
+
+For Variant 3, the specific pixels to be set are determined by the
+``columnx``, ``rowy`` pixel coordinates, ``width`` and ``height``. See
+example Variant 3.
+
+Variant 4 is the same as Variant 3 with the exception that it assumes
+that the first band's pixels of ``rast`` will be set.
+
+For Variant 5, an array of ? is used to determine the specific pixels to
+be set. If all the geometries in the array are of type POINT or
+MULTIPOINT, the function uses a shortcut where the longitude and
+latitude of each point is used to set a pixel directly. Otherwise, the
+geometries are converted to rasters and then iterated through in one
+pass. See example Variant 5.
+
+Availability: 2.1.0
+
+Examples: Variant 1
+-------------------
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 1 | 1 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 2, 2, ARRAY[[9, 9], [9, 9]]::double precision[][]
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   1
+     1 | 2 |   1
+     1 | 3 |   1
+     2 | 1 |   1
+     2 | 2 |   9
+     2 | 3 |   9
+     3 | 1 |   1
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 9 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 9 |   | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 9 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 1, 1, ARRAY[[9, 9, 9], [9, NULL, 9], [9, 9, 9]]::double precision[][]
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   9
+     1 | 2 |   9
+     1 | 3 |   9
+     2 | 1 |   9
+     2 | 2 |    
+     2 | 3 |   9
+     3 | 1 |   9
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 9 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 |   | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 9 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 1, 1,
+                    ARRAY[[9, 9, 9], [9, NULL, 9], [9, 9, 9]]::double precision[][],
+                    ARRAY[[false], [true]]::boolean[][]
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   9
+     1 | 2 |   1
+     1 | 3 |   9
+     2 | 1 |   9
+     2 | 2 |    
+     2 | 3 |   9
+     3 | 1 |   9
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    |   | 1 | 1 |          |   | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 |   | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 9 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_SetValue(
+                    ST_AddBand(
+                        ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                        1, '8BUI', 1, 0
+                    ),
+                    1, 1, 1, NULL
+                ),
+                1, 1, 1,
+                    ARRAY[[9, 9, 9], [9, NULL, 9], [9, 9, 9]]::double precision[][],
+                    ARRAY[[false], [true]]::boolean[][],
+                    TRUE
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   
+     1 | 2 |   1
+     1 | 3 |   9
+     2 | 1 |   9
+     2 | 2 |    
+     2 | 3 |   9
+     3 | 1 |   9
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+Examples: Variant 2
+-------------------
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 1 | 1 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 1, 1, ARRAY[[-1, -1, -1], [-1, 9, 9], [-1, 9, 9]]::double precision[][], -1
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   1
+     1 | 2 |   1
+     1 | 3 |   1
+     2 | 1 |   1
+     2 | 2 |   9
+     2 | 3 |   9
+     3 | 1 |   1
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+::
+
+    /*
+    This example is like the previous one.  Instead of nosetvalue = -1, nosetvalue = NULL
+
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 1 | 1 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 1, 1, ARRAY[[NULL, NULL, NULL], [NULL, 9, 9], [NULL, 9, 9]]::double precision[][], NULL::double precision
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   1
+     1 | 2 |   1
+     1 | 3 |   1
+     2 | 1 |   1
+     2 | 2 |   9
+     2 | 3 |   9
+     3 | 1 |   1
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+Examples: Variant 3
+-------------------
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 1 | 1 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |    =>    | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                    1, '8BUI', 1, 0
+                ),
+                1, 2, 2, 2, 2, 9
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   1
+     1 | 2 |   1
+     1 | 3 |   1
+     2 | 1 |   1
+     2 | 2 |   9
+     2 | 3 |   9
+     3 | 1 |   1
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+::
+
+    /*
+    The ST_SetValues() does the following...
+
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 1 | 1 |
+    + - + - + - +          + - + - + - +
+    | 1 |   | 1 |    =>    | 1 |   | 9 |
+    + - + - + - +          + - + - + - +
+    | 1 | 1 | 1 |          | 1 | 9 | 9 |
+    + - + - + - +          + - + - + - +
+    */
+    SELECT
+        (poly).x,
+        (poly).y,
+        (poly).val
+    FROM (
+    SELECT
+        ST_PixelAsPolygons(
+            ST_SetValues(
+                ST_SetValue(
+                    ST_AddBand(
+                        ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0),
+                        1, '8BUI', 1, 0
+                    ),
+                    1, 2, 2, NULL
+                ),
+                1, 2, 2, 2, 2, 9, TRUE
+            )
+        ) AS poly
+    ) foo
+    ORDER BY 1, 2;
+
+     x | y | val 
+    ---+---+-----
+     1 | 1 |   1
+     1 | 2 |   1
+     1 | 3 |   1
+     2 | 1 |   1
+     2 | 2 |    
+     2 | 3 |   9
+     3 | 1 |   1
+     3 | 2 |   9
+     3 | 3 |   9
+                    
+
+Examples: Variant 5
+-------------------
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 0, 0) AS rast
+    ), bar AS (
+        SELECT 1 AS gid, 'SRID=0;POINT(2.5 -2.5)'::geometry geom UNION ALL
+        SELECT 2 AS gid, 'SRID=0;POLYGON((1 -1, 4 -1, 4 -4, 1 -4, 1 -1))'::geometry geom UNION ALL
+        SELECT 3 AS gid, 'SRID=0;POLYGON((0 0, 5 0, 5 -1, 1 -1, 1 -4, 0 -4, 0 0))'::geometry geom UNION ALL
+        SELECT 4 AS gid, 'SRID=0;MULTIPOINT(0 0, 4 4, 4 -4)'::geometry
+    )
+    SELECT
+        rid, gid, ST_DumpValues(ST_SetValue(rast, 1, geom, gid))
+    FROM foo t1
+    CROSS JOIN bar t2
+    ORDER BY rid, gid;
+
+     rid | gid |                                                                st_dumpvalues                                                                
+    -----+-----+---------------------------------------------------------------------------------------------------------------------------------------------
+       1 |   1 | (1,"{{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,1,NULL,NULL},{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+       1 |   2 | (1,"{{NULL,NULL,NULL,NULL,NULL},{NULL,2,2,2,NULL},{NULL,2,2,2,NULL},{NULL,2,2,2,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+       1 |   3 | (1,"{{3,3,3,3,3},{3,NULL,NULL,NULL,NULL},{3,NULL,NULL,NULL,NULL},{3,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+       1 |   4 | (1,"{{4,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,4}}")
+    (4 rows)
+                    
+
+The following shows that geomvals later in the array can overwrite prior
+geomvals
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 0, 0) AS rast
+    ), bar AS (
+        SELECT 1 AS gid, 'SRID=0;POINT(2.5 -2.5)'::geometry geom UNION ALL
+        SELECT 2 AS gid, 'SRID=0;POLYGON((1 -1, 4 -1, 4 -4, 1 -4, 1 -1))'::geometry geom UNION ALL
+        SELECT 3 AS gid, 'SRID=0;POLYGON((0 0, 5 0, 5 -1, 1 -1, 1 -4, 0 -4, 0 0))'::geometry geom UNION ALL
+        SELECT 4 AS gid, 'SRID=0;MULTIPOINT(0 0, 4 4, 4 -4)'::geometry
+    )
+    SELECT
+        t1.rid, t2.gid, t3.gid, ST_DumpValues(ST_SetValues(rast, 1, ARRAY[ROW(t2.geom, t2.gid), ROW(t3.geom, t3.gid)]::geomval[]))
+    FROM foo t1
+    CROSS JOIN bar t2
+    CROSS JOIN bar t3
+    WHERE t2.gid = 1
+        AND t3.gid = 2
+    ORDER BY t1.rid, t2.gid, t3.gid;
+
+     rid | gid | gid |                                                    st_dumpvalues                                                    
+    -----+-----+-----+---------------------------------------------------------------------------------------------------------------------
+       1 |   1 |   2 | (1,"{{NULL,NULL,NULL,NULL,NULL},{NULL,2,2,2,NULL},{NULL,2,2,2,NULL},{NULL,2,2,2,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+    (1 row)
+                    
+
+This example is the opposite of the prior example
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 0, 0) AS rast
+    ), bar AS (
+        SELECT 1 AS gid, 'SRID=0;POINT(2.5 -2.5)'::geometry geom UNION ALL
+        SELECT 2 AS gid, 'SRID=0;POLYGON((1 -1, 4 -1, 4 -4, 1 -4, 1 -1))'::geometry geom UNION ALL
+        SELECT 3 AS gid, 'SRID=0;POLYGON((0 0, 5 0, 5 -1, 1 -1, 1 -4, 0 -4, 0 0))'::geometry geom UNION ALL
+        SELECT 4 AS gid, 'SRID=0;MULTIPOINT(0 0, 4 4, 4 -4)'::geometry
+    )
+    SELECT
+        t1.rid, t2.gid, t3.gid, ST_DumpValues(ST_SetValues(rast, 1, ARRAY[ROW(t2.geom, t2.gid), ROW(t3.geom, t3.gid)]::geomval[]))
+    FROM foo t1
+    CROSS JOIN bar t2
+    CROSS JOIN bar t3
+    WHERE t2.gid = 2
+        AND t3.gid = 1
+    ORDER BY t1.rid, t2.gid, t3.gid;
+
+     rid | gid | gid |                                                    st_dumpvalues                                                    
+    -----+-----+-----+---------------------------------------------------------------------------------------------------------------------
+       1 |   2 |   1 | (1,"{{NULL,NULL,NULL,NULL,NULL},{NULL,2,2,2,NULL},{NULL,2,1,2,NULL},{NULL,2,2,2,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+    (1 row)
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_DumpValues
+Get the values of the specified band as a 2-dimension array.
+setof record
+ST\_DumpValues
+raster
+rast
+integer[]
+nband
+boolean
+exclude\_nodata\_value=true
+double precision[][]
+ST\_DumpValues
+raster
+rast
+integer
+nband
+boolean
+exclude\_nodata\_value=true
+Description
+-----------
+
+Get the values of the specified band as a 2-dimension array. If
+``nband`` is NULL or not provided, all raster bands are processed.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    WITH foo AS (
+        SELECT ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 1, 0), 2, '32BF', 3, -9999), 3, '16BSI', 0, 0) AS rast
+    )
+    SELECT
+        (ST_DumpValues(rast)).*
+    FROM foo;
+
+     nband |                       valarray                       
+    -------+------------------------------------------------------
+         1 | {{1,1,1},{1,1,1},{1,1,1}}
+         2 | {{3,3,3},{3,3,3},{3,3,3}}
+         3 | {{NULL,NULL,NULL},{NULL,NULL,NULL},{NULL,NULL,NULL}}
+    (3 rows)
+                    
+
+::
+
+    WITH foo AS (
+        SELECT ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(3, 3, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 1, 0), 2, '32BF', 3, -9999), 3, '16BSI', 0, 0) AS rast
+    )
+    SELECT
+        (ST_DumpValues(rast, ARRAY[3, 1])).*
+    FROM foo;
+
+     nband |                       valarray                       
+    -------+------------------------------------------------------
+         3 | {{NULL,NULL,NULL},{NULL,NULL,NULL},{NULL,NULL,NULL}}
+         1 | {{1,1,1},{1,1,1},{1,1,1}}
+    (2 rows)
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_PixelOfValue
+Get the columnx, rowy coordinates of the pixel whose value equals the
+search value.
+setof record
+ST\_PixelOfValue
+raster
+rast
+integer
+nband
+double precision[]
+search
+boolean
+exclude\_nodata\_value=true
+setof record
+ST\_PixelOfValue
+raster
+rast
+double precision[]
+search
+boolean
+exclude\_nodata\_value=true
+setof record
+ST\_PixelOfValue
+raster
+rast
+integer
+nband
+double precision
+search
+boolean
+exclude\_nodata\_value=true
+setof record
+ST\_PixelOfValue
+raster
+rast
+double precision
+search
+boolean
+exclude\_nodata\_value=true
+Description
+-----------
+
+Get the columnx, rowy coordinates of the pixel whose value equals the
+search value. If no band is specified, then band 1 is assumed.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT
+        (pixels).*
+    FROM (
+        SELECT
+            ST_PixelOfValue(
+                ST_SetValue(
+                    ST_SetValue(
+                        ST_SetValue(
+                            ST_SetValue(
+                                ST_SetValue(
+                                    ST_AddBand(
+                                        ST_MakeEmptyRaster(5, 5, -2, 2, 1, -1, 0, 0, 0),
+                                        '8BUI'::text, 1, 0
+                                    ),
+                                    1, 1, 0
+                                ),
+                                2, 3, 0
+                            ),
+                            3, 5, 0
+                        ),
+                        4, 2, 0
+                    ),
+                    5, 4, 255
+                )
+            , 1, ARRAY[1, 255]) AS pixels
+    ) AS foo
+
+     val | x | y 
+    -----+---+---
+       1 | 1 | 2
+       1 | 1 | 3
+       1 | 1 | 4
+       1 | 1 | 5
+       1 | 2 | 1
+       1 | 2 | 2
+       1 | 2 | 4
+       1 | 2 | 5
+       1 | 3 | 1
+       1 | 3 | 2
+       1 | 3 | 3
+       1 | 3 | 4
+       1 | 4 | 1
+       1 | 4 | 3
+       1 | 4 | 4
+       1 | 4 | 5
+       1 | 5 | 1
+       1 | 5 | 2
+       1 | 5 | 3
+     255 | 5 | 4
+       1 | 5 | 5
+                    
+
+Raster Editors
+==============
+
+ST\_SetGeoReference
+Set Georeference 6 georeference parameters in a single call. Numbers
+should be separated by white space. Accepts inputs in GDAL or ESRI
+format. Default is GDAL.
+raster
+ST\_SetGeoReference
+raster
+rast
+text
+georefcoords
+text
+format=GDAL
+raster
+ST\_SetGeoReference
+raster
+rast
+double precision
+upperleftx
+double precision
+upperlefty
+double precision
+scalex
+double precision
+scaley
+double precision
+skewx
+double precision
+skewy
+Description
+-----------
+
+Set Georeference 6 georeference parameters in a single call. Accepts
+inputs in 'GDAL' or 'ESRI' format. Default is GDAL. If 6 coordinates are
+not provided will return null.
+
+Difference between format representations is as follows:
+
+``GDAL``:
+
+::
+
+    scalex skewy skewx scaley upperleftx upperlefty
+
+``ESRI``:
+
+::
+
+    scalex skewy skewx scaley upperleftx + scalex*0.5 upperlefty + scaley*0.5
+
+    **Note**
+
+    If the raster has out-db bands, changing the georeference may result
+    in incorrect access of the band's externally stored data.
+
+Enhanced: 2.1.0 Addition of ST\_SetGeoReference(raster, double
+precision, ...) variant
+
+Examples
+--------
+
+::
+
+    WITH foo AS (
+        SELECT ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0) AS rast
+    )
+    SELECT
+        0 AS rid, (ST_Metadata(rast)).*
+    FROM foo
+    UNION ALL
+    SELECT
+        1, (ST_Metadata(ST_SetGeoReference(rast, '10 0 0 -10 0.1 0.1', 'GDAL'))).*
+    FROM foo
+    UNION ALL
+    SELECT
+        2, (ST_Metadata(ST_SetGeoReference(rast, '10 0 0 -10 5.1 -4.9', 'ESRI'))).*
+    FROM foo
+    UNION ALL
+    SELECT
+        3, (ST_Metadata(ST_SetGeoReference(rast, 1, 1, 10, -10, 0.001, 0.001))).*
+    FROM foo
+
+     rid |     upperleftx     |     upperlefty     | width | height | scalex | scaley | skewx | skewy | srid | numbands 
+    -----+--------------------+--------------------+-------+--------+--------+--------+-------+-------+------+----------
+       0 |                  0 |                  0 |     5 |      5 |      1 |     -1 |     0 |     0 |    0 |        0
+       1 |                0.1 |                0.1 |     5 |      5 |     10 |    -10 |     0 |     0 |    0 |        0
+       2 | 0.0999999999999996 | 0.0999999999999996 |     5 |      5 |     10 |    -10 |     0 |     0 |    0 |        0
+       3 |                  1 |                  1 |     5 |      5 |     10 |    -10 | 0.001 | 0.001 |    0 |        0
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_SetRotation
+Set the rotation of the raster in radian.
+float8
+ST\_SetRotation
+raster
+rast
+float8
+rotation
+Description
+-----------
+
+Uniformly rotate the raster. Rotation is in radian. Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Examples
+--------
+
+::
+
+    SELECT 
+      ST_ScaleX(rast1), ST_ScaleY(rast1), ST_SkewX(rast1), ST_SkewY(rast1),
+      ST_ScaleX(rast2), ST_ScaleY(rast2), ST_SkewX(rast2), ST_SkewY(rast2) 
+    FROM (
+      SELECT ST_SetRotation(rast, 15) AS rast1, rast as rast2 FROM dummy_rast
+    ) AS foo;
+          st_scalex      |      st_scaley      |      st_skewx      |      st_skewy      | st_scalex | st_scaley | st_skewx | st_skewy
+    ---------------------+---------------------+--------------------+--------------------+-----------+-----------+----------+----------
+       -1.51937582571764 |   -2.27906373857646 |   1.95086352047135 |   1.30057568031423 |         2 |         3 |        0 |        0
+     -0.0379843956429411 | -0.0379843956429411 | 0.0325143920078558 | 0.0325143920078558 |      0.05 |     -0.05 |        0 |        0
+                    
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_SetScale
+Sets the X and Y size of pixels in units of coordinate reference system.
+Number units/pixel width/height.
+raster
+ST\_SetScale
+raster
+rast
+float8
+xy
+raster
+ST\_SetScale
+raster
+rast
+float8
+x
+float8
+y
+Description
+-----------
+
+Sets the X and Y size of pixels in units of coordinate reference system.
+Number units/pixel width/height. If only one unit passed in, assumed X
+and Y are the same number.
+
+    **Note**
+
+    ST\_SetScale is different from ? in that ST\_SetScale do not
+    resample the raster to match the raster extent. It only changes the
+    metadata (or georeference) of the raster to correct an originally
+    mis-specified scaling. ST\_Rescale results in a raster having
+    different width and height computed to fit the geographic extent of
+    the input raster. ST\_SetScale do not modify the width, nor the
+    height of the raster.
+
+Changed: 2.0.0 In WKTRaster versions this was called ST\_SetPixelSize.
+This was changed in 2.0.0.
+
+Examples
+--------
+
+::
+
+    UPDATE dummy_rast 
+        SET rast = ST_SetScale(rast, 1.5)
+    WHERE rid = 2;
+
+    SELECT ST_ScaleX(rast) As pixx, ST_ScaleY(rast) As pixy, Box3D(rast) As newbox
+    FROM dummy_rast
+    WHERE rid = 2;
+
+     pixx | pixy |                    newbox
+    ------+------+----------------------------------------------
+      1.5 |  1.5 | BOX(3427927.75 5793244 0, 3427935.25 5793251.5 0)
+                    
+
+::
+
+    UPDATE dummy_rast 
+        SET rast = ST_SetScale(rast, 1.5, 0.55)
+    WHERE rid = 2;
+
+    SELECT ST_ScaleX(rast) As pixx, ST_ScaleY(rast) As pixy, Box3D(rast) As newbox
+    FROM dummy_rast
+    WHERE rid = 2;
+
+     pixx | pixy |                   newbox
+    ------+------+--------------------------------------------
+      1.5 | 0.55 | BOX(3427927.75 5793244 0,3427935.25 5793247 0)
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_SetSkew
+Sets the georeference X and Y skew (or rotation parameter). If only one
+is passed in, sets X and Y to the same value.
+raster
+ST\_SetSkew
+raster
+rast
+float8
+skewxy
+raster
+ST\_SetSkew
+raster
+rast
+float8
+skewx
+float8
+skewy
+Description
+-----------
+
+Sets the georeference X and Y skew (or rotation parameter). If only one
+is passed in, sets X and Y to the same value. Refer to `World
+File <http://en.wikipedia.org/wiki/World_file>`__ for more details.
+
+Examples
+--------
+
+::
+
+    -- Example 1                    
+    UPDATE dummy_rast SET rast = ST_SetSkew(rast,1,2) WHERE rid = 1;
+    SELECT rid, ST_SkewX(rast) As skewx, ST_SkewY(rast) As skewy, 
+        ST_GeoReference(rast) as georef
+    FROM dummy_rast WHERE rid = 1;
+
+    rid | skewx | skewy |    georef
+    ----+-------+-------+--------------
+      1 |     1 |     2 | 2.0000000000
+                        : 2.0000000000
+                        : 1.0000000000
+                        : 3.0000000000
+                        : 0.5000000000
+                        : 0.5000000000
+                        
+                    
+
+::
+
+    -- Example 2 set both to same number:
+    UPDATE dummy_rast SET rast = ST_SetSkew(rast,0) WHERE rid = 1;
+    SELECT rid, ST_SkewX(rast) As skewx, ST_SkewY(rast) As skewy, 
+        ST_GeoReference(rast) as georef
+    FROM dummy_rast WHERE rid = 1;
+                
+     rid | skewx | skewy |    georef
+    -----+-------+-------+--------------
+       1 |     0 |     0 | 2.0000000000
+                         : 0.0000000000
+                         : 0.0000000000
+                         : 3.0000000000
+                         : 0.5000000000
+                         : 0.5000000000
+                    
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_SetSRID
+Sets the SRID of a raster to a particular integer srid defined in the
+spatial\_ref\_sys table.
+raster
+ST\_SetSRID
+raster
+rast
+integer
+srid
+Description
+-----------
+
+Sets the SRID on a raster to a particular integer value.
+
+    **Note**
+
+    This function does not transform the raster in any way - it simply
+    sets meta data defining the spatial ref of the coordinate reference
+    system that it's currently in. Useful for transformations later.
+
+See Also
+--------
+
+?, ?
+
+ST\_SetUpperLeft
+Sets the value of the upper left corner of the pixel to projected X and
+Y coordinates.
+raster
+ST\_SetUpperLeft
+raster
+rast
+double precision
+x
+double precision
+y
+Description
+-----------
+
+Set the value of the upper left corner of raster to the projected X
+coordinates
+
+Examples
+--------
+
+::
+
+    SELECT ST_SetUpperLeft(rast,-71.01,42.37)  
+    FROM dummy_rast
+    WHERE rid = 2;
+                        
+
+See Also
+--------
+
+?, ?
+
+ST\_Resample
+Resample a raster using a specified resampling algorithm, new
+dimensions, an arbitrary grid corner and a set of raster georeferencing
+attributes defined or borrowed from another raster.
+raster
+ST\_Resample
+raster
+rast
+integer
+width
+integer
+height
+double precision
+gridx=NULL
+double precision
+gridy=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+raster
+ST\_Resample
+raster
+rast
+double precision
+scalex=0
+double precision
+scaley=0
+double precision
+gridx=NULL
+double precision
+gridy=NULL
+double precision
+skewx=0
+double precision
+skewy=0
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+raster
+ST\_Resample
+raster
+rast
+raster
+ref
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+boolean
+usescale=true
+raster
+ST\_Resample
+raster
+rast
+raster
+ref
+boolean
+usescale
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+Description
+-----------
+
+Resample a raster using a specified resampling algorithm, new dimensions
+(width & height), a grid corner (gridx & gridy) and a set of raster
+georeferencing attributes (scalex, scaley, skewx & skewy) defined or
+borrowed from another raster. If using a reference raster, the two
+rasters must have the same SRID.
+
+New pixel values are computed using the NearestNeighbor (English or
+American spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling
+algorithm. Default is NearestNeighbor which is the fastest but produce
+the worst interpolation.
+
+A maxerror percent of 0.125 is used if no ``maxerr`` is specified.
+
+    **Note**
+
+    Refer to: `GDAL Warp resampling
+    methods <http://www.gdal.org/gdalwarp.html>`__ for more details.
+
+Availability: 2.0.0 Requires GDAL 1.6.1+
+
+Changed: 2.1.0 Parameter srid removed. Variants with a reference raster
+no longer applies the reference raster's SRID. Use ST\_Transform() to
+reproject raster. Works on rasters with no SRID.
+
+Examples
+--------
+
+::
+
+    SELECT
+        ST_Width(orig) AS orig_width,
+        ST_Width(reduce_100) AS new_width
+    FROM (
+        SELECT
+            rast AS orig,
+            ST_Resample(rast,100,100) AS reduce_100
+        FROM aerials.boston 
+        WHERE ST_Intersects(rast,
+            ST_Transform(
+                ST_MakeEnvelope(-71.128, 42.2392,-71.1277, 42.2397, 4326),26986)
+        )
+        LIMIT 1
+    ) AS foo;
+
+     orig_width | new_width
+    ------------+-------------
+            200 |         100               
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_Rescale
+Resample a raster by adjusting only its scale (or pixel size). New pixel
+values are computed using the NearestNeighbor (english or american
+spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling algorithm.
+Default is NearestNeighbor.
+raster
+ST\_Rescale
+raster
+rast
+double precision
+scalexy
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+raster
+ST\_Rescale
+raster
+rast
+double precision
+scalex
+double precision
+scaley
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+Description
+-----------
+
+Resample a raster by adjusting only its scale (or pixel size). New pixel
+values are computed using the NearestNeighbor (english or american
+spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling algorithm.
+The default is NearestNeighbor which is the fastest but results in the
+worst interpolation.
+
+``scalex`` and ``scaley`` define the new pixel size. scaley must often
+be negative to get well oriented raster.
+
+When the new scalex or scaley is not a divisor of the raster width or
+height, the extent of the resulting raster is expanded to encompass the
+extent of the provided raster.
+
+A maxerror percent of 0.125 is used if no ``maxerr`` is specified.
+
+    **Note**
+
+    Refer to: `GDAL Warp resampling
+    methods <http://www.gdal.org/gdalwarp.html>`__ for more details.
+
+    **Note**
+
+    ST\_Rescale is different from ? in that ST\_SetScale do not resample
+    the raster to match the raster extent. ST\_SetScale only changes the
+    metadata (or georeference) of the raster to correct an originally
+    mis-specified scaling. ST\_Rescale results in a raster having
+    different width and height computed to fit the geographic extent of
+    the input raster. ST\_SetScale do not modify the width, nor the
+    height of the raster.
+
+Availability: 2.0.0 Requires GDAL 1.6.1+
+
+Changed: 2.1.0 Works on rasters with no SRID
+
+Examples
+--------
+
+A simple example rescaling a raster from a pixel size of 0.001 degree to
+a pixel size of 0.0015 degree.
+
+::
+
+    -- the original raster pixel size
+    SELECT ST_PixelWidth(ST_AddBand(ST_MakeEmptyRaster(100, 100, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0)) width
+
+       width
+    ----------
+    0.001
+
+    -- the rescaled raster raster pixel size
+    SELECT ST_PixelWidth(ST_Rescale(ST_AddBand(ST_MakeEmptyRaster(100, 100, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0), 0.0015)) width
+
+       width
+    ----------
+    0.0015
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_Reskew
+Resample a raster by adjusting only its skew (or rotation parameters).
+New pixel values are computed using the NearestNeighbor (english or
+american spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling
+algorithm. Default is NearestNeighbor.
+raster
+ST\_Reskew
+raster
+rast
+double precision
+skewxy
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+raster
+ST\_Reskew
+raster
+rast
+double precision
+skewx
+double precision
+skewy
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+Description
+-----------
+
+Resample a raster by adjusting only its skew (or rotation parameters).
+New pixel values are computed using the NearestNeighbor (english or
+american spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling
+algorithm. The default is NearestNeighbor which is the fastest but
+results in the worst interpolation.
+
+``skewx`` and ``skewy`` define the new skew.
+
+The extent of the new raster will encompass the extent of the provided
+raster.
+
+A maxerror percent of 0.125 if no ``maxerr`` is specified.
+
+    **Note**
+
+    Refer to: `GDAL Warp resampling
+    methods <http://www.gdal.org/gdalwarp.html>`__ for more details.
+
+    **Note**
+
+    ST\_Reskew is different from ? in that ST\_SetSkew do not resample
+    the raster to match the raster extent. ST\_SetSkew only changes the
+    metadata (or georeference) of the raster to correct an originally
+    mis-specified skew. ST\_Reskew results in a raster having different
+    width and height computed to fit the geographic extent of the input
+    raster. ST\_SetSkew do not modify the width, nor the height of the
+    raster.
+
+Availability: 2.0.0 Requires GDAL 1.6.1+
+
+Changed: 2.1.0 Works on rasters with no SRID
+
+Examples
+--------
+
+A simple example reskewing a raster from a skew of 0.0 to a skew of
+0.0015.
+
+::
+
+    -- the original raster pixel size
+    SELECT ST_Rotation(ST_AddBand(ST_MakeEmptyRaster(100, 100, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0))
+                        
+    -- the rescaled raster raster pixel size
+    SELECT ST_Rotation(ST_Reskew(ST_AddBand(ST_MakeEmptyRaster(100, 100, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0), 0.0015))
+                        
+
+See Also
+--------
+
+?, ?, ?, ?, ?, ?, ?
+
+ST\_SnapToGrid
+Resample a raster by snapping it to a grid. New pixel values are
+computed using the NearestNeighbor (english or american spelling),
+Bilinear, Cubic, CubicSpline or Lanczos resampling algorithm. Default is
+NearestNeighbor.
+raster
+ST\_SnapToGrid
+raster
+rast
+double precision
+gridx
+double precision
+gridy
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+double precision
+scalex=DEFAULT 0
+double precision
+scaley=DEFAULT 0
+raster
+ST\_SnapToGrid
+raster
+rast
+double precision
+gridx
+double precision
+gridy
+double precision
+scalex
+double precision
+scaley
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+raster
+ST\_SnapToGrid
+raster
+rast
+double precision
+gridx
+double precision
+gridy
+double precision
+scalexy
+text
+algorithm=NearestNeighbour
+double precision
+maxerr=0.125
+Description
+-----------
+
+Resample a raster by snapping it to a grid defined by an arbitrary pixel
+corner (gridx & gridy) and optionally a pixel size (scalex & scaley).
+New pixel values are computed using the NearestNeighbor (english or
+american spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling
+algorithm. The default is NearestNeighbor which is the fastest but
+results in the worst interpolation.
+
+``gridx`` and ``gridy`` define any arbitrary pixel corner of the new
+grid. This is not necessarily the upper left corner of the new raster
+and it does not have to be inside or on the edge of the new raster
+extent.
+
+You can optionnal define the pixel size of the new grid with ``scalex``
+and ``scaley``.
+
+The extent of the new raster will encompass the extent of the provided
+raster.
+
+A maxerror percent of 0.125 if no ``maxerr`` is specified.
+
+    **Note**
+
+    Refer to: `GDAL Warp resampling
+    methods <http://www.gdal.org/gdalwarp.html>`__ for more details.
+
+    **Note**
+
+    Use ? if you need more control over the grid parameters.
+
+Availability: 2.0.0 Requires GDAL 1.6.1+
+
+Changed: 2.1.0 Works on rasters with no SRID
+
+Examples
+--------
+
+A simple example snapping a raster to a slightly different grid.
+
+::
+
+    -- the original raster pixel size
+    SELECT ST_UpperLeftX(ST_AddBand(ST_MakeEmptyRaster(10, 10, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0))
+                        
+    -- the rescaled raster raster pixel size
+    SELECT ST_UpperLeftX(ST_SnapToGrid(ST_AddBand(ST_MakeEmptyRaster(10, 10, 0, 0, 0.001, -0.001, 0, 0, 4269), '8BUI'::text, 1, 0), 0.0002, 0.0002))
+                        
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_Resize
+Resize a raster to a new width/height
+raster
+ST\_Resize
+raster
+rast
+integer
+width
+integer
+height
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+raster
+ST\_Resize
+raster
+rast
+double precision
+percentwidth
+double precision
+percentheight
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+raster
+ST\_Resize
+raster
+rast
+text
+width
+text
+height
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+Description
+-----------
+
+Resize a raster to a new width/height. The new width/height can be
+specified in exact number of pixels or a percentage of the raster's
+width/height.
+
+New pixel values are computed using the NearestNeighbor (english or
+american spelling), Bilinear, Cubic, CubicSpline or Lanczos resampling
+algorithm. The default is NearestNeighbor which is the fastest but
+results in the worst interpolation.
+
+Variant 1 expects the actual width/height of the output raster.
+
+Variant 2 expects decimal values between zero (0) and one (1) indicating
+the percentage of the input raster's width/height.
+
+Variant 3 takes either the actual width/height of the output raster or a
+textual percentage ("20%") indicating the percentage of the input
+raster's width/height.
+
+Availability: 2.1.0 Requires GDAL 1.6.1+
+
+Examples
+--------
+
+::
+
+    WITH foo AS(
+    SELECT
+        1 AS rid, 
+        ST_Resize(
+            ST_AddBand(
+                ST_MakeEmptyRaster(1000, 1000, 0, 0, 1, -1, 0, 0, 0)
+                , 1, '8BUI', 255, 0
+            )
+        , '50%', '500') AS rast
+    UNION ALL
+    SELECT
+        2 AS rid, 
+        ST_Resize(
+            ST_AddBand(
+                ST_MakeEmptyRaster(1000, 1000, 0, 0, 1, -1, 0, 0, 0)
+                , 1, '8BUI', 255, 0
+            )
+        , 500, 100) AS rast
+    UNION ALL
+    SELECT
+        3 AS rid, 
+        ST_Resize(
+            ST_AddBand(
+                ST_MakeEmptyRaster(1000, 1000, 0, 0, 1, -1, 0, 0, 0)
+                , 1, '8BUI', 255, 0
+            )
+        , 0.25, 0.9) AS rast
+    ), bar AS (
+        SELECT rid, ST_Metadata(rast) AS meta, rast FROM foo
+    )
+    SELECT rid, (meta).* FROM bar
+
+     rid | upperleftx | upperlefty | width | height | scalex | scaley | skewx | skewy | srid | numbands 
+    -----+------------+------------+-------+--------+--------+--------+-------+-------+------+----------
+       1 |          0 |          0 |   500 |    500 |      1 |     -1 |     0 |     0 |    0 |        1
+       2 |          0 |          0 |   500 |    100 |      1 |     -1 |     0 |     0 |    0 |        1
+       3 |          0 |          0 |   250 |    900 |      1 |     -1 |     0 |     0 |    0 |        1
+    (3 rows)
+                    
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_Transform
+Reprojects a raster in a known spatial reference system to another known
+spatial reference system using specified resampling algorithm. Options
+are NearestNeighbor, Bilinear, Cubic, CubicSpline, Lanczos defaulting to
+NearestNeighbor.
+raster
+ST\_Transform
+raster
+rast
+integer
+srid
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+double precision
+scalex
+double precision
+scaley
+raster
+ST\_Transform
+raster
+rast
+integer
+srid
+double precision
+scalex
+double precision
+scaley
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+raster
+ST\_Transform
+raster
+rast
+raster
+alignto
+text
+algorithm=NearestNeighbor
+double precision
+maxerr=0.125
+Description
+-----------
+
+Reprojects a raster in a known spatial reference system to another known
+spatial reference system using specified pixel warping algorithm. Uses
+'NearestNeighbor' if no algorithm is specified and maxerror percent of
+0.125 if no maxerr is specified.
+
+Algorithm options are: 'NearestNeighbor', 'Bilinear', 'Cubic',
+'CubicSpline', and 'Lanczos'. Refer to: `GDAL Warp resampling
+methods <http://www.gdal.org/gdalwarp.html>`__ for more details.
+
+ST\_Transform is often confused with ST\_SetSRID(). ST\_Transform
+actually changes the coordinates of a raster (and resamples the pixel
+values) from one spatial reference system to another, while
+ST\_SetSRID() simply changes the SRID identifier of the raster.
+
+Unlike the other variants, Variant 3 requires a reference raster as
+``alignto``. The transformed raster will be transformed to the spatial
+reference system (SRID) of the reference raster and be aligned
+(ST\_SameAlignment = TRUE) to the reference raster.
+
+    **Note**
+
+    If you find your transformation support is not working right, you
+    may need to set the environment variable PROJSO to the .so or .dll
+    projection library your PostGIS is using. This just needs to have
+    the name of the file. So for example on windows, you would in
+    Control Panel -> System -> Environment Variables add a system
+    variable called ``PROJSO`` and set it to ``libproj.dll`` (if you are
+    using proj 4.6.1). You'll have to restart your PostgreSQL
+    service/daemon after this change.
+
+Availability: 2.0.0 Requires GDAL 1.6.1+
+
+Enhanced: 2.1.0 Addition of ST\_Transform(rast, alignto) variant
+
+Examples
+--------
+
+::
+
+    SELECT ST_Width(mass_stm) As w_before, ST_Width(wgs_84) As w_after,
+      ST_Height(mass_stm) As h_before, ST_Height(wgs_84) As h_after
+        FROM 
+        ( SELECT rast As mass_stm, ST_Transform(rast,4326) As wgs_84
+      ,  ST_Transform(rast,4326, 'Bilinear') AS wgs_84_bilin
+            FROM aerials.o_2_boston 
+                WHERE ST_Intersects(rast,
+                    ST_Transform(ST_MakeEnvelope(-71.128, 42.2392,-71.1277, 42.2397, 4326),26986) )
+            LIMIT 1) As foo;
+                            
+     w_before | w_after | h_before | h_after
+    ----------+---------+----------+---------
+          200 |     228 |      200 |     170
+                        
+
++------------------------------------------------+------------------------------------------------+-----------------------------------------------------------------------------------------------------+
+| original mass state plane meters (mass\_stm)   | After transform to wgs 84 long lat (wgs\_84)   | After transform to wgs 84 long lat with bilinear algorithm instead of NN default (wgs\_84\_bilin)   |
++------------------------------------------------+------------------------------------------------+-----------------------------------------------------------------------------------------------------+
+
+Examples: Variant 3
+-------------------
+
+The following shows the difference between using ST\_Transform(raster,
+srid) and ST\_Transform(raster, alignto)
+
+::
+
+    WITH foo AS (
+        SELECT 0 AS rid, ST_AddBand(ST_MakeEmptyRaster(2, 2, -500000, 600000, 100, -100, 0, 0, 2163), 1, '16BUI', 1, 0) AS rast UNION ALL
+        SELECT 1, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499800, 600000, 100, -100, 0, 0, 2163), 1, '16BUI', 2, 0) AS rast UNION ALL
+        SELECT 2, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499600, 600000, 100, -100, 0, 0, 2163), 1, '16BUI', 3, 0) AS rast UNION ALL
+
+        SELECT 3, ST_AddBand(ST_MakeEmptyRaster(2, 2, -500000, 599800, 100, -100, 0, 0, 2163), 1, '16BUI', 10, 0) AS rast UNION ALL
+        SELECT 4, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499800, 599800, 100, -100, 0, 0, 2163), 1, '16BUI', 20, 0) AS rast UNION ALL
+        SELECT 5, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499600, 599800, 100, -100, 0, 0, 2163), 1, '16BUI', 30, 0) AS rast UNION ALL
+
+        SELECT 6, ST_AddBand(ST_MakeEmptyRaster(2, 2, -500000, 599600, 100, -100, 0, 0, 2163), 1, '16BUI', 100, 0) AS rast UNION ALL
+        SELECT 7, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499800, 599600, 100, -100, 0, 0, 2163), 1, '16BUI', 200, 0) AS rast UNION ALL
+        SELECT 8, ST_AddBand(ST_MakeEmptyRaster(2, 2, -499600, 599600, 100, -100, 0, 0, 2163), 1, '16BUI', 300, 0) AS rast
+    ), bar AS (
+        SELECT
+            ST_Transform(rast, 4269) AS alignto
+        FROM foo
+        LIMIT 1
+    ), baz AS (
+        SELECT
+            rid,
+            rast,
+            ST_Transform(rast, 4269) AS not_aligned,
+            ST_Transform(rast, alignto) AS aligned
+        FROM foo
+        CROSS JOIN bar
+    )
+    SELECT
+        ST_SameAlignment(rast) AS rast,
+        ST_SameAlignment(not_aligned) AS not_aligned,
+        ST_SameAlignment(aligned) AS aligned
+    FROM baz
+
+     rast | not_aligned | aligned 
+    ------+-------------+---------
+     t    | f           | t
+                    
+
+See Also
+--------
+
+?, ?
+
+Raster Band Editors
+===================
+
+ST\_SetBandNoDataValue
+Sets the value for the given band that represents no data. Band 1 is
+assumed if no band is specified. To mark a band as having no nodata
+value, set the nodata value = NULL.
+raster
+ST\_SetBandNoDataValue
+raster
+rast
+double precision
+nodatavalue
+raster
+ST\_SetBandNoDataValue
+raster
+rast
+integer
+band
+double precision
+nodatavalue
+boolean
+forcechecking=false
+Description
+-----------
+
+Sets the value that represents no data for the band. Band 1 is assumed
+if not specified. This will affect results from ?, ?, and the
+ST\_PixelAs...() functions.
+
+Examples
+--------
+
+::
+
+    -- change just first band no data value
+    UPDATE dummy_rast 
+        SET rast = ST_SetBandNoDataValue(rast,1, 254)  
+    WHERE rid = 2;
+
+    -- change no data band value of bands 1,2,3
+    UPDATE dummy_rast 
+        SET rast = 
+            ST_SetBandNoDataValue(
+                ST_SetBandNoDataValue(
+                    ST_SetBandNoDataValue(
+                        rast,1, 254)
+                    ,2,99),
+                    3,108)  
+            WHERE rid = 2;
+            
+    -- wipe out the nodata value this will ensure all pixels are considered for all processing functions
+    UPDATE dummy_rast 
+        SET rast = ST_SetBandNoDataValue(rast,1, NULL)  
+    WHERE rid = 2;
+                        
+
+See Also
+--------
+
+?, ?
+
+ST\_SetBandIsNoData
+Sets the isnodata flag of the band to TRUE.
+raster
+ST\_SetBandIsNoData
+raster
+rast
+integer
+band=1
+Description
+-----------
+
+Sets the isnodata flag for the band to true. Band 1 is assumed if not
+specified. This function should be called only when the flag is
+considered dirty. That is, when the result calling ? is different using
+TRUE as last argument and without using it
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    -- Create dummy table with one raster column
+    create table dummy_rast (rid integer, rast raster);
+
+    -- Add raster with two bands, one pixel/band. In the first band, nodatavalue = pixel value = 3.
+    -- In the second band, nodatavalue = 13, pixel value = 4
+    insert into dummy_rast values(1,
+    (
+    '01' -- little endian (uint8 ndr)
+    || 
+    '0000' -- version (uint16 0)
+    ||
+    '0200' -- nBands (uint16 0)
+    ||
+    '17263529ED684A3F' -- scaleX (float64 0.000805965234044584)
+    ||
+    'F9253529ED684ABF' -- scaleY (float64 -0.00080596523404458)
+    ||
+    '1C9F33CE69E352C0' -- ipX (float64 -75.5533328537098)
+    ||
+    '718F0E9A27A44840' -- ipY (float64 49.2824585505576)
+    ||
+    'ED50EB853EC32B3F' -- skewX (float64 0.000211812383858707)
+    ||
+    '7550EB853EC32B3F' -- skewY (float64 0.000211812383858704)
+    ||
+    'E6100000' -- SRID (int32 4326)
+    ||
+    '0100' -- width (uint16 1)
+    ||
+    '0100' -- height (uint16 1)
+    ||
+    '4' -- hasnodatavalue set to true, isnodata value set to false (when it should be true)
+    ||
+    '2' -- first band type (4BUI) 
+    ||
+    '03' -- novalue==3
+    ||
+    '03' -- pixel(0,0)==3 (same that nodata)
+    ||
+    '0' -- hasnodatavalue set to false
+    ||
+    '5' -- second band type (16BSI)
+    ||
+    '0D00' -- novalue==13
+    ||
+    '0400' -- pixel(0,0)==4
+    )::raster
+    );
+
+    select st_bandisnodata(rast, 1) from dummy_rast where rid = 1; -- Expected false
+    select st_bandisnodata(rast, 1, TRUE) from dummy_rast where rid = 1; -- Expected true
+
+    -- The isnodata flag is dirty. We are going to set it to true
+    update dummy_rast set rast = st_setbandisnodata(rast, 1) where rid = 1;
+
+
+    select st_bandisnodata(rast, 1) from dummy_rast where rid = 1; -- Expected true
+
+                        
+
+See Also
+--------
+
+?, ?, ?, ?
+
+Raster Band Statistics and Analytics
+====================================
+
+ST\_Count
+Returns the number of pixels in a given band of a raster or raster
+coverage. If no band is specified defaults to band 1. If
+exclude\_nodata\_value is set to true, will only count pixels that are
+not equal to the nodata value.
+bigint
+ST\_Count
+raster
+rast
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+bigint
+ST\_Count
+raster
+rast
+boolean
+exclude\_nodata\_value
+bigint
+ST\_Count
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+bigint
+ST\_Count
+text
+rastertable
+text
+rastercolumn
+boolean
+exclude\_nodata\_value
+Description
+-----------
+
+Returns the number of pixels in a given band of a raster or raster
+coverage. If no band is specified ``nband`` defaults to 1.
+
+    **Note**
+
+    If ``exclude_nodata_value`` is set to true, will only count pixels
+    with value not equal to the ``nodata`` value of the raster. Set
+    ``exclude_nodata_value`` to false to get count all pixels
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    --example will count all pixels not 249 and one will count all pixels.  --
+    SELECT rid, ST_Count(ST_SetBandNoDataValue(rast,249)) As exclude_nodata, 
+            ST_Count(ST_SetBandNoDataValue(rast,249),false) As include_nodata
+        FROM dummy_rast WHERE rid=2;
+                        
+    rid | exclude_nodata | include_nodata
+    -----+----------------+----------------
+       2 |             23 |             25
+                    
+
+See Also
+--------
+
+?
+
+ST\_Histogram
+Returns a set of record summarizing a raster or raster coverage data
+distribution separate bin ranges. Number of bins are autocomputed if not
+specified.
+SETOF record
+ST\_Histogram
+raster
+rast
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+integer
+bins=autocomputed
+double precision[]
+width=NULL
+boolean
+right=false
+SETOF record
+ST\_Histogram
+raster
+rast
+integer
+nband
+integer
+bins
+double precision[]
+width=NULL
+boolean
+right=false
+SETOF record
+ST\_Histogram
+raster
+rast
+integer
+nband
+boolean
+exclude\_nodata\_value
+integer
+bins
+boolean
+right
+SETOF record
+ST\_Histogram
+raster
+rast
+integer
+nband
+integer
+bins
+boolean
+right
+SETOF record
+ST\_Histogram
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+integer
+bins
+boolean
+right
+SETOF record
+ST\_Histogram
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+boolean
+exclude\_nodata\_value
+integer
+bins
+boolean
+right
+SETOF record
+ST\_Histogram
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+integer
+bins=autocomputed
+double precision[]
+width=NULL
+boolean
+right=false
+SETOF record
+ST\_Histogram
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+integer
+bins
+double precision[]
+width=NULL
+boolean
+right=false
+Description
+-----------
+
+Returns set of records consisting of min, max, count, percent for a
+given raster band for each bin. If no band is specified ``nband``
+defaults to 1.
+
+    **Note**
+
+    By default only considers pixel values not equal to the ``nodata``
+    value . Set ``exclude_nodata_value`` to false to get count all
+    pixels.
+
+``width ``\ ``double precision[]``
+    width: an array indicating the width of each category/bin. If the
+    number of bins is greater than the number of widths, the widths are
+    repeated.
+
+    Example: 9 bins, widths are [a, b, c] will have the output be [a, b,
+    c, a, b, c, a, b, c]
+
+``bins ``\ ``integer``
+    Number of breakouts -- this is the number of records you'll get back
+    from the function if specified. If not specified then the number of
+    breakouts is autocomputed.
+
+``right ``\ ``boolean``
+    compute the histogram from the right rather than from the left
+    (default). This changes the criteria for evaluating a value x from
+    [a, b) to (a, b]
+
+Availability: 2.0.0
+
+Example: Single raster tile - compute histograms for bands 1, 2, 3 and autocompute bins
+---------------------------------------------------------------------------------------
+
+::
+
+    SELECT band, (stats).*
+    FROM (SELECT rid, band, ST_Histogram(rast, band) As stats
+        FROM dummy_rast CROSS JOIN generate_series(1,3) As band
+         WHERE rid=2) As foo;
+                        
+     band |  min  |  max  | count | percent
+    ------+-------+-------+-------+---------
+        1 |   249 |   250 |     2 |    0.08
+        1 |   250 |   251 |     2 |    0.08
+        1 |   251 |   252 |     1 |    0.04
+        1 |   252 |   253 |     2 |    0.08
+        1 |   253 |   254 |    18 |    0.72
+        2 |    78 | 113.2 |    11 |    0.44
+        2 | 113.2 | 148.4 |     4 |    0.16
+        2 | 148.4 | 183.6 |     4 |    0.16
+        2 | 183.6 | 218.8 |     1 |    0.04
+        2 | 218.8 |   254 |     5 |     0.2
+        3 |    62 | 100.4 |    11 |    0.44
+        3 | 100.4 | 138.8 |     5 |     0.2
+        3 | 138.8 | 177.2 |     4 |    0.16
+        3 | 177.2 | 215.6 |     1 |    0.04
+        3 | 215.6 |   254 |     4 |    0.16
+
+Example: Just band 2 but for 6 bins
+-----------------------------------
+
+::
+
+    SELECT (stats).*
+    FROM (SELECT rid, ST_Histogram(rast, 2,6) As stats
+        FROM dummy_rast 
+         WHERE rid=2) As foo;
+                        
+        min     |    max     | count | percent
+    ------------+------------+-------+---------
+             78 | 107.333333 |     9 |    0.36
+     107.333333 | 136.666667 |     6 |    0.24
+     136.666667 |        166 |     0 |       0
+            166 | 195.333333 |     4 |    0.16
+     195.333333 | 224.666667 |     1 |    0.04
+     224.666667 |        254 |     5 |     0.2
+    (6 rows)
+        
+    -- Same as previous but we explicitly control the pixel value range of each bin.  
+    SELECT (stats).*
+    FROM (SELECT rid, ST_Histogram(rast, 2,6,ARRAY[0.5,1,4,100,5]) As stats
+        FROM dummy_rast 
+         WHERE rid=2) As foo;
+         
+      min  |  max  | count | percent
+    -------+-------+-------+----------
+        78 |  78.5 |     1 |     0.08
+      78.5 |  79.5 |     1 |     0.04
+      79.5 |  83.5 |     0 |        0
+      83.5 | 183.5 |    17 |   0.0068
+     183.5 | 188.5 |     0 |        0
+     188.5 |   254 |     6 | 0.003664
+    (6 rows)
+
+See Also
+--------
+
+?, ?
+
+ST\_Quantile
+Compute quantiles for a raster or raster table coverage in the context
+of the sample or population. Thus, a value could be examined to be at
+the raster's 25%, 50%, 75% percentile.
+SETOF record
+ST\_Quantile
+raster
+rast
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+double precision[]
+quantiles=NULL
+SETOF record
+ST\_Quantile
+raster
+rast
+double precision[]
+quantiles
+SETOF record
+ST\_Quantile
+raster
+rast
+integer
+nband
+double precision[]
+quantiles
+double precision
+ST\_Quantile
+raster
+rast
+double precision
+quantile
+double precision
+ST\_Quantile
+raster
+rast
+boolean
+exclude\_nodata\_value
+double precision
+quantile=NULL
+double precision
+ST\_Quantile
+raster
+rast
+integer
+nband
+double precision
+quantile
+double precision
+ST\_Quantile
+raster
+rast
+integer
+nband
+boolean
+exclude\_nodata\_value
+double precision
+quantile
+double precision
+ST\_Quantile
+raster
+rast
+integer
+nband
+double precision
+quantile
+SETOF record
+ST\_Quantile
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+double precision[]
+quantiles=NULL
+SETOF record
+ST\_Quantile
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+double precision[]
+quantiles
+Description
+-----------
+
+Compute quantiles for a raster or raster table coverage in the context
+of the sample or population. Thus, a value could be examined to be at
+the raster's 25%, 50%, 75% percentile.
+
+    **Note**
+
+    If ``exclude_nodata_value`` is set to false, will also count pixels
+    with no data.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    UPDATE dummy_rast SET rast = ST_SetBandNoDataValue(rast,249) WHERE rid=2;
+    --Example will consider only pixels of band 1 that are not 249 and in named quantiles --
+
+    SELECT (pvq).*
+    FROM (SELECT ST_Quantile(rast, ARRAY[0.25,0.75]) As pvq
+        FROM dummy_rast WHERE rid=2) As foo
+        ORDER BY (pvq).quantile;
+                                        
+     quantile | value
+    ----------+-------
+         0.25 |   253
+         0.75 |   254
+       
+    SELECT ST_Quantile(rast, 0.75) As value
+        FROM dummy_rast WHERE rid=2;
+        
+    value
+    ------
+      254
+
+::
+
+    --real live example.  Quantile of all pixels in band 2 intersecting a geometry
+    SELECT rid, (ST_Quantile(rast,2)).* As pvc
+        FROM o_4_boston 
+            WHERE ST_Intersects(rast, 
+                ST_GeomFromText('POLYGON((224486 892151,224486 892200,224706 892200,224706 892151,224486 892151))',26986)
+                )
+    ORDER BY value, quantile,rid
+    ;
+                    
+        
+     rid | quantile | value
+    -----+----------+-------
+       1 |        0 |     0
+       2 |        0 |     0
+      14 |        0 |     1
+      15 |        0 |     2
+      14 |     0.25 |    37
+       1 |     0.25 |    42
+      15 |     0.25 |    47
+       2 |     0.25 |    50
+      14 |      0.5 |    56
+       1 |      0.5 |    64
+      15 |      0.5 |    66
+       2 |      0.5 |    77
+      14 |     0.75 |    81
+      15 |     0.75 |    87
+       1 |     0.75 |    94
+       2 |     0.75 |   106
+      14 |        1 |   199
+       1 |        1 |   244
+       2 |        1 |   255
+      15 |        1 |   255
+
+See Also
+--------
+
+?, ?
+
+ST\_SummaryStats
+Returns record consisting of count, sum, mean, stddev, min, max for a
+given raster band of a raster or raster coverage. Band 1 is assumed is
+no band is specified.
+record
+ST\_SummaryStats
+text
+rastertable
+text
+rastercolumn
+boolean
+exclude\_nodata\_value
+record
+ST\_SummaryStats
+raster
+rast
+boolean
+exclude\_nodata\_value
+record
+ST\_SummaryStats
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+record
+ST\_SummaryStats
+raster
+rast
+integer
+nband
+boolean
+exclude\_nodata\_value
+Description
+-----------
+
+Returns record consisting of count, sum, mean, stddev, min, max for a
+given raster band of a raster or raster coverage. If no band is
+specified ``nband`` defaults to 1.
+
+    **Note**
+
+    By default only considers pixel values not equal to the ``nodata``
+    value. Set ``exclude_nodata_value`` to false to get count of all
+    pixels.
+
+    **Note**
+
+    By default will sample all pixels. To get faster response, set
+    ``sample_percent`` to lower than 1
+
+Availability: 2.0.0
+
+Example: Single raster tile
+---------------------------
+
+::
+
+    SELECT rid, band, (stats).*
+    FROM (SELECT rid, band, ST_SummaryStats(rast, band) As stats
+        FROM dummy_rast CROSS JOIN generate_series(1,3) As band
+         WHERE rid=2) As foo;
+                        
+     rid | band | count | sum  |    mean    |  stddev   | min | max
+    -----+------+-------+------+------------+-----------+-----+-----
+       2 |    1 |    23 | 5821 | 253.086957 |  1.248061 | 250 | 254
+       2 |    2 |    25 | 3682 |     147.28 | 59.862188 |  78 | 254
+       2 |    3 |    25 | 3290 |      131.6 | 61.647384 |  62 | 254
+                    
+
+Example: Summarize pixels that intersect buildings of interest
+--------------------------------------------------------------
+
+This example took 574ms on PostGIS windows 64-bit with all of Boston
+Buildings and aerial Tiles (tiles each 150x150 pixels ~ 134,000 tiles),
+~102,000 building records
+
+::
+
+    WITH 
+    -- our features of interest
+       feat AS (SELECT gid As building_id, geom_26986 As geom FROM buildings AS b 
+        WHERE gid IN(100, 103,150)
+       ),
+    -- clip band 2 of raster tiles to boundaries of builds
+    -- then get stats for these clipped regions
+       b_stats AS
+        (SELECT  building_id, (stats).*
+    FROM (SELECT building_id, ST_SummaryStats(ST_Clip(rast,2,geom)) As stats
+        FROM aerials.boston
+            INNER JOIN feat
+        ON ST_Intersects(feat.geom,rast) 
+     ) As foo
+     )
+    -- finally summarize stats
+    SELECT building_id, SUM(count) As num_pixels
+      , MIN(min) As min_pval
+      ,  MAX(max) As max_pval
+      , SUM(mean*count)/SUM(count) As avg_pval
+        FROM b_stats
+     WHERE count > 0
+        GROUP BY building_id
+        ORDER BY building_id;
+     building_id | num_pixels | min_pval | max_pval |     avg_pval
+    -------------+------------+----------+----------+------------------
+             100 |       1090 |        1 |      255 | 61.0697247706422
+             103 |        655 |        7 |      182 | 70.5038167938931
+             150 |        895 |        2 |      252 | 185.642458100559
+
+Example: Raster coverage
+------------------------
+
+::
+
+    -- stats for each band --
+    SELECT band, (stats).*
+    FROM (SELECT band, ST_SummaryStats('o_4_boston','rast', band) As stats
+        FROM generate_series(1,3) As band) As foo;
+                        
+     band |  count  |  sum   |       mean       |      stddev      | min | max
+    ------+---------+--------+------------------+------------------+-----+-----
+        1 | 8450000 | 725799 | 82.7064349112426 | 45.6800222638537 |   0 | 255
+        2 | 8450000 | 700487 | 81.4197705325444 | 44.2161184161765 |   0 | 255
+        3 | 8450000 | 575943 |  74.682739408284 | 44.2143885481407 |   0 | 255
+        
+    -- For a table -- will get better speed if set sampling to less than 100%
+    -- Here we set to 25% and get a much faster answer
+    SELECT band, (stats).*
+    FROM (SELECT band, ST_SummaryStats('o_4_boston','rast', band,true,0.25) As stats
+        FROM generate_series(1,3) As band) As foo;
+                        
+     band |  count  |  sum   |       mean       |      stddev      | min | max
+    ------+---------+--------+------------------+------------------+-----+-----
+        1 | 2112500 | 180686 | 82.6890480473373 | 45.6961043857248 |   0 | 255
+        2 | 2112500 | 174571 |  81.448503668639 | 44.2252623171821 |   0 | 255
+        3 | 2112500 | 144364 | 74.6765884023669 | 44.2014869384578 |   0 | 255
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_ValueCount
+Returns a set of records containing a pixel band value and count of the
+number of pixels in a given band of a raster (or a raster coverage) that
+have a given set of values. If no band is specified defaults to band 1.
+By default nodata value pixels are not counted. and all other values in
+the pixel are output and pixel band values are rounded to the nearest
+integer.
+SETOF record
+ST\_ValueCount
+raster
+rast
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+double precision[]
+searchvalues=NULL
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+SETOF record
+ST\_ValueCount
+raster
+rast
+integer
+nband
+double precision[]
+searchvalues
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+SETOF record
+ST\_ValueCount
+raster
+rast
+double precision[]
+searchvalues
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+bigint
+ST\_ValueCount
+raster
+rast
+double precision
+searchvalue
+double precision
+roundto=0
+bigint
+ST\_ValueCount
+raster
+rast
+integer
+nband
+boolean
+exclude\_nodata\_value
+double precision
+searchvalue
+double precision
+roundto=0
+bigint
+ST\_ValueCount
+raster
+rast
+integer
+nband
+double precision
+searchvalue
+double precision
+roundto=0
+SETOF record
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+integer
+nband=1
+boolean
+exclude\_nodata\_value=true
+double precision[]
+searchvalues=NULL
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+SETOF record
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+double precision[]
+searchvalues
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+SETOF record
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+double precision[]
+searchvalues
+double precision
+roundto=0
+double precision
+OUT value
+integer
+OUT count
+bigint
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+boolean
+exclude\_nodata\_value
+double precision
+searchvalue
+double precision
+roundto=0
+bigint
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+double precision
+searchvalue
+double precision
+roundto=0
+bigint
+ST\_ValueCount
+text
+rastertable
+text
+rastercolumn
+integer
+nband
+double precision
+searchvalue
+double precision
+roundto=0
+Description
+-----------
+
+Returns a set of records with columns ``value`` ``count`` which contain
+the pixel band value and count of pixels in the raster tile or raster
+coverage of selected band.
+
+If no band is specified ``nband`` defaults to 1. If no ``searchvalues``
+are specified, will return all pixel values found in the raster or
+raster coverage. If one searchvalue is given, will return an integer
+instead of records denoting the count of pixels having that pixel band
+value
+
+    **Note**
+
+    If ``exclude_nodata_value`` is set to false, will also count pixels
+    with no data.
+
+Availability: 2.0.0
+
+Examples
+--------
+
+::
+
+    UPDATE dummy_rast SET rast = ST_SetBandNoDataValue(rast,249) WHERE rid=2;
+    --Example will count only pixels of band 1 that are not 249. --
+
+    SELECT (pvc).*
+    FROM (SELECT ST_ValueCount(rast) As pvc
+        FROM dummy_rast WHERE rid=2) As foo
+        ORDER BY (pvc).value;
+                                        
+     value | count
+    -------+-------
+       250 |     2
+       251 |     1
+       252 |     2
+       253 |     6
+       254 |    12
+       
+    -- Example will coount all pixels of band 1 including 249 --
+    SELECT (pvc).*
+    FROM (SELECT ST_ValueCount(rast,1,false) As pvc
+        FROM dummy_rast WHERE rid=2) As foo
+        ORDER BY (pvc).value;
+                        
+     value | count
+    -------+-------
+       249 |     2
+       250 |     2
+       251 |     1
+       252 |     2
+       253 |     6
+       254 |    12
+       
+    -- Example will count only non-nodata value pixels of band 2
+    SELECT (pvc).*
+    FROM (SELECT ST_ValueCount(rast,2) As pvc
+        FROM dummy_rast WHERE rid=2) As foo
+        ORDER BY (pvc).value;
+     value | count
+    -------+-------
+        78 |     1
+        79 |     1
+        88 |     1
+        89 |     1
+        96 |     1
+        97 |     1
+        98 |     1
+        99 |     2
+       112 |     2
+    :                   
+
+                    
+
+::
+
+    --real live example.  Count all the pixels in an aerial raster tile band 2 intersecting a geometry 
+    -- and return only the pixel band values that have a count > 500
+    SELECT (pvc).value, SUM((pvc).count) As total
+    FROM (SELECT ST_ValueCount(rast,2) As pvc
+        FROM o_4_boston 
+            WHERE ST_Intersects(rast, 
+                ST_GeomFromText('POLYGON((224486 892151,224486 892200,224706 892200,224706 892151,224486 892151))',26986)
+                 ) 
+            ) As foo
+        GROUP BY (pvc).value
+        HAVING SUM((pvc).count) > 500
+        ORDER BY (pvc).value;
+        
+     value | total
+    -------+-----
+        51 | 502
+        54 | 521
+
+::
+
+    -- Just return count of pixels in each raster tile that have value of 100 of tiles that intersect  a specific geometry --
+    SELECT rid, ST_ValueCount(rast,2,100) As count
+        FROM o_4_boston 
+            WHERE ST_Intersects(rast, 
+                ST_GeomFromText('POLYGON((224486 892151,224486 892200,224706 892200,224706 892151,224486 892151))',26986)
+                 ) ;
+
+     rid | count
+    -----+-------
+       1 |    56
+       2 |    95
+      14 |    37
+      15 |    64
+
+See Also
+--------
+
+?, ?
+
+Raster Outputs
+==============
+
+ST\_AsBinary
+Return the Well-Known Binary (WKB) representation of the raster without
+SRID meta data.
+bytea
+ST\_AsBinary
+raster
+rast
+boolean
+outasin=FALSE
+Description
+-----------
+
+Returns the Binary representation of the raster. If ``outasin`` is TRUE,
+out-db bands are treated as in-db.
+
+This is useful in binary cursors to pull data out of the database
+without converting it to a string representation.
+
+    **Note**
+
+    By default, WKB output contains the external file path for out-db
+    bands. If the client does not have access to the raster file
+    underlying an out-db band, set ``outasin`` to TRUE.
+
+Enhanced: 2.1.0 Addition of ``outasin``
+
+Examples
+--------
+
+::
+
+    SELECT ST_AsBinary(rast) As rastbin FROM dummy_rast WHERE rid=1;
+
+                         rastbin
+    ---------------------------------------------------------------------------------
+    \001\000\000\000\000\000\000\000\000\000\000\000@\000\000\000\000\000\000\010@\
+    000\000\000\000\000\000\340?\000\000\000\000\000\000\340?\000\000\000\000\000\00
+    0\000\000\000\000\000\000\000\000\000\000\012\000\000\000\012\000\024\000 
+                    
+
+ST\_AsGDALRaster
+Return the raster tile in the designated GDAL Raster format. Raster
+formats are one of those supported by your compiled library. Use
+ST\_GDALRasters() to get a list of formats supported by your library.
+bytea
+ST\_AsGDALRaster
+raster
+rast
+text
+format
+text[]
+options=NULL
+integer
+srid=sameassource
+Description
+-----------
+
+Returns the raster tile in the designated format. Arguments are itemized
+below:
+
+-  ``format`` format to output. This is dependent on the drivers
+   compiled in your libgdal library. Generally available are 'JPEG',
+   'GTIff', 'PNG'. Use ? to get a list of formats supported by your
+   library.
+
+-  ``options`` text array of GDAL options. Valid options are dependent
+   on the format. Refer to `GDAL Raster format
+   options <http://www.gdal.org/frmt_various.html>`__ for more details.
+
+-  ``srs`` The proj4text or srtext (from spatial\_ref\_sys) to embed in
+   the image
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+JPEG Output Examples
+--------------------
+
+::
+
+    SELECT ST_AsGDALRaster(rast, 'JPEG') As rastjpg
+    FROM dummy_rast WHERE rid=1;
+
+    SELECT ST_AsGDALRaster(rast, 'JPEG', ARRAY['QUALITY=50']) As rastjpg
+    FROM dummy_rast WHERE rid=2;
+                    
+
+GTIFF Output Examples
+---------------------
+
+::
+
+    SELECT ST_AsGDALRaster(rast, 'GTiff') As rastjpg
+    FROM dummy_rast WHERE rid=2;
+
+    -- Out GeoTiff with jpeg compression, 90% quality
+    SELECT ST_AsGDALRaster(rast, 'GTiff',  
+      ARRAY['COMPRESS=JPEG', 'JPEG_QUALITY=90'], 
+      4269) As rasttiff
+    FROM dummy_rast WHERE rid=2;
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_AsJPEG
+Return the raster tile selected bands as a single Joint Photographic
+Exports Group (JPEG) image (byte array). If no band is specified and 1
+or more than 3 bands, then only the first band is used. If only 3 bands
+then all 3 bands are used and mapped to RGB.
+bytea
+ST\_AsJPEG
+raster
+rast
+text[]
+options=NULL
+bytea
+ST\_AsJPEG
+raster
+rast
+integer
+nband
+integer
+quality
+bytea
+ST\_AsJPEG
+raster
+rast
+integer
+nband
+text[]
+options=NULL
+bytea
+ST\_AsJPEG
+raster
+rast
+integer[]
+nbands
+text[]
+options=NULL
+bytea
+ST\_AsJPEG
+raster
+rast
+integer[]
+nbands
+integer
+quality
+Description
+-----------
+
+Returns the selected bands of the raster as a single Joint Photographic
+Exports Group Image (JPEG). Use ? if you need to export as less common
+raster types. If no band is specified and 1 or more than 3 bands, then
+only the first band is used. If 3 bands then all 3 bands are used. There
+are many variants of the function with many options. These are itemized
+below:
+
+-  ``nband`` is for single band exports.
+
+-  ``nbands`` is an array of bands to export (note that max is 3 for
+   JPEG) and the order of the bands is RGB. e.g ARRAY[3,2,1] means map
+   band 3 to Red, band 2 to green and band 1 to blue
+
+-  ``quality`` number from 0 to 100. The higher the number the crisper
+   the image.
+
+-  ``options`` text Array of GDAL options as defined for JPEG (look at
+   create\_options for JPEG ?). For JPEG valid ones are ``PROGRESSIVE``
+   ON or OFF and ``QUALITY`` a range from 0 to 100 and default to 75.
+   Refer to `GDAL Raster format
+   options <http://www.gdal.org/frmt_various.html>`__ for more details.
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+Examples: Output
+----------------
+
+::
+
+    -- output first 3 bands 75% quality
+    SELECT ST_AsJPEG(rast) As rastjpg
+        FROM dummy_rast WHERE rid=2;
+        
+    -- output only first band as 90% quality
+    SELECT ST_AsJPEG(rast,1,90) As rastjpg
+        FROM dummy_rast WHERE rid=2;
+        
+    -- output first 3 bands (but make band 2 Red, band 1 green, and band 3 blue, progressive and 90% quality
+    SELECT ST_AsJPEG(rast,ARRAY[2,1,3],ARRAY['QUALITY=90','PROGRESSIVE=ON']) As rastjpg
+        FROM dummy_rast WHERE rid=2;
+
+See Also
+--------
+
+?, ?, ?, ?, ?
+
+ST\_AsPNG
+Return the raster tile selected bands as a single portable network
+graphics (PNG) image (byte array). If 1, 3, or 4 bands in raster and no
+bands are specified, then all bands are used. If more 2 or more than 4
+bands and no bands specified, then only band 1 is used. Bands are mapped
+to RGB or RGBA space.
+bytea
+ST\_AsPNG
+raster
+rast
+text[]
+options=NULL
+bytea
+ST\_AsPNG
+raster
+rast
+integer
+nband
+integer
+compression
+bytea
+ST\_AsPNG
+raster
+rast
+integer
+nband
+text[]
+options=NULL
+bytea
+ST\_AsPNG
+raster
+rast
+integer[]
+nbands
+integer
+compression
+bytea
+ST\_AsPNG
+raster
+rast
+integer[]
+nbands
+text[]
+options=NULL
+Description
+-----------
+
+Returns the selected bands of the raster as a single Portable Network
+Graphics Image (PNG). Use ? if you need to export as less common raster
+types. If no band is specified, then the first 3 bands are exported.
+There are many variants of the function with many options. If no
+``srid`` is specified then then srid of the raster is used. These are
+itemized below:
+
+-  ``nband`` is for single band exports.
+
+-  ``nbands`` is an array of bands to export (note that max is 3 for
+   PNG) and the order of the bands is RGB. e.g ARRAY[3,2,1] means map
+   band 3 to Red, band 2 to green and band 1 to blue
+
+-  ``compression`` number from 1 to 9. The higher the number the greater
+   the compression.
+
+-  ``options`` text Array of GDAL options as defined for PNG (look at
+   create\_options for PNG of ?). For PNG valid one is only ZLEVEL
+   (amount of time to spend on compression -- default 6) e.g.
+   ARRAY['ZLEVEL=9']. WORLDFILE is not allowed since the function would
+   have to output two outputs. Refer to `GDAL Raster format
+   options <http://www.gdal.org/frmt_various.html>`__ for more details.
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+Examples
+--------
+
+::
+
+    SELECT ST_AsPNG(rast) As rastpng
+    FROM dummy_rast WHERE rid=2;
+
+    -- export the first 3 bands and map band 3 to Red, band 1 to Green, band 2 to blue
+    SELECT ST_AsPNG(rast, ARRAY[3,1,2]) As rastpng
+    FROM dummy_rast WHERE rid=2;  
+                    
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_AsTIFF
+Return the raster selected bands as a single TIFF image (byte array). If
+no band is specified, then will try to use all bands.
+bytea
+ST\_AsTIFF
+raster
+rast
+text[]
+options=''
+integer
+srid=sameassource
+bytea
+ST\_AsTIFF
+raster
+rast
+text
+compression=''
+integer
+srid=sameassource
+bytea
+ST\_AsTIFF
+raster
+rast
+integer[]
+nbands
+text
+compression=''
+integer
+srid=sameassource
+bytea
+ST\_AsTIFF
+raster
+rast
+integer[]
+nbands
+text[]
+options
+integer
+srid=sameassource
+Description
+-----------
+
+Returns the selected bands of the raster as a single Tagged Image File
+Format (TIFF). If no band is specified, will try to use all bands. This
+is a wrapper around ?. Use ? if you need to export as less common raster
+types. There are many variants of the function with many options. If no
+spatial reference SRS text is present, the spatial reference of the
+raster is used. These are itemized below:
+
+-  ``nbands`` is an array of bands to export (note that max is 3 for
+   PNG) and the order of the bands is RGB. e.g ARRAY[3,2,1] means map
+   band 3 to Red, band 2 to green and band 1 to blue
+
+-  ``compression`` Compression expression -- JPEG90 (or some other
+   percent), LZW, JPEG, DEFLATE9.
+
+-  ``options`` text Array of GDAL create options as defined for GTiff
+   (look at create\_options for GTiff of ?). or refer to `GDAL Raster
+   format options <http://www.gdal.org/frmt_various.html>`__ for more
+   details.
+
+-  ``srid`` srid of spatial\_ref\_sys of the raster. This is used to
+   populate the georeference information
+
+Availability: 2.0.0 - requires GDAL >= 1.6.0.
+
+Examples: Use jpeg compression 90%
+----------------------------------
+
+::
+
+    SELECT ST_AsTIFF(rast, 'JPEG90') As rasttiff
+    FROM dummy_rast WHERE rid=2;
+                    
+
+See Also
+--------
+
+?, ?, ?
+
+Raster Processing
+=================
+
+Map Algebra
+-----------
+
+ST\_Clip
+Returns the raster clipped by the input geometry. If band number not is
+specified, all bands are processed. If
+crop
+is not specified or TRUE, the output raster is cropped.
+raster
+ST\_Clip
+raster
+rast
+integer[]
+nband
+geometry
+geom
+double precision[]
+nodataval=NULL
+boolean
+crop=TRUE
+raster
+ST\_Clip
+raster
+rast
+integer
+nband
+geometry
+geom
+double precision
+nodataval
+boolean
+crop=TRUE
+raster
+ST\_Clip
+raster
+rast
+integer
+nband
+geometry
+geom
+boolean
+crop
+raster
+ST\_Clip
+raster
+rast
+geometry
+geom
+double precision[]
+nodataval=NULL
+boolean
+crop=TRUE
+raster
+ST\_Clip
+raster
+rast
+geometry
+geom
+double precision
+nodataval
+boolean
+crop=TRUE
+raster
+ST\_Clip
+raster
+rast
+geometry
+geom
+boolean
+crop
+Description
+~~~~~~~~~~~
+
+Returns a raster that is clipped by the input geometry ``geom``. If band
+index is not specified, all bands are processed.
+
+Rasters resulting from ST\_Clip must have a nodata value assigned for
+areas clipped, one for each band. If none are provided and the input
+raster do not have a nodata value defined, nodata values of the
+resulting raster are set to ST\_MinPossibleValue(ST\_BandPixelType(rast,
+band)). When the number of nodata value in the array is smaller than the
+number of band, the last one in the array is used for the remaining
+bands. If the number of nodata value is greater than the number of band,
+the extra nodata values are ignored. All variants accepting an array of
+nodata values also accept a single value which will be assigned to each
+band.
+
+If ``crop`` is not specified, true is assumed meaning the output raster
+is cropped to the intersection of the ``geom``\ and ``rast`` extents. If
+``crop`` is set to false, the new raster gets the same extent as
+``rast``.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Rewritten in C
+
+Examples here use Massachusetts aerial data available on MassGIS site
+`MassGIS Aerial
+Orthos <http://www.mass.gov/mgis/colororthos2008.htm>`__. Coordinates
+are in Massachusetts State Plane Meters.
+
+Examples: 1 band clipping
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- Clip the first band of an aerial tile by a 20 meter buffer.
+    SELECT ST_Clip(rast, 1,
+            ST_Buffer(ST_Centroid(ST_Envelope(rast)),20)
+        ) from aerials.boston
+    WHERE rid = 4;
+                        
+
+::
+
+    -- Demonstrate effect of crop on final dimensions of raster
+    -- Note how final extent is clipped to that of the geometry
+    -- if crop = true
+    SELECT ST_XMax(ST_Envelope(ST_Clip(rast, 1, clipper, true))) As xmax_w_trim,
+        ST_XMax(clipper) As xmax_clipper,
+        ST_XMax(ST_Envelope(ST_Clip(rast, 1, clipper, false))) As xmax_wo_trim,
+        ST_XMax(ST_Envelope(rast)) As xmax_rast_orig
+    FROM (SELECT rast, ST_Buffer(ST_Centroid(ST_Envelope(rast)),6) As clipper
+        FROM aerials.boston
+    WHERE rid = 6) As foo;
+
+       xmax_w_trim    |   xmax_clipper   |   xmax_wo_trim   |  xmax_rast_orig
+    ------------------+------------------+------------------+------------------
+     230657.436173996 | 230657.436173996 | 230666.436173996 | 230666.436173996
+                        
+
++------------------------------------+------------------+
+| Full raster tile before clipping   | After Clipping   |
++------------------------------------+------------------+
+
+Examples: 1 band clipping with no crop and add back other bands unchanged
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- Same example as before, but we need to set crop to false to be able to use ST_AddBand
+    -- because ST_AddBand requires all bands be the same Width and height
+    SELECT ST_AddBand(ST_Clip(rast, 1,
+            ST_Buffer(ST_Centroid(ST_Envelope(rast)),20),false
+        ), ARRAY[ST_Band(rast,2),ST_Band(rast,3)] ) from aerials.boston
+    WHERE rid = 6;
+                        
+
++------------------------------------+----------------------------+
+| Full raster tile before clipping   | After Clipping - surreal   |
++------------------------------------+----------------------------+
+
+Examples: Clip all bands
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- Clip all bands of an aerial tile by a 20 meter buffer.
+    -- Only difference is we don't specify a specific band to clip
+    -- so all bands are clipped
+    SELECT ST_Clip(rast,
+          ST_Buffer(ST_Centroid(ST_Envelope(rast)), 20), 
+          false
+        ) from aerials.boston
+    WHERE rid = 4;
+                        
+
++------------------------------------+------------------+
+| Full raster tile before clipping   | After Clipping   |
++------------------------------------+------------------+
+
+See Also
+~~~~~~~~
+
+?, ?, ?
+
+ST\_ColorMap
+Creates a new raster of up to four 8BUI bands (grayscale, RGB, RGBA)
+from the source raster and a specified band. Band 1 is assumed if not
+specified.
+raster
+ST\_ColorMap
+raster
+rast
+integer
+nband=1
+text
+colormap=grayscale
+text
+method=INTERPOLATE
+raster
+ST\_ColorMap
+raster
+rast
+text
+colormap
+text
+method=INTERPOLATE
+Description
+~~~~~~~~~~~
+
+Apply a ``colormap`` to the band at ``nband`` of ``rast`` resulting a
+new raster comprised of up to four 8BUI bands. The number of 8BUI bands
+in the new raster is determined by the number of color components
+defined in ``colormap``.
+
+If ``nband`` is not specified, then band 1 is assumed.
+
+``colormap`` can be a keyword of a pre-defined colormap or a set of
+lines defining the value and the color components.
+
+Valid pre-defined ``colormap`` keyword:
+
+-  ``grayscale`` or ``greyscale`` for a one 8BUI band raster of shades
+   of gray.
+
+-  ``pseudocolor`` for a four 8BUI (RGBA) band raster with colors going
+   from blue to green to red.
+
+-  ``fire`` for a four 8BUI (RGBA) band raster with colors going from
+   black to red to pale yellow.
+
+-  ``bluered`` for a four 8BUI (RGBA) band raster with colors going from
+   blue to pale white to red.
+
+Users can pass a set of entries (one per line) to ``colormap`` to
+specify custom colormaps. Each entry generally consists of five values:
+the pixel value and corresponding Red, Green, Blue, Alpha components
+(color components between 0 and 255). Percent values can be used instead
+of pixel values where 0% and 100% are the minimum and maximum values
+found in the raster band. Values can be separated with commas (','),
+tabs, colons (':') and/or spaces. The pixel value can be set to *nv*,
+*null* or *nodata* for the NODATA value. An example is provided below.
+
+::
+
+    5 0 0 0 255
+    4 100:50 55 255
+    1 150,100 150 255
+    0% 255 255 255 255
+    nv 0 0 0 0
+                        
+
+The syntax of ``colormap`` is similar to that of the color-relief mode
+of GDAL
+`gdaldem <http://www.gdal.org/gdaldem.html#gdaldem_color_relief>`__.
+
+Valid keywords for ``method``:
+
+-  ``INTERPOLATE`` to use linear interpolation to smoothly blend the
+   colors between the given pixel values
+
+-  ``EXACT`` to strictly match only those pixels values found in the
+   colormap. Pixels whose value does not match a colormap entry will be
+   set to 0 0 0 0 (RGBA)
+
+-  ``NEAREST`` to use the colormap entry whose value is closest to the
+   pixel value
+
+    **Note**
+
+    A great reference for colormaps is
+    `ColorBrewer <http://www.colorbrewer2.org>`__.
+
+    **Warning**
+
+    The resulting bands of new raster will have no NODATA value set. Use
+    ? to set a NODATA value if one is needed.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+This is a junk table to play with
+
+::
+
+    -- setup test raster table --
+    DROP TABLE IF EXISTS funky_shapes;
+    CREATE TABLE funky_shapes(rast raster);
+
+    INSERT INTO funky_shapes(rast)
+    WITH ref AS (
+        SELECT ST_MakeEmptyRaster( 200, 200, 0, 200, 1, -1, 0, 0) AS rast
+    )
+    SELECT
+        ST_Union(rast)
+    FROM (
+        SELECT 
+            ST_AsRaster(
+                ST_Rotate(
+                    ST_Buffer(
+                        ST_GeomFromText('LINESTRING(0 2,50 50,150 150,125 50)'),
+                        i*2
+                    ),
+                    pi() * i * 0.125, ST_Point(50,50)
+                ),
+                ref.rast, '8BUI'::text, i * 5
+            ) AS rast
+        FROM ref
+        CROSS JOIN generate_series(1, 10, 3) AS i
+    ) AS shapes;
+                        
+
+::
+
+    SELECT
+        ST_NumBands(rast) As n_orig,
+        ST_NumBands(ST_ColorMap(rast,1, 'greyscale')) As ngrey,
+        ST_NumBands(ST_ColorMap(rast,1, 'pseudocolor')) As npseudo,
+        ST_NumBands(ST_ColorMap(rast,1, 'fire')) As nfire,
+        ST_NumBands(ST_ColorMap(rast,1, 'bluered')) As nbluered,
+        ST_NumBands(ST_ColorMap(rast,1, '
+    100% 255   0   0
+     80% 160   0   0
+     50% 130   0   0
+     30%  30   0   0
+     20%  60   0   0
+      0%   0   0   0
+      nv 255 255 255
+        ')) As nred
+    FROM funky_shapes;
+                        
+
+::
+
+     n_orig | ngrey | npseudo | nfire | nbluered | nred
+    --------+-------+---------+-------+----------+------
+          1 |     1 |       4 |     4 |        4 |    3
+                        
+
+Examples: Compare different color map looks using ST\_AsPNG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    SELECT
+        ST_AsPNG(rast) As orig_png,
+        ST_AsPNG(ST_ColorMap(rast,1,'greyscale')) As grey_png,
+        ST_AsPNG(ST_ColorMap(rast,1, 'pseudocolor')) As pseudo_png,
+        ST_AsPNG(ST_ColorMap(rast,1, 'nfire')) As fire_png,
+        ST_AsPNG(ST_ColorMap(rast,1, 'bluered')) As bluered_png,
+        ST_AsPNG(ST_ColorMap(rast,1, '
+    100% 255   0   0
+     80% 160   0   0
+     50% 130   0   0
+     30%  30   0   0
+     20%  60   0   0
+      0%   0   0   0
+      nv 255 255 255
+        ')) As red_png
+    FROM funky_shapes;
+                        
+
++-------------+----------------+---------------+
+| orig\_png   | grey\_png      | pseudo\_png   |
++-------------+----------------+---------------+
+| fire\_png   | bluered\_png   | red\_png      |
++-------------+----------------+---------------+
+
+See Also
+~~~~~~~~
+
+?, ? ?, ?, ?, ?, ?
+
+ST\_Intersection
+Returns a raster or a set of geometry-pixelvalue pairs representing the
+shared portion of two rasters or the geometrical intersection of a
+vectorization of the raster and a geometry.
+setof geomval
+ST\_Intersection
+geometry
+geom
+raster
+rast
+integer
+band\_num=1
+setof geomval
+ST\_Intersection
+raster
+rast
+geometry
+geom
+setof geomval
+ST\_Intersection
+raster
+rast
+integer
+band\_num
+geometry
+geom
+raster
+ST\_Intersection
+raster
+rast1
+raster
+rast2
+double precision[]
+nodataval
+raster
+ST\_Intersection
+raster
+rast1
+raster
+rast2
+text
+returnband='BOTH'
+double precision[]
+nodataval=NULL
+raster
+ST\_Intersection
+raster
+rast1
+integer
+band\_num1
+raster
+rast2
+integer
+band\_num2
+double precision[]
+nodataval
+raster
+ST\_Intersection
+raster
+rast1
+integer
+band\_num1
+raster
+rast2
+integer
+band\_num2
+text
+returnband='BOTH'
+double precision[]
+nodataval=NULL
+Description
+~~~~~~~~~~~
+
+Returns a raster or a set of geometry-pixelvalue pairs representing the
+shared portion of two rasters or the geometrical intersection of a
+vectorization of the raster and a geometry.
+
+The first three variants, returning a setof geomval, works in vector
+space. The raster is first vectorized (using ST\_DumpAsPolygon) into a
+set of geomval rows and those rows are then intersected with the
+geometry using the ST\_Intersection(geometry, geometry) PostGIS
+function. Geometries intersecting only with a nodata value area of a
+raster returns an empty geometry. They are normally excluded from the
+results by the proper usage of ST\_Intersect in the WHERE clause.
+
+You can access the geometry and the value parts of the resulting set of
+geomval by surrounding them with parenthesis and adding '.geom' or
+'.val' at the end of the expression. e.g. (ST\_Intersection(rast,
+geom)).geom
+
+The other variants, returning a raster, works in raster space. They are
+using the two rasters version of ST\_MapAlgebraExpr to perform the
+intersection.
+
+The extent of the resulting raster corresponds to the geometrical
+intersection of the two raster extents. The resulting raster includes
+'BAND1', 'BAND2' or 'BOTH' bands, following what is passed as the
+``returnband`` parameter. Nodata value areas present in any band results
+in nodata value areas in every bands of the result. In other words, any
+pixel intersecting with a nodata value pixel becomes a nodata value
+pixel in the result.
+
+Rasters resulting from ST\_Intersection must have a nodata value
+assigned for areas not intersecting. You can define or replace the
+nodata value for any resulting band by providing a ``nodataval[]`` array
+of one or two nodata values depending if you request 'BAND1', 'BAND2' or
+'BOTH' bands. The first value in the array replace the nodata value in
+the first band and the second value replace the nodata value in the
+second band. If one input band do not have a nodata value defined and
+none are provided as an array, one is chosen using the
+ST\_MinPossibleValue function. All variant accepting an array of nodata
+value can also accept a single value which will be assigned to each
+requested band.
+
+In all variants, if no band number is specified band 1 is assumed.
+
+    **Note**
+
+    To get more control on the resulting extent or on what to return
+    when encountering a nodata value, use the two rasters version of ?.
+
+    **Note**
+
+    To compute the intersection of a raster band with a geometry in
+    raster space, use ?. ST\_Clip works on multiple bands rasters and
+    does not return a band corresponding to the rasterized geometry.
+
+    **Note**
+
+    ST\_Intersection should be used in conjunction with ST\_Intersects
+    and an index on the raster column and/or the geometry column.
+
+Enhanced: 2.0.0 - Intersection in the raster space was introduced. In
+earlier pre-2.0.0 versions, only intersection performed in vector space
+were supported.
+
+Examples: Geometry, Raster -- resulting in geometry vals
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    SELECT
+        foo.rid,
+        foo.gid,
+        ST_AsText((foo.geomval).geom) As geomwkt,
+        (foo.geomval).val
+    FROM (
+        SELECT
+            A.rid,
+            g.gid,
+            ST_Intersection(A.rast, g.geom) As geomval
+        FROM dummy_rast AS A
+        CROSS JOIN (
+            VALUES
+                (1, ST_Point(3427928, 5793243.85) ),
+                (2, ST_GeomFromText('LINESTRING(3427927.85 5793243.75,3427927.8 5793243.75,3427927.8 5793243.8)')),
+                (3, ST_GeomFromText('LINESTRING(1 2, 3 4)'))
+        ) As g(gid,geom)
+        WHERE A.rid = 2
+    ) As foo;
+
+     rid | gid |      geomwkt                                               | val
+    -----+-----+---------------------------------------------------------------------------------------------
+       2 |   1 | POINT(3427928 5793243.85)                                  | 249
+       2 |   1 | POINT(3427928 5793243.85)                                  | 253
+       2 |   2 | POINT(3427927.85 5793243.75)                               | 254
+       2 |   2 | POINT(3427927.8 5793243.8)                                 | 251
+       2 |   2 | POINT(3427927.8 5793243.8)                                 | 253
+       2 |   2 | LINESTRING(3427927.8 5793243.75,3427927.8 5793243.8)       | 252
+       2 |   2 | MULTILINESTRING((3427927.8 5793243.8,3427927.8 5793243.75),...) | 250
+       2 |   3 | GEOMETRYCOLLECTION EMPTY
+                        
+
+Example: Raster, Geometry -- resulting is a raster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Examples coming soon
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?
+
+ST\_MapAlgebra
+Callback function version - Returns a one-band raster given one or more
+input rasters, band indexes and one user-specified callback function.
+raster
+ST\_MapAlgebra
+rastbandarg[]
+rastbandargset
+regprocedure
+callbackfunc
+text
+pixeltype=NULL
+text
+extenttype=INTERSECTION
+raster
+customextent=NULL
+integer
+distancex=0
+integer
+distancey=0
+text[]
+VARIADIC userargs=NULL
+raster
+ST\_MapAlgebra
+raster
+rast
+integer[]
+nband
+regprocedure
+callbackfunc
+text
+pixeltype=NULL
+text
+extenttype=FIRST
+raster
+customextent=NULL
+integer
+distancex=0
+integer
+distancey=0
+text[]
+VARIADIC userargs=NULL
+raster
+ST\_MapAlgebra
+raster
+rast
+integer
+nband
+regprocedure
+callbackfunc
+text
+pixeltype=NULL
+text
+extenttype=FIRST
+raster
+customextent=NULL
+integer
+distancex=0
+integer
+distancey=0
+text[]
+VARIADIC userargs=NULL
+raster
+ST\_MapAlgebra
+raster
+rast1
+integer
+nband1
+raster
+rast2
+integer
+nband2
+regprocedure
+callbackfunc
+text
+pixeltype=NULL
+text
+extenttype=INTERSECTION
+raster
+customextent=NULL
+integer
+distancex=0
+integer
+distancey=0
+text[]
+VARIADIC userargs=NULL
+Description
+~~~~~~~~~~~
+
+Returns a one-band raster given one or more input rasters, band indexes
+and one user-specified callback function.
+
+rast,rast1,rast2, rastbandargset
+    Rasters on which the map algebra process is evaluated.
+
+    ``rastbandargset`` allows the use of a map algebra operation on many
+    rasters and/or many bands. See example Variant 1.
+
+nband, nband1, nband2
+    Band numbers of the raster to be evaluated. nband can be an integer
+    or integer[] denoting the bands. nband1 is band on rast1 and nband2
+    is band on rast2 for hte 2 raster/2band case.
+
+callbackfunc
+    The ``callbackfunc`` parameter must be the name and signature of an
+    SQL or PL/pgSQL function, cast to a regprocedure. An example
+    PL/pgSQL function example is:
+
+    ::
+
+        CREATE OR REPLACE FUNCTION sample_callbackfunc(value double precision[][][], position integer[][], VARIADIC userargs text[])
+            RETURNS double precision
+            AS $$
+            BEGIN
+                RETURN 0;
+            END;
+            $$ LANGUAGE 'plpgsql' IMMUTABLE;
+                                            
+
+    The ``callbackfunc`` must have three arguments: a 3-dimension double
+    precision array, a 2-dimension integer array and a variadic
+    1-dimension text array. The first argument ``value`` is the set of
+    values (as double precision) from all input rasters. The three
+    dimensions (where indexes are 1-based) are: raster #, row y, column
+    x. The second argument ``position`` is the set of pixel positions
+    from the output raster and input rasters. The outer dimension (where
+    indexes are 0-based) is the raster #. The position at outer
+    dimension index 0 is the output raster's pixel position. For each
+    outer dimension, there are two elements in the inner dimension for X
+    and Y. The third argument ``userargs`` is for passing through any
+    user-specified arguments.
+
+    Passing a ``regprocedure`` argument to a SQL function requires the
+    full function signature to be passed, then cast to a
+    ``regprocedure`` type. To pass the above example PL/pgSQL function
+    as an argument, the SQL for the argument is:
+
+    ::
+
+        'sample_callbackfunc(double precision[], integer[], text[])'::regprocedure
+                                            
+
+    Note that the argument contains the name of the function, the types
+    of the function arguments, quotes around the name and argument
+    types, and a cast to a ``regprocedure``.
+
+pixeltype
+    If ``pixeltype`` is passed in, the one band of the new raster will
+    be of that pixeltype. If pixeltype is passed NULL or left out, the
+    new raster band will have the same pixeltype as the specified band
+    of the first raster (for extent types: INTERSECTION, UNION, FIRST,
+    CUSTOM) or the specified band of the appropriate raster (for extent
+    types: SECOND, LAST). If in doubt, always specify ``pixeltype``.
+
+    The resulting pixel type of the output raster must be one listed in
+    ? or left out or set to NULL.
+
+extenttype
+    Possible values are INTERSECTION (default), UNION, FIRST (default
+    for one raster variants), SECOND, LAST, CUSTOM.
+
+customextent
+    If ``extentype`` is CUSTOM, a raster must be provided for
+    ``customextent``. See example 4 of Variant 1.
+
+distancex
+    The distance in pixels from the reference cell. So width of
+    resulting matrix would be ``2*distancex + 1``.If not specified only
+    the reference cell is considered (neighborhood of 0).
+
+distancey
+    The distance in pixels from reference cell in y direction. Height of
+    resulting matrix would be ``2*distancey + 1`` .If not specified only
+    the reference cell is considered (neighborhood of 0).
+
+userargs
+    The third argument to the ``callbackfunc`` is a ``variadic text``
+    array. All trailing text arguments are passed through to the
+    specified ``callbackfunc``, and are contained in the ``userargs``
+    argument.
+
+    **Note**
+
+    For more information about the VARIADIC keyword, please refer to the
+    PostgreSQL documentation and the "SQL Functions with Variable
+    Numbers of Arguments" section of `Query Language (SQL)
+    Functions <http://www.postgresql.org/docs/current/static/xfunc-sql.html>`__.
+
+    **Note**
+
+    The ``text[]`` argument to the ``callbackfunc`` is required,
+    regardless of whether you choose to pass any arguments to the
+    callback function for processing or not.
+
+Variant 1 accepts an array of ``rastbandarg`` allowing the use of a map
+algebra operation on many rasters and/or many bands. See example Variant
+1.
+
+Variants 2 and 3 operate upon one or more bands of one raster. See
+example Variant 2 and 3.
+
+Variant 4 operate upon two rasters with one band per raster. See example
+Variant 4.
+
+Availability: 2.1.0
+
+Examples: Variant 1
+~~~~~~~~~~~~~~~~~~~
+
+One raster, one band
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            ARRAY[ROW(rast, 1)]::rastbandarg[],
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo
+                        
+
+One raster, several bands
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            ARRAY[ROW(rast, 3), ROW(rast, 1), ROW(rast, 3), ROW(rast, 2)]::rastbandarg[],
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo
+                        
+
+Several rasters, several bands
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast UNION ALL
+        SELECT 2 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 1, 1, -1, 0, 0, 0), 1, '16BUI', 2, 0), 2, '8BUI', 20, 0), 3, '32BUI', 300, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            ARRAY[ROW(t1.rast, 3), ROW(t2.rast, 1), ROW(t2.rast, 3), ROW(t1.rast, 2)]::rastbandarg[],
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE t1.rid = 1
+        AND t2.rid = 2
+                        
+
+Complete example of tiles of a coverage with neighborhood. This query
+only works with PostgreSQL 9.1 or higher.
+
+::
+
+    WITH foo AS (
+        SELECT 0 AS rid, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0) AS rast UNION ALL
+        SELECT 1, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, 0, 1, -1, 0, 0, 0), 1, '16BUI', 2, 0) AS rast UNION ALL
+        SELECT 2, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, 0, 1, -1, 0, 0, 0), 1, '16BUI', 3, 0) AS rast UNION ALL
+
+        SELECT 3, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, -2, 1, -1, 0, 0, 0), 1, '16BUI', 10, 0) AS rast UNION ALL
+        SELECT 4, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, -2, 1, -1, 0, 0, 0), 1, '16BUI', 20, 0) AS rast UNION ALL
+        SELECT 5, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, -2, 1, -1, 0, 0, 0), 1, '16BUI', 30, 0) AS rast UNION ALL
+
+        SELECT 6, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, -4, 1, -1, 0, 0, 0), 1, '16BUI', 100, 0) AS rast UNION ALL
+        SELECT 7, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, -4, 1, -1, 0, 0, 0), 1, '16BUI', 200, 0) AS rast UNION ALL
+        SELECT 8, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, -4, 1, -1, 0, 0, 0), 1, '16BUI', 300, 0) AS rast
+    )
+    SELECT
+        t1.rid,
+        ST_MapAlgebra(
+            ARRAY[ROW(ST_Union(t2.rast), 1)]::rastbandarg[],
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure,
+            '32BUI',
+            'CUSTOM', t1.rast,
+            1, 1
+        ) AS rast
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE t1.rid = 4
+        AND t2.rid BETWEEN 0 AND 8
+        AND ST_Intersects(t1.rast, t2.rast)
+    GROUP BY t1.rid, t1.rast
+                        
+
+Example like the prior one for tiles of a coverage with neighborhood but
+works with PostgreSQL 9.0.
+
+::
+
+    WITH src AS (
+        SELECT 0 AS rid, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0) AS rast UNION ALL
+        SELECT 1, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, 0, 1, -1, 0, 0, 0), 1, '16BUI', 2, 0) AS rast UNION ALL
+        SELECT 2, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, 0, 1, -1, 0, 0, 0), 1, '16BUI', 3, 0) AS rast UNION ALL
+
+        SELECT 3, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, -2, 1, -1, 0, 0, 0), 1, '16BUI', 10, 0) AS rast UNION ALL
+        SELECT 4, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, -2, 1, -1, 0, 0, 0), 1, '16BUI', 20, 0) AS rast UNION ALL
+        SELECT 5, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, -2, 1, -1, 0, 0, 0), 1, '16BUI', 30, 0) AS rast UNION ALL
+
+        SELECT 6, ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, -4, 1, -1, 0, 0, 0), 1, '16BUI', 100, 0) AS rast UNION ALL
+        SELECT 7, ST_AddBand(ST_MakeEmptyRaster(2, 2, 2, -4, 1, -1, 0, 0, 0), 1, '16BUI', 200, 0) AS rast UNION ALL
+        SELECT 8, ST_AddBand(ST_MakeEmptyRaster(2, 2, 4, -4, 1, -1, 0, 0, 0), 1, '16BUI', 300, 0) AS rast
+    )
+    WITH foo AS (
+        SELECT
+            t1.rid,
+            ST_Union(t2.rast) AS rast
+        FROM src t1
+        JOIN src t2
+            ON ST_Intersects(t1.rast, t2.rast)
+            AND t2.rid BETWEEN 0 AND 8
+        WHERE t1.rid = 4
+        GROUP BY t1.rid
+    ), bar AS (
+        SELECT
+            t1.rid,
+            ST_MapAlgebra(
+                ARRAY[ROW(t2.rast, 1)]::rastbandarg[],
+                'raster_nmapalgebra_test(double precision[], int[], text[])'::regprocedure,
+                '32BUI',
+                'CUSTOM', t1.rast,
+                1, 1
+            ) AS rast
+        FROM src t1
+        JOIN foo t2
+            ON t1.rid = t2.rid 
+    )
+    SELECT
+        rid,
+        (ST_Metadata(rast)),
+        (ST_BandMetadata(rast, 1)),
+        ST_Value(rast, 1, 1, 1)
+    FROM bar;
+                        
+
+Examples: Variants 2 and 3
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One raster, several bands
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            rast, ARRAY[3, 1, 3, 2]::integer[],
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo
+                        
+
+One raster, one band
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            rast, 2,
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo
+                        
+
+Examples: Variant 4
+~~~~~~~~~~~~~~~~~~~
+
+Two rasters, two bands
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast UNION ALL
+        SELECT 2 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 1, 1, -1, 0, 0, 0), 1, '16BUI', 2, 0), 2, '8BUI', 20, 0), 3, '32BUI', 300, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            t1.rast, 2,
+            t2.rast, 1,
+            'sample_callbackfunc(double precision[], int[], text[])'::regprocedure
+        ) AS rast
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE t1.rid = 1
+        AND t2.rid = 2
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?
+
+ST\_MapAlgebra
+Expression version - Returns a one-band raster given one or two input
+rasters, band indexes and one or more user-specified SQL expressions.
+raster
+ST\_MapAlgebra
+raster
+rast
+integer
+nband
+text
+pixeltype
+text
+expression
+double precision
+nodataval=NULL
+raster
+ST\_MapAlgebra
+raster
+rast
+text
+pixeltype
+text
+expression
+double precision
+nodataval=NULL
+raster
+ST\_MapAlgebra
+raster
+rast1
+integer
+nband1
+raster
+rast2
+integer
+nband2
+text
+expression
+text
+pixeltype=NULL
+text
+extenttype=INTERSECTION
+text
+nodata1expr=NULL
+text
+nodata2expr=NULL
+double precision
+nodatanodataval=NULL
+raster
+ST\_MapAlgebra
+raster
+rast1
+raster
+rast2
+text
+expression
+text
+pixeltype=NULL
+text
+extenttype=INTERSECTION
+text
+nodata1expr=NULL
+text
+nodata2expr=NULL
+double precision
+nodatanodataval=NULL
+Description
+~~~~~~~~~~~
+
+Expression version - Returns a one-band raster given one or two input
+rasters, band indexes and one or more user-specified SQL expressions.
+
+Availability: 2.1.0
+
+Description: Variants 1 and 2 (one raster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+algebraic operation defined by the ``expression`` on the input raster
+(``rast``). If ``nband`` is not provided, band 1 is assumed. The new
+raster will have the same georeference, width, and height as the
+original raster but will only have one band.
+
+If ``pixeltype`` is passed in, then the new raster will have a band of
+that pixeltype. If pixeltype is passed NULL, then the new raster band
+will have the same pixeltype as the input ``rast`` band.
+
+-  Keywords permitted for ``expression``
+
+   1. ``[rast]`` - Pixel value of the pixel of interest
+
+   2. ``[rast.val]`` - Pixel value of the pixel of interest
+
+   3. ``[rast.x]`` - 1-based pixel column of the pixel of interest
+
+   4. ``[rast.y]`` - 1-based pixel row of the pixel of interest
+
+Description: Variants 3 and 4 (two raster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+algebraic operation to the two bands defined by the ``expression`` on
+the two input raster bands ``rast1``, (``rast2``). If no ``band1``,
+``band2`` is specified band 1 is assumed. The resulting raster will be
+aligned (scale, skew and pixel corners) on the grid defined by the first
+raster. The resulting raster will have the extent defined by the
+``extenttype`` parameter.
+
+expression
+    A PostgreSQL algebraic expression involving the two rasters and
+    PostgreSQL defined functions/operators that will define the pixel
+    value when pixels intersect. e.g. (([rast1] + [rast2])/2.0)::integer
+
+pixeltype
+    The resulting pixel type of the output raster. Must be one listed in
+    ?, left out or set to NULL. If not passed in or set to NULL, will
+    default to the pixeltype of the first raster.
+
+extenttype
+    Controls the extent of resulting raster
+
+    1. ``INTERSECTION`` - The extent of the new raster is the
+       intersection of the two rasters. This is the default.
+
+    2. ``UNION`` - The extent of the new raster is the union of the two
+       rasters.
+
+    3. ``FIRST`` - The extent of the new raster is the same as the one
+       of the first raster.
+
+    4. ``SECOND`` - The extent of the new raster is the same as the one
+       of the second raster.
+
+nodata1expr
+    An algebraic expression involving only ``rast2`` or a constant that
+    defines what to return when pixels of ``rast1`` are nodata values
+    and spatially corresponding rast2 pixels have values.
+
+nodata2expr
+    An algebraic expression involving only ``rast1`` or a constant that
+    defines what to return when pixels of ``rast2`` are nodata values
+    and spatially corresponding rast1 pixels have values.
+
+nodatanodataval
+    A numeric constant to return when spatially corresponding rast1 and
+    rast2 pixels are both nodata values.
+
+-  Keywords permitted in ``expression``, ``nodata1expr`` and
+   ``nodata2expr``
+
+   1. ``[rast1]`` - Pixel value of the pixel of interest from ``rast1``
+
+   2. ``[rast1.val]`` - Pixel value of the pixel of interest from
+      ``rast1``
+
+   3. ``[rast1.x]`` - 1-based pixel column of the pixel of interest from
+      ``rast1``
+
+   4. ``[rast1.y]`` - 1-based pixel row of the pixel of interest from
+      ``rast1``
+
+   5. ``[rast2]`` - Pixel value of the pixel of interest from ``rast2``
+
+   6. ``[rast2.val]`` - Pixel value of the pixel of interest from
+      ``rast2``
+
+   7. ``[rast2.x]`` - 1-based pixel column of the pixel of interest from
+      ``rast2``
+
+   8. ``[rast2.y]`` - 1-based pixel row of the pixel of interest from
+      ``rast2``
+
+Examples: Variants 1 and 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT ST_AddBand(ST_MakeEmptyRaster(10, 10, 0, 0, 1, 1, 0, 0, 0), '32BF', 1, -1) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(rast, 1, NULL, 'ceil([rast]*[rast.x]/[rast.y]+[rast.val])')
+    FROM foo
+                        
+
+Examples: Variant 3 and 4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT 1 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 0, 1, -1, 0, 0, 0), 1, '16BUI', 1, 0), 2, '8BUI', 10, 0), 3, '32BUI', 100, 0) AS rast UNION ALL
+        SELECT 2 AS rid, ST_AddBand(ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(2, 2, 0, 1, 1, -1, 0, 0, 0), 1, '16BUI', 2, 0), 2, '8BUI', 20, 0), 3, '32BUI', 300, 0) AS rast
+    )
+    SELECT
+        ST_MapAlgebra(
+            t1.rast, 2,
+            t2.rast, 1,
+            '([rast2] + [rast1.val]) / 2'
+        ) AS rast
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE t1.rid = 1
+        AND t2.rid = 2
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?
+
+ST\_MapAlgebraExpr
+1 raster band version: Creates a new one band raster formed by applying
+a valid PostgreSQL algebraic operation on the input raster band and of
+pixeltype provided. Band 1 is assumed if no band is specified.
+raster
+ST\_MapAlgebraExpr
+raster
+rast
+integer
+band
+text
+pixeltype
+text
+expression
+double precision
+nodataval=NULL
+raster
+ST\_MapAlgebraExpr
+raster
+rast
+text
+pixeltype
+text
+expression
+double precision
+nodataval=NULL
+Description
+~~~~~~~~~~~
+
+    **Warning**
+
+    ? is deprecated as of 2.1.0. Use ? instead.
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+algebraic operation defined by the ``expression`` on the input raster
+(``rast``). If no ``band`` is specified band 1 is assumed. The new
+raster will have the same georeference, width, and height as the
+original raster but will only have one band.
+
+If ``pixeltype`` is passed in, then the new raster will have a band of
+that pixeltype. If pixeltype is passed NULL, then the new raster band
+will have the same pixeltype as the input ``rast`` band.
+
+In the expression you can use the term ``[rast]`` to refer to the pixel
+value of the original band, ``[rast.x]`` to refer to the 1-based pixel
+column index, ``[rast.y]`` to refer to the 1-based pixel row index.
+
+Availability: 2.0.0
+
+Examples
+~~~~~~~~
+
+Create a new 1 band raster from our original that is a function of
+modulo 2 of the original raster band.
+
+::
+
+    ALTER TABLE dummy_rast ADD COLUMN map_rast raster;
+    UPDATE dummy_rast SET map_rast = ST_MapAlgebraExpr(rast,NULL,'mod([rast],2)') WHERE rid = 2;
+
+    SELECT
+        ST_Value(rast,1,i,j) As origval,
+        ST_Value(map_rast, 1, i, j) As mapval
+    FROM dummy_rast
+    CROSS JOIN generate_series(1, 3) AS i
+    CROSS JOIN generate_series(1,3) AS j
+    WHERE rid = 2;
+
+     origval | mapval
+    ---------+--------
+         253 |      1
+         254 |      0
+         253 |      1
+         253 |      1
+         254 |      0
+         254 |      0
+         250 |      0
+         254 |      0
+         254 |      0
+                        
+
+Create a new 1 band raster of pixel-type 2BUI from our original that is
+reclassified and set the nodata value to be 0.
+
+::
+
+    ALTER TABLE dummy_rast ADD COLUMN map_rast2 raster;
+    UPDATE dummy_rast SET
+        map_rast2 = ST_MapAlgebraExpr(rast,'2BUI','CASE WHEN [rast] BETWEEN 100 and 250 THEN 1 WHEN [rast] = 252 THEN 2 WHEN [rast] BETWEEN 253 and 254 THEN 3 ELSE 0 END', '0')
+    WHERE rid = 2;
+
+    SELECT DISTINCT
+        ST_Value(rast,1,i,j) As origval,
+        ST_Value(map_rast2, 1, i, j) As mapval
+    FROM dummy_rast
+    CROSS JOIN generate_series(1, 5) AS i
+    CROSS JOIN generate_series(1,5) AS j
+    WHERE rid = 2;
+
+     origval | mapval
+    ---------+--------
+         249 |      1
+         250 |      1
+         251 |
+         252 |      2
+         253 |      3
+         254 |      3
+         
+    SELECT
+        ST_BandPixelType(map_rast2) As b1pixtyp
+    FROM dummy_rast
+    WHERE rid = 2;
+
+     b1pixtyp
+    ----------
+     2BUI
+                        
+
++-------------------------------+------------------+
+| original (column rast-view)   | rast\_view\_ma   |
++-------------------------------+------------------+
+
+Create a new 3 band raster same pixel type from our original 3 band
+raster with first band altered by map algebra and remaining 2 bands
+unaltered.
+
+::
+
+    SELECT
+        ST_AddBand(
+            ST_AddBand(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(rast_view),
+                    ST_MapAlgebraExpr(rast_view,1,NULL,'tan([rast])*[rast]')
+                ), 
+                ST_Band(rast_view,2)
+            ),
+            ST_Band(rast_view, 3) As rast_view_ma
+        )
+    FROM wind
+    WHERE rid=167;
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?
+
+ST\_MapAlgebraExpr
+2 raster band version: Creates a new one band raster formed by applying
+a valid PostgreSQL algebraic operation on the two input raster bands and
+of pixeltype provided. band 1 of each raster is assumed if no band
+numbers are specified. The resulting raster will be aligned (scale, skew
+and pixel corners) on the grid defined by the first raster and have its
+extent defined by the "extenttype" parameter. Values for "extenttype"
+can be: INTERSECTION, UNION, FIRST, SECOND.
+raster
+ST\_MapAlgebraExpr
+raster
+rast1
+raster
+rast2
+text
+expression
+text
+pixeltype=same\_as\_rast1\_band
+text
+extenttype=INTERSECTION
+text
+nodata1expr=NULL
+text
+nodata2expr=NULL
+double precision
+nodatanodataval=NULL
+raster
+ST\_MapAlgebraExpr
+raster
+rast1
+integer
+band1
+raster
+rast2
+integer
+band2
+text
+expression
+text
+pixeltype=same\_as\_rast1\_band
+text
+extenttype=INTERSECTION
+text
+nodata1expr=NULL
+text
+nodata2expr=NULL
+double precision
+nodatanodataval=NULL
+Description
+~~~~~~~~~~~
+
+    **Warning**
+
+    ? is deprecated as of 2.1.0. Use ? instead.
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+algebraic operation to the two bands defined by the ``expression`` on
+the two input raster bands ``rast1``, (``rast2``). If no ``band1``,
+``band2`` is specified band 1 is assumed. The resulting raster will be
+aligned (scale, skew and pixel corners) on the grid defined by the first
+raster. The resulting raster will have the extent defined by the
+``extenttype`` parameter.
+
+expression
+    A PostgreSQL algebraic expression involving the two rasters and
+    PostgreSQL defined functions/operators that will define the pixel
+    value when pixels intersect. e.g. (([rast1] + [rast2])/2.0)::integer
+
+pixeltype
+    The resulting pixel type of the output raster. Must be one listed in
+    ?, left out or set to NULL. If not passed in or set to NULL, will
+    default to the pixeltype of the first raster.
+
+extenttype
+    Controls the extent of resulting raster
+
+    1. ``INTERSECTION`` - The extent of the new raster is the
+       intersection of the two rasters. This is the default.
+
+    2. ``UNION`` - The extent of the new raster is the union of the two
+       rasters.
+
+    3. ``FIRST`` - The extent of the new raster is the same as the one
+       of the first raster.
+
+    4. ``SECOND`` - The extent of the new raster is the same as the one
+       of the second raster.
+
+nodata1expr
+    An algebraic expression involving only ``rast2`` or a constant that
+    defines what to return when pixels of ``rast1`` are nodata values
+    and spatially corresponding rast2 pixels have values.
+
+nodata2expr
+    An algebraic expression involving only ``rast1`` or a constant that
+    defines what to return when pixels of ``rast2`` are nodata values
+    and spatially corresponding rast1 pixels have values.
+
+nodatanodataval
+    A numeric constant to return when spatially corresponding rast1 and
+    rast2 pixels are both nodata values.
+
+If ``pixeltype`` is passed in, then the new raster will have a band of
+that pixeltype. If pixeltype is passed NULL or no pixel type specified,
+then the new raster band will have the same pixeltype as the input
+``rast1`` band.
+
+Use the term ``[rast1.val]`` ``[rast2.val]`` to refer to the pixel value
+of the original raster bands and ``[rast1.x]``, ``[rast1.y]`` etc. to
+refer to the column / row positions of the pixels.
+
+Availability: 2.0.0
+
+Example: 2 Band Intersection and Union
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a new 1 band raster from our original that is a function of
+modulo 2 of the original raster band.
+
+::
+
+    --Create a cool set of rasters --
+    DROP TABLE IF EXISTS fun_shapes; 
+    CREATE TABLE fun_shapes(rid serial PRIMARY KEY, fun_name text, rast raster);
+
+    -- Insert some cool shapes around Boston in Massachusetts state plane meters --
+    INSERT INTO fun_shapes(fun_name, rast)
+    VALUES ('ref', ST_AsRaster(ST_MakeEnvelope(235229, 899970, 237229, 901930,26986),200,200,'8BUI',0,0));
+
+    INSERT INTO fun_shapes(fun_name,rast)
+    WITH ref(rast) AS (SELECT rast FROM fun_shapes WHERE fun_name = 'ref' ) 
+    SELECT 'area' AS fun_name, ST_AsRaster(ST_Buffer(ST_SetSRID(ST_Point(236229, 900930),26986), 1000), 
+                ref.rast,'8BUI', 10, 0) As rast
+    FROM ref
+    UNION ALL
+    SELECT 'rand bubbles', 
+                ST_AsRaster( 
+                (SELECT ST_Collect(geom)
+        FROM (SELECT ST_Buffer(ST_SetSRID(ST_Point(236229 + i*random()*100, 900930 + j*random()*100),26986), random()*20) As geom
+                FROM generate_series(1,10) As i, generate_series(1,10) As j
+                ) As foo ), ref.rast,'8BUI', 200, 0) 
+    FROM ref;
+
+    --map them -
+    SELECT  ST_MapAlgebraExpr(
+            area.rast, bub.rast, '[rast2.val]', '8BUI', 'INTERSECTION', '[rast2.val]', '[rast1.val]') As interrast,
+            ST_MapAlgebraExpr(
+                area.rast, bub.rast, '[rast2.val]', '8BUI', 'UNION', '[rast2.val]', '[rast1.val]') As unionrast
+    FROM 
+      (SELECT rast FROM fun_shapes WHERE
+     fun_name = 'area') As area
+    CROSS JOIN  (SELECT rast 
+    FROM fun_shapes WHERE
+     fun_name = 'rand bubbles') As bub
+                        
+
++---------------------------+---------------------+
+| mapalgebra intersection   | map algebra union   |
++---------------------------+---------------------+
+
+Example: Overlaying rasters on a canvas as separate bands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- we use ST_AsPNG to render the image so all single band ones look grey --
+    WITH mygeoms 
+        AS ( SELECT 2 As bnum, ST_Buffer(ST_Point(1,5),10) As geom
+                UNION ALL
+                SELECT 3 AS bnum, 
+                    ST_Buffer(ST_GeomFromText('LINESTRING(50 50,150 150,150 50)'), 10,'join=bevel') As geom
+                UNION ALL
+                SELECT 1 As bnum, 
+                    ST_Buffer(ST_GeomFromText('LINESTRING(60 50,150 150,150 50)'), 5,'join=bevel') As geom
+                ),
+       -- define our canvas to be 1 to 1 pixel to geometry
+       canvas
+        AS (SELECT ST_AddBand(ST_MakeEmptyRaster(200, 
+            200, 
+            ST_XMin(e)::integer, ST_YMax(e)::integer, 1, -1, 0, 0) , '8BUI'::text,0) As rast
+            FROM (SELECT ST_Extent(geom) As e,
+                        Max(ST_SRID(geom)) As srid 
+                        from mygeoms 
+                        ) As foo
+                ),
+       rbands AS (SELECT ARRAY(SELECT ST_MapAlgebraExpr(canvas.rast, ST_AsRaster(m.geom, canvas.rast, '8BUI', 100),
+                     '[rast2.val]', '8BUI', 'FIRST', '[rast2.val]', '[rast1.val]') As rast
+                    FROM mygeoms AS m CROSS JOIN canvas
+                    ORDER BY m.bnum) As rasts
+                    )
+              SELECT rasts[1] As rast1 , rasts[2] As rast2, rasts[3] As rast3, ST_AddBand(
+                        ST_AddBand(rasts[1],rasts[2]), rasts[3]) As final_rast
+                FROM rbands;
+                        
+
++---------+---------------+
+| rast1   | rast2         |
++---------+---------------+
+| rast3   | final\_rast   |
++---------+---------------+
+
+Example: Overlay 2 meter boundary of select parcels over an aerial imagery
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- Create new 3 band raster composed of first 2 clipped bands, and overlay of 3rd band with our geometry
+    -- This query took 3.6 seconds on PostGIS windows 64-bit install
+    WITH pr AS
+    -- Note the order of operation: we clip all the rasters to dimensions of our region
+    (SELECT ST_Clip(rast,ST_Expand(geom,50) ) As rast, g.geom
+        FROM aerials.o_2_boston AS r INNER JOIN
+    -- union our parcels of interest so they form a single geometry we can later intersect with
+            (SELECT ST_Union(ST_Transform(the_geom,26986)) AS geom 
+              FROM landparcels WHERE pid IN('0303890000', '0303900000')) As g
+            ON ST_Intersects(rast::geometry, ST_Expand(g.geom,50))
+    ),
+    -- we then union the raster shards together
+    -- ST_Union on raster is kinda of slow but much faster the smaller you can get the rasters
+    -- therefore we want to clip first and then union
+    prunion AS
+    (SELECT ST_AddBand(NULL, ARRAY[ST_Union(rast,1),ST_Union(rast,2),ST_Union(rast,3)] ) As clipped,geom
+    FROM pr
+    GROUP BY geom)
+    -- return our final raster which is the unioned shard with 
+    -- with the overlay of our parcel boundaries
+    -- add first 2 bands, then mapalgebra of 3rd band + geometry
+    SELECT ST_AddBand(ST_Band(clipped,ARRAY[1,2])
+        , ST_MapAlgebraExpr(ST_Band(clipped,3), ST_AsRaster(ST_Buffer(ST_Boundary(geom),2),clipped, '8BUI',250),
+         '[rast2.val]', '8BUI', 'FIRST', '[rast2.val]', '[rast1.val]') ) As rast
+    FROM prunion;
+                        
+
++-------------------------------------------------------+
+| The blue lines are the boundaries of select parcels   |
++-------------------------------------------------------+
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_MapAlgebraFct
+1 band version - Creates a new one band raster formed by applying a
+valid PostgreSQL function on the input raster band and of pixeltype
+prodived. Band 1 is assumed if no band is specified.
+raster
+ST\_MapAlgebraFct
+raster
+rast
+regprocedure
+onerasteruserfunc
+raster
+ST\_MapAlgebraFct
+raster
+rast
+regprocedure
+onerasteruserfunc
+text[]
+VARIADIC args
+raster
+ST\_MapAlgebraFct
+raster
+rast
+text
+pixeltype
+regprocedure
+onerasteruserfunc
+raster
+ST\_MapAlgebraFct
+raster
+rast
+text
+pixeltype
+regprocedure
+onerasteruserfunc
+text[]
+VARIADIC args
+raster
+ST\_MapAlgebraFct
+raster
+rast
+integer
+band
+regprocedure
+onerasteruserfunc
+raster
+ST\_MapAlgebraFct
+raster
+rast
+integer
+band
+regprocedure
+onerasteruserfunc
+text[]
+VARIADIC args
+raster
+ST\_MapAlgebraFct
+raster
+rast
+integer
+band
+text
+pixeltype
+regprocedure
+onerasteruserfunc
+raster
+ST\_MapAlgebraFct
+raster
+rast
+integer
+band
+text
+pixeltype
+regprocedure
+onerasteruserfunc
+text[]
+VARIADIC args
+Description
+~~~~~~~~~~~
+
+    **Warning**
+
+    ? is deprecated as of 2.1.0. Use ? instead.
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+function specified by the ``onerasteruserfunc`` on the input raster
+(``rast``). If no ``band`` is specified, band 1 is assumed. The new
+raster will have the same georeference, width, and height as the
+original raster but will only have one band.
+
+If ``pixeltype`` is passed in, then the new raster will have a band of
+that pixeltype. If pixeltype is passed NULL, then the new raster band
+will have the same pixeltype as the input ``rast`` band.
+
+The ``onerasteruserfunc`` parameter must be the name and signature of a
+SQL or PL/pgSQL function, cast to a regprocedure. A very simple and
+quite useless PL/pgSQL function example is:
+
+::
+
+    CREATE OR REPLACE FUNCTION simple_function(pixel FLOAT, pos INTEGER[], VARIADIC args TEXT[])
+        RETURNS FLOAT
+        AS $$ BEGIN
+            RETURN 0.0;
+        END; $$
+        LANGUAGE 'plpgsql' IMMUTABLE;
+
+The ``userfunction`` may accept two or three arguments: a float value,
+an optional integer array, and a variadic text array. The first argument
+is the value of an individual raster cell (regardless of the raster
+datatype). The second argument is the position of the current processing
+cell in the form '{x,y}'. The third argument indicates that all
+remaining parameters to ? shall be passed through to the
+``userfunction``.
+
+Passing a ``regprodedure`` argument to a SQL function requires the full
+function signature to be passed, then cast to a ``regprocedure`` type.
+To pass the above example PL/pgSQL function as an argument, the SQL for
+the argument is:
+
+::
+
+    'simple_function(float,integer[],text[])'::regprocedure
+
+Note that the argument contains the name of the function, the types of
+the function arguments, quotes around the name and argument types, and a
+cast to a ``regprocedure``.
+
+The third argument to the ``userfunction`` is a ``variadic text`` array.
+All trailing text arguments to any ? call are passed through to the
+specified ``userfunction``, and are contained in the ``args`` argument.
+
+    **Note**
+
+    For more information about the VARIADIC keyword, please refer to the
+    PostgreSQL documentation and the "SQL Functions with Variable
+    Numbers of Arguments" section of `Query Language (SQL)
+    Functions <http://www.postgresql.org/docs/current/static/xfunc-sql.html>`__.
+
+    **Note**
+
+    The ``text[]`` argument to the ``userfunction`` is required,
+    regardless of whether you choose to pass any arguments to your user
+    function for processing or not.
+
+Availability: 2.0.0
+
+Examples
+~~~~~~~~
+
+Create a new 1 band raster from our original that is a function of
+modulo 2 of the original raster band.
+
+::
+
+    ALTER TABLE dummy_rast ADD COLUMN map_rast raster;
+    CREATE FUNCTION mod_fct(pixel float, pos integer[], variadic args text[])
+    RETURNS float
+    AS $$
+    BEGIN
+        RETURN pixel::integer % 2;
+    END;
+    $$
+    LANGUAGE 'plpgsql' IMMUTABLE;
+
+    UPDATE dummy_rast SET map_rast = ST_MapAlgebraFct(rast,NULL,'mod_fct(float,integer[],text[])'::regprocedure) WHERE rid = 2;
+
+    SELECT ST_Value(rast,1,i,j) As origval, ST_Value(map_rast, 1, i, j) As mapval
+    FROM dummy_rast CROSS JOIN generate_series(1, 3) AS i CROSS JOIN generate_series(1,3) AS j
+    WHERE rid = 2;
+
+     origval | mapval
+    ---------+--------
+         253 |      1
+         254 |      0
+         253 |      1
+         253 |      1
+         254 |      0
+         254 |      0
+         250 |      0
+         254 |      0
+         254 |      0
+                        
+
+Create a new 1 band raster of pixel-type 2BUI from our original that is
+reclassified and set the nodata value to a passed parameter to the user
+function (0).
+
+::
+
+    ALTER TABLE dummy_rast ADD COLUMN map_rast2 raster;
+    CREATE FUNCTION classify_fct(pixel float, pos integer[], variadic args text[])
+    RETURNS float
+    AS
+    $$
+    DECLARE
+        nodata float := 0;
+    BEGIN
+        IF NOT args[1] IS NULL THEN
+            nodata := args[1];
+        END IF;
+        IF pixel < 251 THEN
+            RETURN 1;
+        ELSIF pixel = 252 THEN
+            RETURN 2;
+        ELSIF pixel > 252 THEN
+            RETURN 3;
+        ELSE
+            RETURN nodata;
+        END IF;
+    END;
+    $$
+    LANGUAGE 'plpgsql';
+    UPDATE dummy_rast SET map_rast2 = ST_MapAlgebraFct(rast,'2BUI','classify_fct(float,integer[],text[])'::regprocedure, '0') WHERE rid = 2;
+
+    SELECT DISTINCT ST_Value(rast,1,i,j) As origval, ST_Value(map_rast2, 1, i, j) As mapval
+    FROM dummy_rast CROSS JOIN generate_series(1, 5) AS i CROSS JOIN generate_series(1,5) AS j
+    WHERE rid = 2;
+
+     origval | mapval
+    ---------+--------
+         249 |      1
+         250 |      1
+         251 |
+         252 |      2
+         253 |      3
+         254 |      3
+         
+    SELECT ST_BandPixelType(map_rast2) As b1pixtyp
+    FROM dummy_rast WHERE rid = 2;
+
+     b1pixtyp
+    ----------
+     2BUI
+                        
+
++-------------------------------+------------------+
+| original (column rast-view)   | rast\_view\_ma   |
++-------------------------------+------------------+
+
+Create a new 3 band raster same pixel type from our original 3 band
+raster with first band altered by map algebra and remaining 2 bands
+unaltered.
+
+::
+
+    CREATE FUNCTION rast_plus_tan(pixel float, pos integer[], variadic args text[])
+    RETURNS float
+    AS
+    $$
+    BEGIN
+        RETURN tan(pixel) * pixel;
+    END;
+    $$
+    LANGUAGE 'plpgsql';
+
+    SELECT ST_AddBand(
+        ST_AddBand(
+            ST_AddBand(
+                ST_MakeEmptyRaster(rast_view),
+                ST_MapAlgebraFct(rast_view,1,NULL,'rast_plus_tan(float,integer[],text[])'::regprocedure)
+            ), 
+            ST_Band(rast_view,2)
+        ),
+        ST_Band(rast_view, 3) As rast_view_ma
+    )
+    FROM wind
+    WHERE rid=167;
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?
+
+ST\_MapAlgebraFct
+2 band version - Creates a new one band raster formed by applying a
+valid PostgreSQL function on the 2 input raster bands and of pixeltype
+prodived. Band 1 is assumed if no band is specified. Extent type
+defaults to INTERSECTION if not specified.
+raster
+ST\_MapAlgebraFct
+raster
+rast1
+raster
+rast2
+regprocedure
+tworastuserfunc
+text
+pixeltype=same\_as\_rast1
+text
+extenttype=INTERSECTION
+text[]
+VARIADIC userargs
+raster
+ST\_MapAlgebraFct
+raster
+rast1
+integer
+band1
+raster
+rast2
+integer
+band2
+regprocedure
+tworastuserfunc
+text
+pixeltype=same\_as\_rast1
+text
+extenttype=INTERSECTION
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+    **Warning**
+
+    ? is deprecated as of 2.1.0. Use ? instead.
+
+Creates a new one band raster formed by applying a valid PostgreSQL
+function specified by the ``tworastuserfunc`` on the input raster
+``rast1``, ``rast2``. If no ``band1`` or ``band2`` is specified, band 1
+is assumed. The new raster will have the same georeference, width, and
+height as the original rasters but will only have one band.
+
+If ``pixeltype`` is passed in, then the new raster will have a band of
+that pixeltype. If pixeltype is passed NULL or left out, then the new
+raster band will have the same pixeltype as the input ``rast1`` band.
+
+The ``tworastuserfunc`` parameter must be the name and signature of an
+SQL or PL/pgSQL function, cast to a regprocedure. An example PL/pgSQL
+function example is:
+
+::
+
+    CREATE OR REPLACE FUNCTION simple_function_for_two_rasters(pixel1 FLOAT, pixel2 FLOAT, pos INTEGER[], VARIADIC args TEXT[])
+        RETURNS FLOAT
+        AS $$ BEGIN
+            RETURN 0.0;
+        END; $$
+        LANGUAGE 'plpgsql' IMMUTABLE;
+
+The ``tworastuserfunc`` may accept three or four arguments: a double
+precision value, a double precision value, an optional integer array,
+and a variadic text array. The first argument is the value of an
+individual raster cell in ``rast1`` (regardless of the raster datatype).
+The second argument is an individual raster cell value in ``rast2``. The
+third argument is the position of the current processing cell in the
+form '{x,y}'. The fourth argument indicates that all remaining
+parameters to ? shall be passed through to the ``tworastuserfunc``.
+
+Passing a ``regprodedure`` argument to a SQL function requires the full
+function signature to be passed, then cast to a ``regprocedure`` type.
+To pass the above example PL/pgSQL function as an argument, the SQL for
+the argument is:
+
+::
+
+    'simple_function(double precision, double precision, integer[], text[])'::regprocedure
+
+Note that the argument contains the name of the function, the types of
+the function arguments, quotes around the name and argument types, and a
+cast to a ``regprocedure``.
+
+The third argument to the ``tworastuserfunc`` is a ``variadic text``
+array. All trailing text arguments to any ? call are passed through to
+the specified ``tworastuserfunc``, and are contained in the ``userargs``
+argument.
+
+    **Note**
+
+    For more information about the VARIADIC keyword, please refer to the
+    PostgreSQL documentation and the "SQL Functions with Variable
+    Numbers of Arguments" section of `Query Language (SQL)
+    Functions <http://www.postgresql.org/docs/current/static/xfunc-sql.html>`__.
+
+    **Note**
+
+    The ``text[]`` argument to the ``tworastuserfunc`` is required,
+    regardless of whether you choose to pass any arguments to your user
+    function for processing or not.
+
+Availability: 2.0.0
+
+Example: Overlaying rasters on a canvas as separate bands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- define our user defined function --
+    CREATE OR REPLACE FUNCTION raster_mapalgebra_union(
+        rast1 double precision,
+        rast2 double precision,
+        pos integer[],
+        VARIADIC userargs text[]
+    )
+        RETURNS double precision
+        AS $$
+        DECLARE
+        BEGIN
+            CASE
+                WHEN rast1 IS NOT NULL AND rast2 IS NOT NULL THEN
+                    RETURN ((rast1 + rast2)/2.);
+                WHEN rast1 IS NULL AND rast2 IS NULL THEN
+                    RETURN NULL;
+                WHEN rast1 IS NULL THEN
+                    RETURN rast2;
+                ELSE
+                    RETURN rast1;
+            END CASE;
+
+            RETURN NULL;
+        END;
+        $$ LANGUAGE 'plpgsql' IMMUTABLE COST 1000;
+
+    -- prep our test table of rasters
+    DROP TABLE IF EXISTS map_shapes;
+    CREATE TABLE map_shapes(rid serial PRIMARY KEY, rast raster, bnum integer, descrip text);
+    INSERT INTO map_shapes(rast,bnum, descrip)
+    WITH mygeoms 
+        AS ( SELECT 2 As bnum, ST_Buffer(ST_Point(90,90),30) As geom, 'circle' As descrip
+                UNION ALL
+                SELECT 3 AS bnum, 
+                    ST_Buffer(ST_GeomFromText('LINESTRING(50 50,150 150,150 50)'), 15) As geom, 'big road' As descrip
+                UNION ALL
+                SELECT 1 As bnum, 
+                    ST_Translate(ST_Buffer(ST_GeomFromText('LINESTRING(60 50,150 150,150 50)'), 8,'join=bevel'), 10,-6) As geom, 'small road' As descrip
+                ),
+       -- define our canvas to be 1 to 1 pixel to geometry
+       canvas
+        AS ( SELECT ST_AddBand(ST_MakeEmptyRaster(250, 
+            250, 
+            ST_XMin(e)::integer, ST_YMax(e)::integer, 1, -1, 0, 0 ) , '8BUI'::text,0) As rast
+            FROM (SELECT ST_Extent(geom) As e,
+                        Max(ST_SRID(geom)) As srid 
+                        from mygeoms 
+                        ) As foo
+                )
+    -- return our rasters aligned with our canvas
+    SELECT ST_AsRaster(m.geom, canvas.rast, '8BUI', 240) As rast, bnum, descrip
+                    FROM mygeoms AS m CROSS JOIN canvas
+    UNION ALL 
+    SELECT canvas.rast, 4, 'canvas'
+    FROM canvas;
+
+    -- Map algebra on single band rasters and then collect with ST_AddBand
+    INSERT INTO map_shapes(rast,bnum,descrip)
+    SELECT ST_AddBand(ST_AddBand(rasts[1], rasts[2]),rasts[3]), 4, 'map bands overlay fct union (canvas)'
+        FROM (SELECT ARRAY(SELECT ST_MapAlgebraFct(m1.rast, m2.rast, 
+                'raster_mapalgebra_union(double precision, double precision, integer[], text[])'::regprocedure, '8BUI', 'FIRST')
+                    FROM map_shapes As m1 CROSS JOIN map_shapes As m2
+                        WHERE m1.descrip = 'canvas' AND m2.descrip <> 'canvas' ORDER BY m2.bnum) As rasts) As foo;
+                        
+
++----------------------------------------------------------------------+
+| map bands overlay (canvas) (R: small road, G: circle, B: big road)   |
++----------------------------------------------------------------------+
+
+User Defined function that takes extra args
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+        
+    CREATE OR REPLACE FUNCTION raster_mapalgebra_userargs(
+        rast1 double precision,
+        rast2 double precision,
+        pos integer[],
+        VARIADIC userargs text[]
+    )
+        RETURNS double precision
+        AS $$
+        DECLARE
+        BEGIN
+            CASE
+                WHEN rast1 IS NOT NULL AND rast2 IS NOT NULL THEN
+                    RETURN least(userargs[1]::integer,(rast1 + rast2)/2.);
+                WHEN rast1 IS NULL AND rast2 IS NULL THEN
+                    RETURN userargs[2]::integer;
+                WHEN rast1 IS NULL THEN
+                    RETURN greatest(rast2,random()*userargs[3]::integer)::integer;
+                ELSE
+                    RETURN greatest(rast1, random()*userargs[4]::integer)::integer;
+            END CASE;
+
+            RETURN NULL;
+        END;
+        $$ LANGUAGE 'plpgsql' VOLATILE COST 1000;
+        
+    SELECT ST_MapAlgebraFct(m1.rast, 1, m1.rast, 3,
+                'raster_mapalgebra_userargs(double precision, double precision, integer[], text[])'::regprocedure,
+                    '8BUI', 'INTERSECT', '100','200','200','0') 
+                    FROM map_shapes As m1
+                        WHERE m1.descrip = 'map bands overlay fct union (canvas)'; 
+                        
+
+user defined with extra args and different bands from same raster
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?
+
+ST\_MapAlgebraFctNgb
+1-band version: Map Algebra Nearest Neighbor using user-defined
+PostgreSQL function. Return a raster which values are the result of a
+PLPGSQL user function involving a neighborhood of values from the input
+raster band.
+raster
+ST\_MapAlgebraFctNgb
+raster
+rast
+integer
+band
+text
+pixeltype
+integer
+ngbwidth
+integer
+ngbheight
+regprocedure
+onerastngbuserfunc
+text
+nodatamode
+text[]
+VARIADIC args
+Description
+~~~~~~~~~~~
+
+    **Warning**
+
+    ? is deprecated as of 2.1.0. Use ? instead.
+
+(one raster version) Return a raster which values are the result of a
+PLPGSQL user function involving a neighborhood of values from the input
+raster band. The user function takes the neighborhood of pixel values as
+an array of numbers, for each pixel, returns the result from the user
+function, replacing pixel value of currently inspected pixel with the
+function result.
+
+rast
+    Raster on which the user function is evaluated.
+
+band
+    Band number of the raster to be evaluated. Default to 1.
+
+pixeltype
+    The resulting pixel type of the output raster. Must be one listed in
+    ? or left out or set to NULL. If not passed in or set to NULL, will
+    default to the pixeltype of the ``rast``. Results are truncated if
+    they are larger than what is allowed for the pixeltype.
+
+ngbwidth
+    The width of the neighborhood, in cells.
+
+ngbheight
+    The height of the neighborhood, in cells.
+
+onerastngbuserfunc
+    PLPGSQL/psql user function to apply to neighborhood pixels of a
+    single band of a raster. The first element is a 2-dimensional array
+    of numbers representing the rectangular pixel neighborhood
+
+nodatamode
+    Defines what value to pass to the function for a neighborhood pixel
+    that is nodata or NULL
+
+    'ignore': any NODATA values encountered in the neighborhood are
+    ignored by the computation -- this flag must be sent to the user
+    callback function, and the user function decides how to ignore it.
+
+    'NULL': any NODATA values encountered in the neighborhood will cause
+    the resulting pixel to be NULL -- the user callback function is
+    skipped in this case.
+
+    'value': any NODATA values encountered in the neighborhood are
+    replaced by the reference pixel (the one in the center of the
+    neighborhood). Note that if this value is NODATA, the behavior is
+    the same as 'NULL' (for the affected neighborhood)
+
+args
+    Arguments to pass into the user function.
+
+Availability: 2.0.0
+
+Examples
+~~~~~~~~
+
+Examples utilize the katrina raster loaded as a single tile described in
+http://trac.osgeo.org/gdal/wiki/frmts_wtkraster.html and then prepared
+in the ? examples
+
+::
+
+    --
+    -- A simple 'callback' user function that averages up all the values in a neighborhood.
+    --
+    CREATE OR REPLACE FUNCTION rast_avg(matrix float[][], nodatamode text, variadic args text[])
+        RETURNS float AS
+        $$
+        DECLARE
+            _matrix float[][];
+            x1 integer;
+            x2 integer;
+            y1 integer;
+            y2 integer;
+            sum float;
+        BEGIN
+            _matrix := matrix;
+            sum := 0;
+            FOR x in array_lower(matrix, 1)..array_upper(matrix, 1) LOOP
+                FOR y in array_lower(matrix, 2)..array_upper(matrix, 2) LOOP
+                    sum := sum + _matrix[x][y];
+                END LOOP;
+            END LOOP;
+            RETURN (sum*1.0/(array_upper(matrix,1)*array_upper(matrix,2) ))::integer ;
+        END;
+        $$
+    LANGUAGE 'plpgsql' IMMUTABLE COST 1000;
+        
+    -- now we apply to our raster averaging pixels within 2 pixels of each other in X and Y direction --
+    SELECT ST_MapAlgebraFctNgb(rast, 1,  '8BUI', 4,4,
+            'rast_avg(float[][], text, text[])'::regprocedure, 'NULL', NULL) As nn_with_border
+        FROM katrinas_rescaled 
+        limit 1;
+                        
+
++----------------------------+----------------------------------------------------------------------+
+| First band of our raster   | new raster after averaging pixels withing 4x4 pixels of each other   |
++----------------------------+----------------------------------------------------------------------+
+
+See Also
+~~~~~~~~
+
+?, ?, ?
+
+ST\_Reclass
+Creates a new raster composed of band types reclassified from original.
+The nband is the band to be changed. If nband is not specified assumed
+to be 1. All other bands are returned unchanged. Use case: convert a
+16BUI band to a 8BUI and so forth for simpler rendering as viewable
+formats.
+raster
+ST\_Reclass
+raster
+rast
+integer
+nband
+text
+reclassexpr
+text
+pixeltype
+double precision
+nodataval=NULL
+raster
+ST\_Reclass
+raster
+rast
+reclassarg[]
+VARIADIC reclassargset
+raster
+ST\_Reclass
+raster
+rast
+text
+reclassexpr
+text
+pixeltype
+Description
+~~~~~~~~~~~
+
+Creates a new raster formed by applying a valid PostgreSQL algebraic
+operation defined by the ``reclassexpr`` on the input raster (``rast``).
+If no ``band`` is specified band 1 is assumed. The new raster will have
+the same georeference, width, and height as the original raster. Bands
+not designated will come back unchanged. Refer to ? for description of
+valid reclassification expressions.
+
+The bands of the new raster will have pixel type of ``pixeltype``. If
+``reclassargset`` is passed in then each reclassarg defines behavior of
+each band generated.
+
+Availability: 2.0.0
+
+Examples Basic
+~~~~~~~~~~~~~~
+
+Create a new raster from the original where band 2 is converted from
+8BUI to 4BUI and all values from 101-254 are set to nodata value.
+
+::
+
+    ALTER TABLE dummy_rast ADD COLUMN reclass_rast raster;
+    UPDATE dummy_rast SET reclass_rast = ST_Reclass(rast,2,'0-87:1-10, 88-100:11-15, 101-254:0-0', '4BUI',0) WHERE rid = 2;
+
+    SELECT i as col, j as row, ST_Value(rast,2,i,j) As origval, 
+        ST_Value(reclass_rast, 2, i, j) As reclassval, 
+        ST_Value(reclass_rast, 2, i, j, false) As reclassval_include_nodata
+    FROM dummy_rast CROSS JOIN generate_series(1, 3) AS i CROSS JOIN generate_series(1,3) AS j
+    WHERE rid = 2;
+
+     col | row | origval | reclassval | reclassval_include_nodata
+    -----+-----+---------+------------+---------------------------
+       1 |   1 |      78 |          9 |                         9
+       2 |   1 |      98 |         14 |                        14
+       3 |   1 |     122 |            |                         0
+       1 |   2 |      96 |         14 |                        14
+       2 |   2 |     118 |            |                         0
+       3 |   2 |     180 |            |                         0
+       1 |   3 |      99 |         15 |                        15
+       2 |   3 |     112 |            |                         0
+       3 |   3 |     169 |            |                         0
+                        
+
+Example: Advanced using multiple reclassargs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a new raster from the original where band 1,2,3 is converted to
+1BB,4BUI, 4BUI respectively and reclassified. Note this uses the
+variadic ``reclassarg`` argument which can take as input an indefinite
+number of reclassargs (theoretically as many bands as you have)
+
+::
+
+    UPDATE dummy_rast SET reclass_rast = 
+        ST_Reclass(rast,
+            ROW(2,'0-87]:1-10, (87-100]:11-15, (101-254]:0-0', '4BUI',NULL)::reclassarg,
+            ROW(1,'0-253]:1, 254:0', '1BB', NULL)::reclassarg,
+            ROW(3,'0-70]:1, (70-86:2, [86-150):3, [150-255:4', '4BUI', NULL)::reclassarg
+            ) WHERE rid = 2;
+
+    SELECT i as col, j as row,ST_Value(rast,1,i,j) As ov1,  ST_Value(reclass_rast, 1, i, j) As rv1, 
+        ST_Value(rast,2,i,j) As ov2, ST_Value(reclass_rast, 2, i, j) As rv2, 
+        ST_Value(rast,3,i,j) As ov3, ST_Value(reclass_rast, 3, i, j) As rv3
+    FROM dummy_rast CROSS JOIN generate_series(1, 3) AS i CROSS JOIN generate_series(1,3) AS j
+    WHERE rid = 2;
+
+    col | row | ov1 | rv1 | ov2 | rv2 | ov3 | rv3
+    ----+-----+-----+-----+-----+-----+-----+-----
+      1 |   1 | 253 |   1 |  78 |   9 |  70 |   1
+      2 |   1 | 254 |   0 |  98 |  14 |  86 |   3
+      3 |   1 | 253 |   1 | 122 |   0 | 100 |   3
+      1 |   2 | 253 |   1 |  96 |  14 |  80 |   2
+      2 |   2 | 254 |   0 | 118 |   0 | 108 |   3
+      3 |   2 | 254 |   0 | 180 |   0 | 162 |   4
+      1 |   3 | 250 |   1 |  99 |  15 |  90 |   3
+      2 |   3 | 254 |   0 | 112 |   0 | 108 |   3
+      3 |   3 | 254 |   0 | 169 |   0 | 175 |   4
+                        
+
+Example: Advanced Map a single band 32BF raster to multiple viewable bands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a new 3 band (8BUI,8BUI,8BUI viewable raster) from a raster that
+has only one 32bf band
+
+::
+
+    ALTER TABLE wind ADD COLUMN rast_view raster;
+    UPDATE wind 
+        set rast_view = ST_AddBand( NULL,
+            ARRAY[
+                ST_Reclass(rast, 1,'0.1-10]:1-10,9-10]:11,(11-33:0'::text, '8BUI'::text,0),
+                ST_Reclass(rast,1, '11-33):0-255,[0-32:0,(34-1000:0'::text, '8BUI'::text,0),  
+                ST_Reclass(rast,1,'0-32]:0,(32-100:100-255'::text, '8BUI'::text,0)
+                ]
+                );
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_Union
+Returns the union of a set of raster tiles into a single raster composed
+of 1 or more bands.
+raster
+ST\_Union
+setof raster
+rast
+raster
+ST\_Union
+setof raster
+rast
+unionarg[]
+unionargset
+raster
+ST\_Union
+setof raster
+rast
+integer
+nband
+raster
+ST\_Union
+setof raster
+rast
+text
+uniontype
+raster
+ST\_Union
+setof raster
+rast
+integer
+nband
+text
+uniontype
+Description
+~~~~~~~~~~~
+
+Returns the union of a set of raster tiles into a single raster composed
+of at least one band. The resulting raster's extent is the extent of the
+whole set. In the case of intersection, the resulting value is defined
+by ``uniontype`` which is one of the following: LAST (default), FIRST,
+MIN, MAX, COUNT, SUM, MEAN, RANGE.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Improved Speed (fully C-Based).
+
+Availability: 2.1.0 ST\_Union(rast, unionarg) variant was introduced.
+
+Enhanced: 2.1.0 ST\_Union(rast) (variant 1) unions all bands of all
+input rasters. Prior versions of PostGIS assumed the first band.
+
+Enhanced: 2.1.0 ST\_Union(rast, uniontype) (variant 4) unions all bands
+of all input rasters.
+
+Examples: Reconstitute a single band chunked raster tile
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- this creates a single band from first band of raster tiles
+    -- that form the original file system tile
+    SELECT filename, ST_Union(rast,1) As file_rast
+    FROM sometable WHERE filename IN('dem01', 'dem02') GROUP BY filename;
+                        
+
+Examples: Return a multi-band raster that is the union of tiles intersecting geometry
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    -- this creates a multi band raster collecting all the tiles that intersect a line
+    -- Note: In 2.0, this would have just returned a single band raster
+    -- , new union works on all bands by default
+    -- this is equivalent to unionarg: ARRAY[ROW(1, 'LAST'), ROW(2, 'LAST'), ROW(3, 'LAST')]::unionarg[]
+    SELECT ST_Union(rast)
+    FROM aerials.boston
+    WHERE ST_Intersects(rast,  ST_GeomFromText('LINESTRING(230486 887771, 230500 88772)',26986) );
+                        
+
+Examples: Return a multi-band raster that is the union of tiles intersecting geometry
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here we use the longer syntax if we only wanted a subset of bands or we
+want to change order of bands
+
+::
+
+    -- this creates a multi band raster collecting all the tiles that intersect a line
+    SELECT ST_Union(rast,ARRAY[ROW(2, 'LAST'), ROW(1, 'LAST'), ROW(3, 'LAST')]::unionarg[])
+    FROM aerials.boston
+    WHERE ST_Intersects(rast,  ST_GeomFromText('LINESTRING(230486 887771, 230500 88772)',26986) );
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?
+
+Built-in Map Algebra Callback Functions
+---------------------------------------
+
+ST\_Distinct4ma
+Raster processing function that calculates the number of unique pixel
+values in a neighborhood.
+float8
+ST\_Distinct4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Distinct4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the number of unique pixel values in a neighborhood of pixels.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, NULL, 1, 1, 'st_distinct4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid | st_value
+    -----+----------
+       2 |        3
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_InvDistWeight4ma
+Raster processing function that interpolates a pixel's value from the
+pixel's neighborhood.
+double precision
+ST\_InvDistWeight4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate an interpolated value for a pixel using the Inverse Distance
+Weighted method.
+
+There are two optional parameters that can be passed through
+``userargs``. The first parameter is the power factor (variable k in the
+equation below) between 0 and 1 used in the Inverse Distance Weighted
+equation. If not specified, default value is 1. The second parameter is
+the weight percentage applied only when the value of the pixel of
+interest is included with the interpolated value from the neighborhood.
+If not specified and the pixel of interest has a value, that value is
+returned.
+
+The basic inverse distance weight equation is: k = power factor, a real
+number between 0 and 1
+
+    **Note**
+
+    This function is a specialized callback function for use as a
+    callback parameter to ?.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    -- NEEDS EXAMPLE
+                    
+
+See Also
+~~~~~~~~
+
+?, ?
+
+ST\_Max4ma
+Raster processing function that calculates the maximum pixel value in a
+neighborhood.
+float8
+ST\_Max4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Max4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the maximum pixel value in a neighborhood of pixels.
+
+For Variant 2, a substitution value for NODATA pixels can be specified
+by passing that value to userargs.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, NULL, 1, 1, 'st_max4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid | st_value
+    -----+----------
+       2 |      254
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_Mean4ma
+Raster processing function that calculates the mean pixel value in a
+neighborhood.
+float8
+ST\_Mean4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Mean4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the mean pixel value in a neighborhood of pixels.
+
+For Variant 2, a substitution value for NODATA pixels can be specified
+by passing that value to userargs.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, '32BF', 1, 1, 'st_mean4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid |     st_value
+    -----+------------------
+       2 | 253.222229003906
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?
+
+ST\_Min4ma
+Raster processing function that calculates the minimum pixel value in a
+neighborhood.
+float8
+ST\_Min4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Min4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the minimum pixel value in a neighborhood of pixels.
+
+For Variant 2, a substitution value for NODATA pixels can be specified
+by passing that value to userargs.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, NULL, 1, 1, 'st_min4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid | st_value
+    -----+----------
+       2 |      250
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_MinDist4ma
+Raster processing function that returns the minimum distance (in number
+of pixels) between the pixel of interest and a neighboring pixel with
+value.
+double precision
+ST\_MinDist4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Return the shortest distance (in number of pixels) between the pixel of
+interest and the closest pixel with value in the neighborhood.
+
+    **Note**
+
+    The intent of this function is to provide an informative data point
+    that helps infer the usefulness of the pixel of interest's
+    interpolated value from ?. This function is particularly useful when
+    the neighborhood is sparsely populated.
+
+    **Note**
+
+    This function is a specialized callback function for use as a
+    callback parameter to ?.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    -- NEEDS EXAMPLE
+                    
+
+See Also
+~~~~~~~~
+
+?, ?
+
+ST\_Range4ma
+Raster processing function that calculates the range of pixel values in
+a neighborhood.
+float8
+ST\_Range4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Range4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the range of pixel values in a neighborhood of pixels.
+
+For Variant 2, a substitution value for NODATA pixels can be specified
+by passing that value to userargs.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, NULL, 1, 1, 'st_range4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid | st_value
+    -----+----------
+       2 |        4
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_StdDev4ma
+Raster processing function that calculates the standard deviation of
+pixel values in a neighborhood.
+float8
+ST\_StdDev4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_StdDev4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the standard deviation of pixel values in a neighborhood of
+pixels.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, '32BF', 1, 1, 'st_stddev4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid |     st_value
+    -----+------------------
+       2 | 1.30170822143555
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+ST\_Sum4ma
+Raster processing function that calculates the sum of all pixel values
+in a neighborhood.
+float8
+ST\_Sum4ma
+float8[][]
+matrix
+text
+nodatamode
+text[]
+VARIADIC args
+double precision
+ST\_Sum4ma
+double precision[][][]
+value
+integer[][]
+pos
+text[]
+VARIADIC userargs
+Description
+~~~~~~~~~~~
+
+Calculate the sum of all pixel values in a neighborhood of pixels.
+
+For Variant 2, a substitution value for NODATA pixels can be specified
+by passing that value to userargs.
+
+    **Note**
+
+    Variant 1 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Note**
+
+    Variant 2 is a specialized callback function for use as a callback
+    parameter to ?.
+
+    **Warning**
+
+    Use of Variant 1 is discouraged since ? has been deprecated as of
+    2.1.0.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Addition of Variant 2
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT 
+        rid,
+        st_value(
+            st_mapalgebrafctngb(rast, 1, '32BF', 1, 1, 'st_sum4ma(float[][],text,text[])'::regprocedure, 'ignore', NULL), 2, 2
+        ) 
+    FROM dummy_rast 
+    WHERE rid = 2;
+     rid | st_value
+    -----+----------
+       2 |     2279
+    (1 row)
+                    
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?, ?, ?
+
+DEM (Elevation)
+---------------
+
+ST\_Aspect
+Returns the aspect (in degrees by default) of an elevation raster band.
+Useful for analyzing terrain.
+raster
+ST\_Aspect
+raster
+rast
+integer
+band=1
+text
+pixeltype=32BF
+text
+units=DEGREES
+boolean
+interpolate\_nodata=FALSE
+raster
+ST\_Aspect
+raster
+rast
+integer
+band
+raster
+customextent
+text
+pixeltype=32BF
+text
+units=DEGREES
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Returns the aspect (in degrees by default) of an elevation raster band.
+Utilizes map algebra and applies the aspect equation to neighboring
+pixels.
+
+``units`` indicates the units of the aspect. Possible values are:
+RADIANS, DEGREES (default).
+
+When ``units`` = RADIANS, values are between 0 and 2 \* pi radians
+measured clockwise from North.
+
+When ``units`` = DEGREES, values are between 0 and 360 degrees measured
+clockwise from North.
+
+If slope of pixel is zero, aspect of pixel is -1.
+
+    **Note**
+
+    For more information about Slope, Aspect and Hillshade, please refer
+    to `ESRI - How hillshade
+    works <http://webhelp.esri.com/arcgisdesktop/9.3/index.cfm?TopicName=How%20Hillshade%20works>`__
+    and `ERDAS Field Guide - Aspect
+    Images <http://geospatial.intergraph.com/fieldguide/wwhelp/wwhimpl/common/html/wwhelp.htm?context=FieldGuide&file=Aspect_Images.html>`__.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Uses ST\_MapAlgebra() and added optional
+``interpolate_nodata`` function parameter
+
+Changed: 2.1.0 In prior versions, return values were in radians. Now,
+return values default to degrees
+
+Examples: Variant 1
+~~~~~~~~~~~~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT ST_SetValues(
+            ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '32BF', 0, -9999),
+            1, 1, 1, ARRAY[
+                [1, 1, 1, 1, 1],
+                [1, 2, 2, 2, 1],
+                [1, 2, 3, 2, 1],
+                [1, 2, 2, 2, 1],
+                [1, 1, 1, 1, 1]
+            ]::double precision[][]
+        ) AS rast
+    )
+    SELECT
+        ST_DumpValues(ST_Aspect(rast, 1, '32BF'))
+    FROM foo
+
+                                                                                                        st_dumpvalues                                                                   
+                                      
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    ----------------------------------
+     (1,"{{315,341.565063476562,0,18.4349479675293,45},{288.434936523438,315,0,45,71.5650482177734},{270,270,-1,90,90},{251.565048217773,225,180,135,108.434951782227},{225,198.43495178
+    2227,180,161.565048217773,135}}")
+    (1 row)
+                        
+
+Examples: Variant 2
+~~~~~~~~~~~~~~~~~~~
+
+Complete example of tiles of a coverage. This query only works with
+PostgreSQL 9.1 or higher.
+
+::
+
+    WITH foo AS (
+        SELECT ST_Tile(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(6, 6, 0, 0, 1, -1, 0, 0, 0),
+                    1, '32BF', 0, -9999
+                ),
+                1, 1, 1, ARRAY[
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 2, 1],
+                    [1, 2, 2, 3, 3, 1],
+                    [1, 1, 3, 2, 1, 1],
+                    [1, 2, 2, 1, 2, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ]::double precision[]
+            ),
+            2, 2
+        ) AS rast
+    )
+    SELECT
+        t1.rast,
+        ST_Aspect(ST_Union(t2.rast), 1, t1.rast)
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE ST_Intersects(t1.rast, t2.rast)
+    GROUP BY t1.rast;
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_HillShade
+Returns the hypothetical illumination of an elevation raster band using
+provided azimuth, altitude, brightness and scale inputs.
+raster
+ST\_HillShade
+raster
+rast
+integer
+band=1
+text
+pixeltype=32BF
+double precision
+azimuth=315
+double precision
+altitude=45
+double precision
+max\_bright=255
+double precision
+scale=1.0
+boolean
+interpolate\_nodata=FALSE
+raster
+ST\_HillShade
+raster
+rast
+integer
+band
+raster
+customextent
+text
+pixeltype=32BF
+double precision
+azimuth=315
+double precision
+altitude=45
+double precision
+max\_bright=255
+double precision
+scale=1.0
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Returns the hypothetical illumination of an elevation raster band using
+the azimuth, altitude, brightness, and scale inputs. Utilizes map
+algebra and applies the hill shade equation to neighboring pixels.
+Return pixel values are between 0 and 255.
+
+``azimuth`` is a value between 0 and 360 degrees measured clockwise from
+North.
+
+``altitude`` is a value between 0 and 90 degrees where 0 degrees is at
+the horizon and 90 degrees is directly overhead.
+
+``max_bright`` is a value between 0 and 255 with 0 as no brightness and
+255 as max brightness.
+
+``scale`` is the ratio of vertical units to horizontal. For Feet:LatLon
+use scale=370400, for Meters:LatLon use scale=111120.
+
+If ``interpolate_nodata`` is TRUE, values for NODATA pixels from the
+input raster will be interpolated using ? before computing the hillshade
+illumination.
+
+    **Note**
+
+    For more information about Hillshade, please refer to `How hillshade
+    works <http://webhelp.esri.com/arcgisdesktop/9.3/index.cfm?TopicName=How%20Hillshade%20works>`__.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Uses ST\_MapAlgebra() and added optional
+``interpolate_nodata`` function parameter
+
+Changed: 2.1.0 In prior versions, azimuth and altitude were expressed in
+radians. Now, azimuth and altitude are expressed in degrees
+
+Examples: Variant 1
+~~~~~~~~~~~~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT ST_SetValues(
+            ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '32BF', 0, -9999),
+            1, 1, 1, ARRAY[
+                [1, 1, 1, 1, 1],
+                [1, 2, 2, 2, 1],
+                [1, 2, 3, 2, 1],
+                [1, 2, 2, 2, 1],
+                [1, 1, 1, 1, 1]
+            ]::double precision[][]
+        ) AS rast
+    )
+    SELECT
+        ST_DumpValues(ST_Hillshade(rast, 1, '32BF'))
+    FROM foo
+
+                                                                                                                           st_dumpvalues                                                
+                                                                           
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------
+     (1,"{{NULL,NULL,NULL,NULL,NULL},{NULL,251.32763671875,220.749786376953,147.224319458008,NULL},{NULL,220.749786376953,180.312225341797,67.7497863769531,NULL},{NULL,147.224319458008
+    ,67.7497863769531,43.1210060119629,NULL},{NULL,NULL,NULL,NULL,NULL}}")
+    (1 row)
+                        
+
+Examples: Variant 2
+~~~~~~~~~~~~~~~~~~~
+
+Complete example of tiles of a coverage. This query only works with
+PostgreSQL 9.1 or higher.
+
+::
+
+    WITH foo AS (
+        SELECT ST_Tile(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(6, 6, 0, 0, 1, -1, 0, 0, 0),
+                    1, '32BF', 0, -9999
+                ),
+                1, 1, 1, ARRAY[
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 2, 1],
+                    [1, 2, 2, 3, 3, 1],
+                    [1, 1, 3, 2, 1, 1],
+                    [1, 2, 2, 1, 2, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ]::double precision[]
+            ),
+            2, 2
+        ) AS rast
+    )
+    SELECT
+        t1.rast,
+        ST_Hillshade(ST_Union(t2.rast), 1, t1.rast)
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE ST_Intersects(t1.rast, t2.rast)
+    GROUP BY t1.rast;
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_Roughness
+Returns a raster with the calculated "roughness" of a DEM.
+raster
+ST\_Roughness
+raster
+rast
+integer
+nband
+raster
+customextent
+text
+pixeltype="32BF"
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Calculates the "roughness" of a DEM, by subtracting the maximum from the
+minimum for a given area.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    -- needs examples
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_Slope
+Returns the slope (in degrees by default) of an elevation raster band.
+Useful for analyzing terrain.
+raster
+ST\_Slope
+raster
+rast
+integer
+nband=1
+text
+pixeltype=32BF
+text
+units=DEGREES
+double precision
+scale=1.0
+boolean
+interpolate\_nodata=FALSE
+raster
+ST\_Slope
+raster
+rast
+integer
+nband
+raster
+customextent
+text
+pixeltype=32BF
+text
+units=DEGREES
+double precision
+scale=1.0
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Returns the slope (in degrees by default) of an elevation raster band.
+Utilizes map algebra and applies the slope equation to neighboring
+pixels.
+
+``units`` indicates the units of the slope. Possible values are:
+RADIANS, DEGREES (default), PERCENT.
+
+``scale`` is the ratio of vertical units to horizontal. For Feet:LatLon
+use scale=370400, for Meters:LatLon use scale=111120.
+
+If ``interpolate_nodata`` is TRUE, values for NODATA pixels from the
+input raster will be interpolated using ? before computing the surface
+slope.
+
+    **Note**
+
+    For more information about Slope, Aspect and Hillshade, please refer
+    to `ESRI - How hillshade
+    works <http://webhelp.esri.com/arcgisdesktop/9.3/index.cfm?TopicName=How%20Hillshade%20works>`__
+    and `ERDAS Field Guide - Slope
+    Images <http://geospatial.intergraph.com/fieldguide/wwhelp/wwhimpl/common/html/wwhelp.htm?context=FieldGuide&file=Slope_Images.html>`__.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 Uses ST\_MapAlgebra() and added optional ``units``,
+``scale``, ``interpolate_nodata`` function parameters
+
+Changed: 2.1.0 In prior versions, return values were in radians. Now,
+return values default to degrees
+
+Examples: Variant 1
+~~~~~~~~~~~~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT ST_SetValues(
+            ST_AddBand(ST_MakeEmptyRaster(5, 5, 0, 0, 1, -1, 0, 0, 0), 1, '32BF', 0, -9999),
+            1, 1, 1, ARRAY[
+                [1, 1, 1, 1, 1],
+                [1, 2, 2, 2, 1],
+                [1, 2, 3, 2, 1],
+                [1, 2, 2, 2, 1],
+                [1, 1, 1, 1, 1]
+            ]::double precision[][]
+        ) AS rast
+    )
+    SELECT
+        ST_DumpValues(ST_Slope(rast, 1, '32BF'))
+    FROM foo
+
+                                st_dumpvalues                                                                                                                                           
+                                                                         
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------
+     (1,"{{10.0249881744385,21.5681285858154,26.5650520324707,21.5681285858154,10.0249881744385},{21.5681285858154,35.2643890380859,36.8698959350586,35.2643890380859,21.5681285858154},
+    {26.5650520324707,36.8698959350586,0,36.8698959350586,26.5650520324707},{21.5681285858154,35.2643890380859,36.8698959350586,35.2643890380859,21.5681285858154},{10.0249881744385,21.
+    5681285858154,26.5650520324707,21.5681285858154,10.0249881744385}}")
+    (1 row)
+                        
+
+Examples: Variant 2
+~~~~~~~~~~~~~~~~~~~
+
+Complete example of tiles of a coverage. This query only works with
+PostgreSQL 9.1 or higher.
+
+::
+
+    WITH foo AS (
+        SELECT ST_Tile(
+            ST_SetValues(
+                ST_AddBand(
+                    ST_MakeEmptyRaster(6, 6, 0, 0, 1, -1, 0, 0, 0),
+                    1, '32BF', 0, -9999
+                ),
+                1, 1, 1, ARRAY[
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 2, 1],
+                    [1, 2, 2, 3, 3, 1],
+                    [1, 1, 3, 2, 1, 1],
+                    [1, 2, 2, 1, 2, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ]::double precision[]
+            ),
+            2, 2
+        ) AS rast
+    )
+    SELECT
+        t1.rast,
+        ST_Slope(ST_Union(t2.rast), 1, t1.rast)
+    FROM foo t1
+    CROSS JOIN foo t2
+    WHERE ST_Intersects(t1.rast, t2.rast)
+    GROUP BY t1.rast;
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_TPI
+Returns a raster with the calculated Topographic Position Index.
+raster
+ST\_TPI
+raster
+rast
+integer
+nband
+raster
+customextent
+text
+pixeltype="32BF"
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Calculates the Topographic Position Index, which is defined as the
+folcal mean with radius of one minus the center cell.
+
+    **Note**
+
+    This function only supports a focalmean radius of one.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    -- needs examples
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+ST\_TRI
+Returns a raster with the calculated Terrain Ruggedness Index.
+raster
+ST\_TRI
+raster
+rast
+integer
+nband
+raster
+customextent
+text
+pixeltype="32BF"
+boolean
+interpolate\_nodata=FALSE
+Description
+~~~~~~~~~~~
+
+Terrain Ruggedness Index is calculated by comparing a central pixel with
+its neighbors, taking the absolute values of the differences, and
+averaging the result.
+
+    **Note**
+
+    This function only supports a focalmean radius of one.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    -- needs examples
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?, ?, ?
+
+Raster to Geometry
+------------------
+
+Box3D
+Returns the box 3d representation of the enclosing box of the raster.
+box3d
+Box3D
+raster
+rast
+Description
+~~~~~~~~~~~
+
+Returns the box representing the extent of the raster.
+
+The polygon is defined by the corner points of the bounding box
+((``MINX``, ``MINY``), (``MAXX``, ``MAXY``))
+
+Changed: 2.0.0 In pre-2.0 versions, there used to be a box2d instead of
+box3d. Since box2d is a deprecated type, this was changed to box3d.
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT
+        rid,
+        Box3D(rast) AS rastbox
+    FROM dummy_rast;
+
+    rid |        rastbox
+    ----+-------------------------------------------------
+    1   | BOX3D(0.5 0.5 0,20.5 60.5 0)
+    2   | BOX3D(3427927.75 5793243.5 0,3427928 5793244 0)
+                        
+
+See Also
+~~~~~~~~
+
+?
+
+ST\_ConvexHull
+Return the convex hull geometry of the raster including pixel values
+equal to BandNoDataValue. For regular shaped and non-skewed rasters,
+this gives the same result as ST\_Envelope so only useful for
+irregularly shaped or skewed rasters.
+geometry
+ST\_ConvexHull
+raster
+rast
+Description
+~~~~~~~~~~~
+
+Return the convex hull geometry of the raster including the
+NoDataBandValue band pixels. For regular shaped and non-skewed rasters,
+this gives more or less the same result as ST\_Envelope so only useful
+for irregularly shaped or skewed rasters.
+
+    **Note**
+
+    ST\_Envelope floors the coordinates and hence add a little buffer
+    around the raster so the answer is subtly different from
+    ST\_ConvexHull which does not floor.
+
+Examples
+~~~~~~~~
+
+Refer to `PostGIS Raster
+Specification <http://trac.osgeo.org/postgis/wiki/WKTRaster/SpecificationWorking01>`__
+for a diagram of this.
+
+::
+
+    -- Note envelope and convexhull are more or less the same
+    SELECT ST_AsText(ST_ConvexHull(rast)) As convhull, 
+        ST_AsText(ST_Envelope(rast)) As env
+    FROM dummy_rast WHERE rid=1;
+
+                            convhull                        |                env
+    --------------------------------------------------------+------------------------------------
+     POLYGON((0.5 0.5,20.5 0.5,20.5 60.5,0.5 60.5,0.5 0.5)) | POLYGON((0 0,20 0,20 60,0 60,0 0))
+                    
+
+::
+
+     
+    -- now we skew the raster 
+    -- note how the convex hull and envelope are now different
+    SELECT ST_AsText(ST_ConvexHull(rast)) As convhull, 
+        ST_AsText(ST_Envelope(rast)) As env
+    FROM (SELECT ST_SetRotation(rast, 0.1, 0.1) As rast 
+        FROM dummy_rast WHERE rid=1) As foo;
+        
+                            convhull                        |                env
+    --------------------------------------------------------+------------------------------------
+     POLYGON((0.5 0.5,20.5 1.5,22.5 61.5,2.5 60.5,0.5 0.5)) | POLYGON((0 0,22 0,22 61,0 61,0 0))
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?
+
+ST\_DumpAsPolygons
+Returns a set of geomval (geom,val) rows, from a given raster band. If
+no band number is specified, band num defaults to 1.
+setof geomval
+ST\_DumpAsPolygons
+raster
+rast
+integer
+band\_num=1
+boolean
+exclude\_nodata\_value=TRUE
+Description
+~~~~~~~~~~~
+
+This is a set-returning function (SRF). It returns a set of geomval
+rows, formed by a geometry (geom) and a pixel band value (val). Each
+polygon is the union of all pixels for that band that have the same
+pixel value denoted by val.
+
+ST\_DumpAsPolygon is useful for polygonizing rasters. It is the reverse
+of a GROUP BY in that it creates new rows. For example it can be used to
+expand a single raster into multiple POLYGONS/MULTIPOLYGONS.
+
+Availability: Requires GDAL 1.7 or higher.
+
+    **Note**
+
+    If there is a no data value set for a band, pixels with that value
+    will not be returned.
+
+    **Note**
+
+    If you only care about count of pixels with a given value in a
+    raster, it is faster to use ?.
+
+    **Note**
+
+    This is different than ST\_PixelAsPolygons where one geometry is
+    returned for each pixel regardless of pixel value.
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT val, ST_AsText(geom) As geomwkt
+    FROM (
+    SELECT (ST_DumpAsPolygons(rast)).*
+    FROM dummy_rast 
+    WHERE rid = 2
+    ) As foo
+    WHERE val BETWEEN 249 and 251
+    ORDER BY val;
+
+     val |                                                       geomwkt
+    -----+--------------------------------------------------------------------------
+     249 | POLYGON((3427927.95 5793243.95,3427927.95 5793243.85,3427928 5793243.85,
+            3427928 5793243.95,3427927.95 5793243.95))
+     250 | POLYGON((3427927.75 5793243.9,3427927.75 5793243.85,3427927.8 5793243.85,
+            3427927.8 5793243.9,3427927.75 5793243.9))
+     250 | POLYGON((3427927.8 5793243.8,3427927.8 5793243.75,3427927.85 5793243.75,
+            3427927.85 5793243.8, 3427927.8 5793243.8))
+     251 | POLYGON((3427927.75 5793243.85,3427927.75 5793243.8,3427927.8 5793243.8,
+            3427927.8 5793243.85,3427927.75 5793243.85))
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?
+
+ST\_Envelope
+Returns the polygon representation of the extent of the raster.
+geometry
+ST\_Envelope
+raster
+rast
+Description
+~~~~~~~~~~~
+
+Returns the polygon representation of the extent of the raster in
+spatial coordinate units defined by srid. It is a float8 minimum
+bounding box represented as a polygon.
+
+The polygon is defined by the corner points of the bounding box
+((``MINX``, ``MINY``), (``MINX``, ``MAXY``), (``MAXX``, ``MAXY``),
+(``MAXX``, ``MINY``), (``MINX``, ``MINY``))
+
+Examples
+~~~~~~~~
+
+::
+
+    SELECT rid, ST_AsText(ST_Envelope(rast)) As envgeomwkt
+    FROM dummy_rast;
+
+     rid |                                         envgeomwkt
+    -----+--------------------------------------------------------------------
+       1 | POLYGON((0 0,20 0,20 60,0 60,0 0))
+       2 | POLYGON((3427927 5793243,3427928 5793243,
+            3427928 5793244,3427927 5793244, 3427927 5793243))
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?
+
+ST\_MinConvexHull
+Return the convex hull geometry of the raster excluding NODATA pixels.
+geometry
+ST\_MinConvexHull
+raster
+rast
+integer
+nband=NULL
+Description
+~~~~~~~~~~~
+
+Return the convex hull geometry of the raster excluding NODATA pixels.
+If ``nband`` is NULL, all bands of the raster are considered.
+
+Availability: 2.1.0
+
+Examples
+~~~~~~~~
+
+::
+
+    WITH foo AS (
+        SELECT
+            ST_SetValues(
+                ST_SetValues(
+                    ST_AddBand(ST_AddBand(ST_MakeEmptyRaster(9, 9, 0, 0, 1, -1, 0, 0, 0), 1, '8BUI', 0, 0), 2, '8BUI', 1, 0),
+                    1, 1, 1,
+                    ARRAY[
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 1, 1, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    ]::double precision[][]
+                ),
+                2, 1, 1,
+                ARRAY[
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0, 0]
+                ]::double precision[][]
+            ) AS rast
+    )
+    SELECT
+        ST_AsText(ST_ConvexHull(rast)) AS hull,
+        ST_AsText(ST_MinConvexHull(rast)) AS mhull,
+        ST_AsText(ST_MinConvexHull(rast, 1)) AS mhull_1,
+        ST_AsText(ST_MinConvexHull(rast, 2)) AS mhull_2
+    FROM foo
+
+                   hull               |                mhull                |               mhull_1               |               mhull_2               
+    ----------------------------------+-------------------------------------+-------------------------------------+-------------------------------------
+     POLYGON((0 0,9 0,9 -9,0 -9,0 0)) | POLYGON((0 -3,9 -3,9 -9,0 -9,0 -3)) | POLYGON((3 -3,9 -3,9 -6,3 -6,3 -3)) | POLYGON((0 -3,6 -3,6 -9,0 -9,0 -3))
+                        
+
+See Also
+~~~~~~~~
+
+?, ?, ?, ?
+
+ST\_Polygon
+Returns a multipolygon geometry formed by the union of pixels that have
+a pixel value that is not no data value. If no band number is specified,
+band num defaults to 1.
+geometry
+ST\_Polygon
+raster
+rast
+integer
+band\_num=1
+Description
+~~~~~~~~~~~
+
+Availability: 0.1.6 Requires GDAL 1.7 or higher.
+
+Enhanced: 2.1.0 Improved Speed (fully C-Based) and the returning
+multipolygon is ensured to be valid.
+
+Changed: 2.1.0 In prior versions would sometimes return a polygon,
+changed to always return multipolygon.
+
+Examples
+~~~~~~~~
+
+::
+
+    -- by default no data band value is 0 or not set, so polygon will return a square polygon   
+    SELECT ST_AsText(ST_Polygon(rast)) As geomwkt
+    FROM dummy_rast
+    WHERE rid = 2;
+
+    geomwkt
+    --------------------------------------------
+    MULTIPOLYGON(((3427927.75 5793244,3427928 5793244,3427928 5793243.75,3427927.75 5793243.75,3427927.75 5793244)))
+            
+            
+    -- now we change the no data value of first band
+    UPDATE dummy_rast SET rast = ST_SetBandNoDataValue(rast,1,254)
+    WHERE rid = 2;
+    SELECt rid, ST_BandNoDataValue(rast)
+    from dummy_rast where rid = 2;
+
+    -- ST_Polygon excludes the pixel value 254 and returns a multipolygon
+    SELECT ST_AsText(ST_Polygon(rast)) As geomwkt
+    FROM dummy_rast
+    WHERE rid = 2;
+
+    geomwkt
+    ---------------------------------------------------------
+    MULTIPOLYGON(((3427927.9 5793243.95,3427927.85 5793243.95,3427927.85 5793244,3427927.9 5793244,3427927.9 5793243.95)),((3427928 5793243.85,3427928 5793243.8,3427927.95 5793243.8,3427927.95 5793243.85,3427927.9 5793243.85,3427927.9 5793243.9,3427927.9 5793243.95,3427927.95 5793243.95,3427928 5793243.95,3427928 5793243.85)),((3427927.8 5793243.75,3427927.75 5793243.75,3427927.75 5793243.8,3427927.75 5793243.85,3427927.75 5793243.9,3427927.75 5793244,3427927.8 5793244,3427927.8 5793243.9,3427927.8 5793243.85,3427927.85 5793243.85,3427927.85 5793243.8,3427927.85 5793243.75,3427927.8 5793243.75)))
+
+    -- Or if you want the no data value different for just one time
+
+    SELECT ST_AsText(
+        ST_Polygon(
+            ST_SetBandNoDataValue(rast,1,252)
+            )
+        ) As geomwkt
+    FROM dummy_rast
+    WHERE rid =2;
+
+    geomwkt
+    ---------------------------------
+    MULTIPOLYGON(((3427928 5793243.85,3427928 5793243.8,3427928 5793243.75,3427927.85 5793243.75,3427927.8 5793243.75,3427927.8 5793243.8,3427927.75 5793243.8,3427927.75 5793243.85,3427927.75 5793243.9,3427927.75 5793244,3427927.8 5793244,3427927.85 5793244,3427927.9 5793244,3427928 5793244,3427928 5793243.95,3427928 5793243.85),(3427927.9 5793243.9,3427927.9 5793243.85,3427927.95 5793243.85,3427927.95 5793243.9,3427927.9 5793243.9)))
+                        
+
+See Also
+~~~~~~~~
+
+?, ?
+
+Raster Operators
+================
+
+&&
+Returns
+TRUE
+if A's bounding box intersects B's bounding box.
+boolean
+&&
+raster
+A
+raster
+B
+Description
+-----------
+
+The ``&&`` operator returns ``TRUE`` if the bounding box of raster A
+intersects the bounding box of raster B.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the rasters.
+
+Examples
+--------
+
+::
+
+    SELECT A.rid As a_rid, B.rid As b_rid, A.rast && B.rast As intersect
+     FROM dummy_rast AS A CROSS JOIN dummy_rast AS B LIMIT 3;
+
+     a_rid | b_rid | intersect
+    -------+-------+---------
+         2 |     2 | t
+         2 |     3 | f
+         2 |     1 | f
+
+&<
+Returns
+TRUE
+if A's bounding box is to the left of B's.
+boolean
+&<
+raster
+A
+raster
+B
+Description
+-----------
+
+The ``&<`` operator returns ``TRUE`` if the bounding box of raster A
+overlaps or is to the left of the bounding box of raster B, or more
+accurately, overlaps or is NOT to the right of the bounding box of
+raster B.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the geometries.
+
+Examples
+--------
+
+::
+
+    SELECT A.rid As a_rid, B.rid As b_rid, A.rast &< B.rast As overleft
+     FROM dummy_rast AS A CROSS JOIN dummy_rast AS B;
+
+    a_rid | b_rid | overleft
+    ------+-------+----------
+        2 |     2 | t
+        2 |     3 | f
+        2 |     1 | f
+        3 |     2 | t
+        3 |     3 | t
+        3 |     1 | f
+        1 |     2 | t
+        1 |     3 | t
+        1 |     1 | t
+
+&>
+Returns
+TRUE
+if A's bounding box is to the right of B's.
+boolean
+&>
+raster
+A
+raster
+B
+Description
+-----------
+
+The ``&>`` operator returns ``TRUE`` if the bounding box of raster A
+overlaps or is to the right of the bounding box of raster B, or more
+accurately, overlaps or is NOT to the left of the bounding box of raster
+B.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the geometries.
+
+Examples
+--------
+
+::
+
+    SELECT A.rid As a_rid, B.rid As b_rid, A.rast &> B.rast As overright
+     FROM dummy_rast AS A CROSS JOIN dummy_rast AS B;
+
+     a_rid | b_rid | overright
+    -------+-------+----------
+         2 |     2 | t
+         2 |     3 | t
+         2 |     1 | t
+         3 |     2 | f
+         3 |     3 | t
+         3 |     1 | f
+         1 |     2 | f
+         1 |     3 | t
+         1 |     1 | t
+
+Raster and Raster Band Spatial Relationships
+============================================
+
+ST\_Contains
+Return true if no points of raster rastB lie in the exterior of raster
+rastA and at least one point of the interior of rastB lies in the
+interior of rastA.
+boolean
+ST\_Contains
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Contains
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA contains rastB if and only if no points of rastB lie in the
+exterior of rastA and at least one point of the interior of rastB lies
+in the interior of rastA. If the band number is not provided (or set to
+NULL), only the convex hull of the raster is considered in the test. If
+the band number is provided, only those pixels with value (not NODATA)
+are considered in the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Contains(ST\_Polygon(raster),
+    geometry) or ST\_Contains(geometry, ST\_Polygon(raster)).
+
+    **Note**
+
+    ST\_Contains() is the inverse of ST\_Within(). So,
+    ST\_Contains(rastA, rastB) implies ST\_Within(rastB, rastA).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    -- specified band numbers
+    SELECT r1.rid, r2.rid, ST_Contains(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 1;
+
+    NOTICE:  The first raster provided has no bands
+     rid | rid | st_contains 
+    -----+-----+-------------
+       1 |   1 | 
+       1 |   2 | f
+                
+
+::
+
+    -- no band numbers specified
+    SELECT r1.rid, r2.rid, ST_Contains(r1.rast, r2.rast) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 1;
+     rid | rid | st_contains 
+    -----+-----+-------------
+       1 |   1 | t
+       1 |   2 | f
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_ContainsProperly
+Return true if rastB intersects the interior of rastA but not the
+boundary or exterior of rastA.
+boolean
+ST\_ContainsProperly
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_ContainsProperly
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA contains properly rastB if rastB intersects the interior of
+rastA but not the boundary or exterior of rastA. If the band number is
+not provided (or set to NULL), only the convex hull of the raster is
+considered in the test. If the band number is provided, only those
+pixels with value (not NODATA) are considered in the test.
+
+Raster rastA does not contain properly itself but does contain itself.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g.
+    ST\_ContainsProperly(ST\_Polygon(raster), geometry) or
+    ST\_ContainsProperly(geometry, ST\_Polygon(raster)).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_ContainsProperly(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_containsproperly 
+    -----+-----+---------------------
+       2 |   1 | f
+       2 |   2 | f
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_Covers
+Return true if no points of raster rastB lie outside raster rastA.
+boolean
+ST\_Covers
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Covers
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA covers rastB if and only if no points of rastB lie in the
+exterior of rastA. If the band number is not provided (or set to NULL),
+only the convex hull of the raster is considered in the test. If the
+band number is provided, only those pixels with value (not NODATA) are
+considered in the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Covers(ST\_Polygon(raster),
+    geometry) or ST\_Covers(geometry, ST\_Polygon(raster)).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_Covers(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_covers 
+    -----+-----+-----------
+       2 |   1 | f
+       2 |   2 | t
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_CoveredBy
+Return true if no points of raster rastA lie outside raster rastB.
+boolean
+ST\_CoveredBy
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_CoveredBy
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA is covered by rastB if and only if no points of rastA lie
+in the exterior of rastB. If the band number is not provided (or set to
+NULL), only the convex hull of the raster is considered in the test. If
+the band number is provided, only those pixels with value (not NODATA)
+are considered in the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_CoveredBy(ST\_Polygon(raster),
+    geometry) or ST\_CoveredBy(geometry, ST\_Polygon(raster)).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_CoveredBy(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_coveredby 
+    -----+-----+--------------
+       2 |   1 | f
+       2 |   2 | t
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_Disjoint
+Return true if raster rastA does not spatially intersect rastB.
+boolean
+ST\_Disjoint
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Disjoint
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA and rastB are disjointed if they do not share any space
+together. If the band number is not provided (or set to NULL), only the
+convex hull of the raster is considered in the test. If the band number
+is provided, only those pixels with value (not NODATA) are considered in
+the test.
+
+    **Note**
+
+    This function does NOT use any indexes.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Disjoint(ST\_Polygon(raster),
+    geometry).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    -- rid = 1 has no bands, hence the NOTICE and the NULL value for st_disjoint
+    SELECT r1.rid, r2.rid, ST_Disjoint(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+    NOTICE:  The second raster provided has no bands
+     rid | rid | st_disjoint 
+    -----+-----+-------------
+       2 |   1 | 
+       2 |   2 | f
+                
+
+::
+
+    -- this time, without specifying band numbers
+    SELECT r1.rid, r2.rid, ST_Disjoint(r1.rast, r2.rast) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_disjoint 
+    -----+-----+-------------
+       2 |   1 | t
+       2 |   2 | f
+                
+
+See Also
+--------
+
+?
+
+ST\_Intersects
+Return true if raster rastA spatially intersects raster rastB.
+boolean
+ST\_Intersects
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Intersects
+raster
+rastA
+raster
+rastB
+boolean
+ST\_Intersects
+raster
+rast
+integer
+nband
+geometry
+geommin
+boolean
+ST\_Intersects
+raster
+rast
+geometry
+geommin
+integer
+nband=NULL
+boolean
+ST\_Intersects
+geometry
+geommin
+raster
+rast
+integer
+nband=NULL
+Description
+-----------
+
+Return true if raster rastA spatially intersects raster rastB. If the
+band number is not provided (or set to NULL), only the convex hull of
+the raster is considered in the test. If the band number is provided,
+only those pixels with value (not NODATA) are considered in the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+Enhanced: 2.0.0 support raster/raster intersects was introduced.
+
+    **Warning**
+
+    Changed: 2.1.0 The behavior of the ST\_Intersects(raster, geometry)
+    variants changed to match that of ST\_Intersects(geometry, raster).
+
+Examples
+--------
+
+::
+
+    -- different bands of same raster
+    SELECT ST_Intersects(rast, 2, rast, 3) FROM dummy_rast WHERE rid = 2;
+
+     st_intersects 
+    ---------------
+     t
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_Overlaps
+Return true if raster rastA and rastB intersect but one does not
+completely contain the other.
+boolean
+ST\_Overlaps
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Overlaps
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Return true if raster rastA spatially overlaps raster rastB. This means
+that rastA and rastB intersect but one does not completely contain the
+other. If the band number is not provided (or set to NULL), only the
+convex hull of the raster is considered in the test. If the band number
+is provided, only those pixels with value (not NODATA) are considered in
+the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Overlaps(ST\_Polygon(raster),
+    geometry).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    -- comparing different bands of same raster
+    SELECT ST_Overlaps(rast, 1, rast, 2) FROM dummy_rast WHERE rid = 2;
+
+     st_overlaps 
+    -------------
+     f
+                
+
+See Also
+--------
+
+?
+
+ST\_Touches
+Return true if raster rastA and rastB have at least one point in common
+but their interiors do not intersect.
+boolean
+ST\_Touches
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Touches
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Return true if raster rastA spatially touches raster rastB. This means
+that rastA and rastB have at least one point in common but their
+interiors do not intersect. If the band number is not provided (or set
+to NULL), only the convex hull of the raster is considered in the test.
+If the band number is provided, only those pixels with value (not
+NODATA) are considered in the test.
+
+    **Note**
+
+    This function will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Touches(ST\_Polygon(raster),
+    geometry).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_Touches(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_touches 
+    -----+-----+------------
+       2 |   1 | f
+       2 |   2 | f
+                
+
+See Also
+--------
+
+?
+
+ST\_SameAlignment
+Returns true if rasters have same skew, scale, spatial ref and false if
+they don't with notice detailing issue.
+boolean
+ST\_SameAlignment
+raster
+rastA
+raster
+rastB
+boolean
+ST\_SameAlignment
+double precision
+ulx1
+double precision
+uly1
+double precision
+scalex1
+double precision
+scaley1
+double precision
+skewx1
+double precision
+skewy1
+double precision
+ulx2
+double precision
+uly2
+double precision
+scalex2
+double precision
+scaley2
+double precision
+skewx2
+double precision
+skewy2
+boolean
+ST\_SameAlignment
+raster set
+rastfield
+Description
+-----------
+
+Non-Aggregate version (Variants 1 and 2): Returns true if the two
+rasters (either provided directly or made using the values for
+upperleft, scale, skew and srid) have the same scale, skew, srid and at
+least one of any of the four corners of any pixel of one raster falls on
+any corner of the grid of the other raster. Returns false if they don't
+and a NOTICE detailing the alignment issue.
+
+Aggregate version (Variant 3): From a set of rasters, returns true if
+all rasters in the set are aligned. The ST\_SameAlignment() function is
+an "aggregate" function in the terminology of PostgreSQL. That means
+that it operates on rows of data, in the same way the SUM() and AVG()
+functions do.
+
+Availability: 2.0.0
+
+Enhanced: 2.1.0 addition of Aggegrate variant
+
+Examples: Rasters
+-----------------
+
+::
+
+    SELECT ST_SameAlignment(
+        ST_MakeEmptyRaster(1, 1, 0, 0, 1, 1, 0, 0),
+        ST_MakeEmptyRaster(1, 1, 0, 0, 1, 1, 0, 0)
+    ) as sm;
+
+    sm
+    ----
+    t
+
+::
+
+    SELECT ST_SameAlignment(A.rast,b.rast)
+     FROM dummy_rast AS A CROSS JOIN dummy_rast AS B;
+
+     NOTICE:  The two rasters provided have different SRIDs
+    NOTICE:  The two rasters provided have different SRIDs
+     st_samealignment
+    ------------------
+     t
+     f
+     f
+     f
+
+See Also
+--------
+
+?, ?, ?
+
+ST\_NotSameAlignmentReason
+Returns text stating if rasters are aligned and if not aligned, a reason
+why.
+boolean
+ST\_SameAlignment
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Returns text stating if rasters are aligned and if not aligned, a reason
+why.
+
+    **Note**
+
+    If there are several reasons why the rasters are not aligned, only
+    one reason (the first test to fail) will be returned.
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT
+        ST_SameAlignment(
+            ST_MakeEmptyRaster(1, 1, 0, 0, 1, 1, 0, 0),
+            ST_MakeEmptyRaster(1, 1, 0, 0, 1.1, 1.1, 0, 0)
+        ),
+        ST_NotSameAlignmentReason(
+            ST_MakeEmptyRaster(1, 1, 0, 0, 1, 1, 0, 0),
+            ST_MakeEmptyRaster(1, 1, 0, 0, 1.1, 1.1, 0, 0)
+        )
+    ;
+
+     st_samealignment |            st_notsamealignmentreason            
+    ------------------+-------------------------------------------------
+     f                | The rasters have different scales on the X axis
+    (1 row)
+                    
+
+See Also
+--------
+
+?, ?
+
+ST\_Within
+Return true if no points of raster rastA lie in the exterior of raster
+rastB and at least one point of the interior of rastA lies in the
+interior of rastB.
+boolean
+ST\_Within
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+boolean
+ST\_Within
+raster
+rastA
+raster
+rastB
+Description
+-----------
+
+Raster rastA is within rastB if and only if no points of rastA lie in
+the exterior of rastB and at least one point of the interior of rastA
+lies in the interior of rastB. If the band number is not provided (or
+set to NULL), only the convex hull of the raster is considered in the
+test. If the band number is provided, only those pixels with value (not
+NODATA) are considered in the test.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_Within(ST\_Polygon(raster),
+    geometry) or ST\_Within(geometry, ST\_Polygon(raster)).
+
+    **Note**
+
+    ST\_Within() is the inverse of ST\_Contains(). So, ST\_Within(rastA,
+    rastB) implies ST\_Contains(rastB, rastA).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_Within(r1.rast, 1, r2.rast, 1) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_within 
+    -----+-----+-----------
+       2 |   1 | f
+       2 |   2 | t
+                
+
+See Also
+--------
+
+?, ?, ?, ?
+
+ST\_DWithin
+Return true if rasters rastA and rastB are within the specified distance
+of each other.
+boolean
+ST\_DWithin
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+double precision
+distance\_of\_srid
+boolean
+ST\_DWithin
+raster
+rastA
+raster
+rastB
+double precision
+distance\_of\_srid
+Description
+-----------
+
+Return true if rasters rastA and rastB are within the specified distance
+of each other. If the band number is not provided (or set to NULL), only
+the convex hull of the raster is considered in the test. If the band
+number is provided, only those pixels with value (not NODATA) are
+considered in the test.
+
+The distance is specified in units defined by the spatial reference
+system of the rasters. For this function to make sense, the source
+rasters must both be of the same coordinate projection, having the same
+SRID.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g. ST\_DWithin(ST\_Polygon(raster),
+    geometry).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_DWithin(r1.rast, 1, r2.rast, 1, 3.14) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_dwithin 
+    -----+-----+------------
+       2 |   1 | f
+       2 |   2 | t
+                
+
+See Also
+--------
+
+?, ?
+
+ST\_DFullyWithin
+Return true if rasters rastA and rastB are fully within the specified
+distance of each other.
+boolean
+ST\_DFullyWithin
+raster
+rastA
+integer
+nbandA
+raster
+rastB
+integer
+nbandB
+double precision
+distance\_of\_srid
+boolean
+ST\_DFullyWithin
+raster
+rastA
+raster
+rastB
+double precision
+distance\_of\_srid
+Description
+-----------
+
+Return true if rasters rastA and rastB are fully within the specified
+distance of each other. If the band number is not provided (or set to
+NULL), only the convex hull of the raster is considered in the test. If
+the band number is provided, only those pixels with value (not NODATA)
+are considered in the test.
+
+The distance is specified in units defined by the spatial reference
+system of the rasters. For this function to make sense, the source
+rasters must both be of the same coordinate projection, having the same
+SRID.
+
+    **Note**
+
+    This operand will make use of any indexes that may be available on
+    the rasters.
+
+    **Note**
+
+    To test the spatial relationship of a raster and a geometry, use
+    ST\_Polygon on the raster, e.g.
+    ST\_DFullyWithin(ST\_Polygon(raster), geometry).
+
+Availability: 2.1.0
+
+Examples
+--------
+
+::
+
+    SELECT r1.rid, r2.rid, ST_DFullyWithin(r1.rast, 1, r2.rast, 1, 3.14) FROM dummy_rast r1 CROSS JOIN dummy_rast r2 WHERE r1.rid = 2;
+
+     rid | rid | st_dfullywithin 
+    -----+-----+-----------------
+       2 |   1 | f
+       2 |   2 | t
+                
+
+See Also
+--------
+
+?, ?

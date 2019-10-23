@@ -1,0 +1,14 @@
+.. list-table::
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Option
+     - Description
+   * - Workspace
+     - Name of the workspace associated with the store and its layer(s).
+   * - Data Source Name
+     - Name of the store
+   * - Description
+     - Metadata associated with the store
+   * - URL
+     - Location of the data source. Can be a URL, an absolute file path, or a relative file path.

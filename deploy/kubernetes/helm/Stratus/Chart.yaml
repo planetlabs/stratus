@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Stratus
+name: Stratus
+version: 0.1.0

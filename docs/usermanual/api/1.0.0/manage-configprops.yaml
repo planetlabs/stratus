@@ -1,0 +1,528 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Configuration Properties
+  description: Displays a collated list of all @ConfigurationProperties.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/configprops:
+    get:
+      operationId: configpropsGet
+      summary: Displays a collated list of all @ConfigurationProperties.
+      description: 
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "contexts": {
+                      "bootstrap": {
+                          "beans": {
+                              "encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties": {
+                                  "prefix": "encrypt",
+                                  "properties": {
+                                      "failOnError": true,
+                                      "keyStore": {
+                                          "type": "jks"
+                                      },
+                                      "salt": "deadbeef"
+                                  }
+                              },
+                              "spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties": {
+                                  "prefix": "spring.cloud.config",
+                                  "properties": {
+                                      "allowOverride": true,
+                                      "overrideNone": false,
+                                      "overrideSystemProperties": true
+                                  }
+                              }
+                          },
+                          "parentId": null
+                      },
+                      "stratus-1": {
+                          "beans": {
+                              "GWCProperties": {
+                                  "prefix": "stratus.gwc",
+                                  "properties": {
+                                      "defaultFileBlobStore": false
+                                  }
+                              },
+                              "WPSConfigurationProperties": {
+                                  "prefix": "stratus.wps",
+                                  "properties": {
+                                      "accessKey": "******",
+                                      "fileStorage": "local",
+                                      "s3Bucket": "stratus-wps",
+                                      "s3Region": "US_EAST_1",
+                                      "s3Url": "https://s3.amazonaws.com/",
+                                      "secretKey": "******"
+                                  }
+                              },
+                              "cacheProperties": {
+                                  "prefix": "stratus.catalog.redis.caching",
+                                  "properties": {
+                                      "useParallelQueries": false
+                                  }
+                              },
+                              "diskSpaceHealthIndicatorProperties": {
+                                  "prefix": "management.health.diskspace",
+                                  "properties": {
+                                      "path": "/.",
+                                      "threshold": {}
+                                  }
+                              },
+                              "management.endpoint.configprops-org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointProperties": {
+                                  "prefix": "management.endpoint.configprops",
+                                  "properties": {}
+                              },
+                              "management.endpoint.env-org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointProperties": {
+                                  "prefix": "management.endpoint.env",
+                                  "properties": {}
+                              },
+                              "management.endpoint.health-org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties": {
+                                  "prefix": "management.endpoint.health",
+                                  "properties": {
+                                      "roles": [],
+                                      "showDetails": "NEVER"
+                                  }
+                              },
+                              "management.endpoint.logfile-org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointProperties": {
+                                  "prefix": "management.endpoint.logfile",
+                                  "properties": {}
+                              },
+                              "management.endpoints.jmx-org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointProperties": {
+                                  "prefix": "management.endpoints.jmx",
+                                  "properties": {
+                                      "domain": "org.springframework.boot",
+                                      "exposure": {
+                                          "exclude": [],
+                                          "include": []
+                                      },
+                                      "staticNames": {}
+                                  }
+                              },
+                              "management.endpoints.web-org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties": {
+                                  "prefix": "management.endpoints.web",
+                                  "properties": {
+                                      "basePath": "/rest/manage",
+                                      "exposure": {
+                                          "exclude": [],
+                                          "include": [
+                                              "*"
+                                          ]
+                                      },
+                                      "pathMapping": {}
+                                  }
+                              },
+                              "management.endpoints.web.cors-org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties": {
+                                  "prefix": "management.endpoints.web.cors",
+                                  "properties": {
+                                      "allowedHeaders": [],
+                                      "allowedMethods": [],
+                                      "allowedOrigins": [],
+                                      "exposedHeaders": [],
+                                      "maxAge": {
+                                          "units": [
+                                              "SECONDS",
+                                              "NANOS"
+                                          ]
+                                      }
+                                  }
+                              },
+                              "management.health.status-org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorProperties": {
+                                  "prefix": "management.health.status",
+                                  "properties": {
+                                      "httpMapping": {}
+                                  }
+                              },
+                              "management.info-org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties": {
+                                  "prefix": "management.info",
+                                  "properties": {
+                                      "git": {
+                                          "mode": "FULL"
+                                      }
+                                  }
+                              },
+                              "management.metrics-org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties": {
+                                  "prefix": "management.metrics",
+                                  "properties": {
+                                      "distribution": {
+                                          "maximumExpectedValue": {},
+                                          "minimumExpectedValue": {},
+                                          "percentiles": {},
+                                          "percentilesHistogram": {},
+                                          "sla": {}
+                                      },
+                                      "enable": {},
+                                      "tags": {},
+                                      "useGlobalRegistry": true,
+                                      "web": {
+                                          "client": {
+                                              "maxUriTags": 100,
+                                              "requestsMetricName": "http.client.requests"
+                                          },
+                                          "server": {
+                                              "autoTimeRequests": true,
+                                              "maxUriTags": 100,
+                                              "requestsMetricName": "http.server.requests"
+                                          }
+                                      }
+                                  }
+                              },
+                              "management.metrics.export.simple-org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleProperties": {
+                                  "prefix": "management.metrics.export.simple",
+                                  "properties": {
+                                      "mode": "CUMULATIVE",
+                                      "step": {
+                                          "units": [
+                                              "SECONDS",
+                                              "NANOS"
+                                          ]
+                                      }
+                                  }
+                              },
+                              "management.server-org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties": {
+                                  "prefix": "management.server",
+                                  "properties": {
+                                      "servlet": {
+                                          "contextPath": ""
+                                      }
+                                  }
+                              },
+                              "management.trace.http-org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceProperties": {
+                                  "prefix": "management.trace.http",
+                                  "properties": {
+                                      "include": [
+                                          "REQUEST_HEADERS",
+                                          "TIME_TAKEN",
+                                          "COOKIE_HEADERS",
+                                          "RESPONSE_HEADERS"
+                                      ]
+                                  }
+                              },
+                              "redisConfigProps": {
+                                  "prefix": "stratus.catalog.redis",
+                                  "properties": {
+                                      "caching": {
+                                          "enableOwsCaching": true,
+                                          "enableRestCaching": true,
+                                          "useParallelQueries": false
+                                      },
+                                      "cluster": {
+                                          "hosts": []
+                                      },
+                                      "enableConnectionPooling": true,
+                                      "enableStratus12Upgrade": true,
+                                      "manual": {
+                                          "database": 0,
+                                          "host": "172.17.0.2",
+                                          "port": 6379
+                                      },
+                                      "pcf": {
+                                          "serviceId": "stratus-redis"
+                                      },
+                                      "pool": {
+                                          "LIFO": true,
+                                          "blockWhenExhausted": true,
+                                          "fairness": false,
+                                          "maxIdle": 50,
+                                          "maxTotal": 1000,
+                                          "maxWaitMillis": -1,
+                                          "minEvictableIdleTimeMillis": 1800000,
+                                          "minIdle": 15,
+                                          "numTestsPerEvictionRun": 3,
+                                          "softMinEvictableIdleTimeMillis": -1,
+                                          "testOnBorrow": false,
+                                          "testOnCreate": false,
+                                          "testOnReturn": false,
+                                          "testWhileIdle": false,
+                                          "timeBetweenEvictionRunsMillis": -1
+                                      },
+                                      "sentinel": {
+                                          "hosts": [],
+                                          "useSlaveReads": true
+                                      },
+                                      "shareNativeLettuceConnection": false
+                                  }
+                              },
+                              "resourceInitializationConfigProps": {
+                                  "prefix": "stratus.store",
+                                  "properties": {
+                                      "overwriteResources": false
+                                  }
+                              },
+                              "server-org.springframework.boot.autoconfigure.web.ServerProperties": {
+                                  "prefix": "server",
+                                  "properties": {
+                                      "error": {
+                                          "includeException": false,
+                                          "includeStacktrace": "NEVER",
+                                          "path": "/error",
+                                          "whitelabel": {
+                                              "enabled": true
+                                          }
+                                      },
+                                      "jetty": {
+                                          "acceptors": -1,
+                                          "accesslog": {
+                                              "append": false,
+                                              "dateFormat": "dd/MMM/yyyy:HH:mm:ss Z",
+                                              "enabled": false,
+                                              "extendedFormat": false,
+                                              "logCookies": false,
+                                              "logLatency": false,
+                                              "logServer": false,
+                                              "retentionPeriod": 31,
+                                              "timeZone": "GMT"
+                                          },
+                                          "maxHttpPostSize": {},
+                                          "selectors": -1
+                                      },
+                                      "maxHttpHeaderSize": {},
+                                      "port": 8080,
+                                      "servlet": {
+                                          "applicationDisplayName": "application",
+                                          "contextParameters": {
+                                              "PARTIAL_BUFFER_STRATEGY_SIZE": "50",
+                                              "serviceStrategy": "SPEED"
+                                          },
+                                          "contextPath": "/geoserver"
+                                      },
+                                      "tomcat": {
+                                          "acceptCount": 100,
+                                          "accesslog": {
+                                              "buffered": true,
+                                              "directory": "logs",
+                                              "enabled": false,
+                                              "fileDateFormat": ".yyyy-MM-dd",
+                                              "pattern": "common",
+                                              "prefix": "access_log",
+                                              "renameOnRotate": false,
+                                              "requestAttributesEnabled": false,
+                                              "rotate": true,
+                                              "suffix": ".log"
+                                          },
+                                          "additionalTldSkipPatterns": [],
+                                          "backgroundProcessorDelay": {
+                                              "units": [
+                                                  "SECONDS",
+                                                  "NANOS"
+                                              ]
+                                          },
+                                          "internalProxies": "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|192\\.168\\.\\d{1,3}\\.\\d{1,3}|169\\.254\\.\\d{1,3}\\.\\d{1,3}|127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|0:0:0:0:0:0:0:1|::1",
+                                          "maxConnections": 10000,
+                                          "maxHttpHeaderSize": {},
+                                          "maxHttpPostSize": {},
+                                          "maxSwallowSize": {},
+                                          "maxThreads": 200,
+                                          "minSpareThreads": 10,
+                                          "portHeader": "X-Forwarded-Port",
+                                          "protocolHeaderHttpsValue": "https",
+                                          "redirectContextRoot": true,
+                                          "resource": {
+                                              "allowCaching": true
+                                          },
+                                          "uriEncoding": "UTF-8"
+                                      },
+                                      "undertow": {
+                                          "accesslog": {
+                                              "dir": "/logs",
+                                              "enabled": false,
+                                              "pattern": "common",
+                                              "prefix": "access_log.",
+                                              "rotate": true,
+                                              "suffix": "log"
+                                          },
+                                          "eagerFilterInit": true,
+                                          "maxHttpPostSize": {}
+                                      }
+                                  }
+                              },
+                              "spring.cloud.compatibility-verifier-org.springframework.cloud.configuration.CompatibilityVerifierProperties": {
+                                  "prefix": "spring.cloud.compatibility-verifier",
+                                  "properties": {
+                                      "compatibleBootVersions": [
+                                          "2.1.x"
+                                      ],
+                                      "enabled": false
+                                  }
+                              },
+                              "spring.http-org.springframework.boot.autoconfigure.http.HttpProperties": {
+                                  "prefix": "spring.http",
+                                  "properties": {
+                                      "encoding": {
+                                          "charset": "UTF-8",
+                                          "force": true,
+                                          "forceRequest": false,
+                                          "forceResponse": false
+                                      },
+                                      "logRequestDetails": false
+                                  }
+                              },
+                              "spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties": {
+                                  "prefix": "spring.info",
+                                  "properties": {
+                                      "build": {
+                                          "encoding": "UTF-8",
+                                          "location": {}
+                                      },
+                                      "git": {
+                                          "encoding": "UTF-8",
+                                          "location": {}
+                                      }
+                                  }
+                              },
+                              "spring.jackson-org.springframework.boot.autoconfigure.jackson.JacksonProperties": {
+                                  "prefix": "spring.jackson",
+                                  "properties": {
+                                      "deserialization": {},
+                                      "generator": {},
+                                      "mapper": {},
+                                      "parser": {},
+                                      "serialization": {
+                                          "FAIL_ON_EMPTY_BEANS": false
+                                      },
+                                      "visibility": {}
+                                  }
+                              },
+                              "spring.mvc-org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties": {
+                                  "prefix": "spring.mvc",
+                                  "properties": {
+                                      "async": {},
+                                      "contentnegotiation": {
+                                          "favorParameter": false,
+                                          "favorPathExtension": true,
+                                          "mediaTypes": {}
+                                      },
+                                      "dispatchOptionsRequest": true,
+                                      "dispatchTraceRequest": false,
+                                      "ignoreDefaultModelOnRedirect": true,
+                                      "localeResolver": "ACCEPT_HEADER",
+                                      "logResolvedException": false,
+                                      "pathmatch": {
+                                          "useRegisteredSuffixPattern": false,
+                                          "useSuffixPattern": true
+                                      },
+                                      "servlet": {
+                                          "loadOnStartup": 1,
+                                          "path": "/"
+                                      },
+                                      "staticPathPattern": "/**",
+                                      "throwExceptionIfNoHandlerFound": false,
+                                      "view": {}
+                                  }
+                              },
+                              "spring.resources-org.springframework.boot.autoconfigure.web.ResourceProperties": {
+                                  "prefix": "spring.resources",
+                                  "properties": {
+                                      "addMappings": true,
+                                      "cache": {
+                                          "cachecontrol": {}
+                                      },
+                                      "chain": {
+                                          "cache": true,
+                                          "compressed": false,
+                                          "htmlApplicationCache": false,
+                                          "strategy": {
+                                              "content": {
+                                                  "enabled": false,
+                                                  "paths": [
+                                                      "/**"
+                                                  ]
+                                              },
+                                              "fixed": {
+                                                  "enabled": false,
+                                                  "paths": [
+                                                      "/**"
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      "staticLocations": [
+                                          "classpath:/META-INF/resources/",
+                                          "classpath:/resources/",
+                                          "classpath:/static/",
+                                          "classpath:/public/"
+                                      ]
+                                  }
+                              },
+                              "spring.security-org.springframework.boot.autoconfigure.security.SecurityProperties": {
+                                  "prefix": "spring.security",
+                                  "properties": {
+                                      "filter": {
+                                          "dispatcherTypes": [
+                                              "ASYNC",
+                                              "REQUEST",
+                                              "ERROR"
+                                          ],
+                                          "order": -100
+                                      },
+                                      "user": {
+                                          "name": "user",
+                                          "password": "******",
+                                          "roles": []
+                                      }
+                                  }
+                              },
+                              "spring.thymeleaf-org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties": {
+                                  "prefix": "spring.thymeleaf",
+                                  "properties": {
+                                      "cache": true,
+                                      "checkTemplate": true,
+                                      "checkTemplateLocation": true,
+                                      "enableSpringElCompiler": false,
+                                      "enabled": true,
+                                      "encoding": "UTF-8",
+                                      "mode": "HTML",
+                                      "prefix": "classpath:/templates/",
+                                      "reactive": {
+                                          "maxChunkSize": {}
+                                      },
+                                      "renderHiddenMarkersBeforeCheckboxes": false,
+                                      "servlet": {
+                                          "contentType": {
+                                              "parameters": {}
+                                          },
+                                          "producePartialOutputWhileProcessing": true
+                                      },
+                                      "suffix": ".html"
+                                  }
+                              },
+                              "stratusCatalogConfigProps": {
+                                  "prefix": "stratus",
+                                  "properties": {
+                                      "initializerTimeout": 240000,
+                                      "maxWaitForInitializerCheck": 10000,
+                                      "minWaitForInitializerCheck": 1000,
+                                      "proxyBaseUrl": ""
+                                  }
+                              },
+                              "stratusConfigProps": {
+                                  "prefix": "stratus",
+                                  "properties": {
+                                      "jndi": {
+                                          "sources": []
+                                      },
+                                      "tomcat": {
+                                          "useRelativeRedirects": true
+                                      },
+                                      "web": {
+                                          "enableRedisSessions": false,
+                                          "requestLoggingFilterEnabled": false,
+                                          "requestLoggingFilterLogRequestBodies": false,
+                                          "theme": "light"
+                                      }
+                                  }
+                              }
+                          },
+                          "parentId": "bootstrap"
+                      }
+                  }
+              }

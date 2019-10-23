@@ -1,0 +1,11 @@
+containers:
+- name: stratus
+  image: {{ .Values.stratus.container.repo }}/{{ .Values.stratus.container.image }}:{{ .Values.stratus.container.tag }}
+  volumeMounts:
+  - mountPath: /var/gwc
+    name: tile-cache
+volumes:
+- name: tile-cache
+  hostPath:
+    path: /var/stratus/gwc
+    type: Directory

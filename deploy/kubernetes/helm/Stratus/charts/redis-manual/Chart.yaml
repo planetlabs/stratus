@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for Redis Manual (no sentinel)
+name: RedisManual
+version: 0.1.0

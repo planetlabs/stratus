@@ -1,0 +1,899 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Environment
+  description: Exposes properties from Spring’s ConfigurableEnvironment.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/env:
+    get:
+      operationId: envGet
+      summary: Exposes properties from Spring’s ConfigurableEnvironment.
+      description: 
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "activeProfiles": [
+                      "lettuce-manual"
+                  ],
+                  "propertySources": [
+                      {
+                          "name": "server.ports",
+                          "properties": {
+                              "local.server.port": {
+                                  "value": 8080
+                              }
+                          }
+                      },
+                      {
+                          "name": "servletContextInitParams",
+                          "properties": {
+                              "PARTIAL_BUFFER_STRATEGY_SIZE": {
+                                  "value": "50"
+                              },
+                              "serviceStrategy": {
+                                  "value": "SPEED"
+                              }
+                          }
+                      },
+                      {
+                          "name": "systemProperties",
+                          "properties": {
+                              "GEOSERVER_DATA_DIR": {
+                                  "value": "/tmp/baseDir16873533030171990909"
+                              },
+                              "GEOSERVER_XSTREAM_WHITELIST": {
+                                  "value": "org.geoserver.**"
+                              },
+                              "GEOWEBCACHE_CACHE_DIR": {
+                                  "value": "/tmp/gwc"
+                              },
+                              "GeoServerConfigurationLock.enabled": {
+                                  "value": "false"
+                              },
+                              "PID": {
+                                  "value": "1"
+                              },
+                              "awt.toolkit": {
+                                  "value": "sun.awt.X11.XToolkit"
+                              },
+                              "catalina.base": {
+                                  "value": "/tmp/tomcat.844037886354704409.8080"
+                              },
+                              "catalina.home": {
+                                  "value": "/tmp/tomcat.844037886354704409.8080"
+                              },
+                              "catalina.useNaming": {
+                                  "value": "false"
+                              },
+                              "file.encoding": {
+                                  "value": "ANSI_X3.4-1968"
+                              },
+                              "file.separator": {
+                                  "value": "/"
+                              },
+                              "java.awt.graphicsenv": {
+                                  "value": "sun.awt.X11GraphicsEnvironment"
+                              },
+                              "java.awt.headless": {
+                                  "value": "true"
+                              },
+                              "java.awt.printerjob": {
+                                  "value": "sun.print.PSPrinterJob"
+                              },
+                              "java.class.path": {
+                                  "value": "/stratus-application-exec.jar"
+                              },
+                              "java.class.version": {
+                                  "value": "55.0"
+                              },
+                              "java.home": {
+                                  "value": "/usr/lib/jvm/java-11-amazon-corretto"
+                              },
+                              "java.io.tmpdir": {
+                                  "value": "/tmp"
+                              },
+                              "java.library.path": {
+                                  "value": "/usr/local/lib:/usr/lib:/usr/lib64:/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"
+                              },
+                              "java.protocol.handler.pkgs": {
+                                  "value": "org.springframework.boot.loader"
+                              },
+                              "java.runtime.name": {
+                                  "value": "OpenJDK Runtime Environment"
+                              },
+                              "java.runtime.version": {
+                                  "value": "11.0.4+11-LTS"
+                              },
+                              "java.specification.name": {
+                                  "value": "Java Platform API Specification"
+                              },
+                              "java.specification.vendor": {
+                                  "value": "Oracle Corporation"
+                              },
+                              "java.specification.version": {
+                                  "value": "11"
+                              },
+                              "java.util.prefs.syncInterval": {
+                                  "value": "5000000"
+                              },
+                              "java.vendor": {
+                                  "value": "Amazon.com Inc."
+                              },
+                              "java.vendor.url": {
+                                  "value": "https://aws.amazon.com/corretto/"
+                              },
+                              "java.vendor.url.bug": {
+                                  "value": "https://github.com/corretto/corretto-11/issues/"
+                              },
+                              "java.vendor.version": {
+                                  "value": "Corretto-11.0.4.11.1"
+                              },
+                              "java.version": {
+                                  "value": "11.0.4"
+                              },
+                              "java.version.date": {
+                                  "value": "2019-07-16"
+                              },
+                              "java.vm.compressedOopsMode": {
+                                  "value": "32-bit"
+                              },
+                              "java.vm.info": {
+                                  "value": "mixed mode"
+                              },
+                              "java.vm.name": {
+                                  "value": "OpenJDK 64-Bit Server VM"
+                              },
+                              "java.vm.specification.name": {
+                                  "value": "Java Virtual Machine Specification"
+                              },
+                              "java.vm.specification.vendor": {
+                                  "value": "Oracle Corporation"
+                              },
+                              "java.vm.specification.version": {
+                                  "value": "11"
+                              },
+                              "java.vm.vendor": {
+                                  "value": "Amazon.com Inc."
+                              },
+                              "java.vm.version": {
+                                  "value": "11.0.4+11-LTS"
+                              },
+                              "jdk.debug": {
+                                  "value": "release"
+                              },
+                              "line.separator": {
+                                  "value": "\n"
+                              },
+                              "org.geotools.epsg.factory.timeout": {
+                                  "value": "-1"
+                              },
+                              "org.geotools.referencing.forceXY": {
+                                  "value": "true"
+                              },
+                              "os.arch": {
+                                  "value": "amd64"
+                              },
+                              "os.name": {
+                                  "value": "Linux"
+                              },
+                              "os.version": {
+                                  "value": "4.9.184-linuxkit"
+                              },
+                              "path.separator": {
+                                  "value": ":"
+                              },
+                              "spring.beaninfo.ignore": {
+                                  "value": "true"
+                              },
+                              "sun.arch.data.model": {
+                                  "value": "64"
+                              },
+                              "sun.boot.library.path": {
+                                  "value": "/usr/lib/jvm/java-11-amazon-corretto/lib"
+                              },
+                              "sun.cpu.endian": {
+                                  "value": "little"
+                              },
+                              "sun.cpu.isalist": {
+                                  "value": ""
+                              },
+                              "sun.font.fontmanager": {
+                                  "value": "sun.awt.X11FontManager"
+                              },
+                              "sun.io.unicode.encoding": {
+                                  "value": "UnicodeLittle"
+                              },
+                              "sun.java.command": {
+                                  "value": "******"
+                              },
+                              "sun.java.launcher": {
+                                  "value": "SUN_STANDARD"
+                              },
+                              "sun.jnu.encoding": {
+                                  "value": "ANSI_X3.4-1968"
+                              },
+                              "sun.management.compiler": {
+                                  "value": "HotSpot 64-Bit Tiered Compilers"
+                              },
+                              "sun.nio.ch.bugLevel": {
+                                  "value": ""
+                              },
+                              "sun.os.patch.level": {
+                                  "value": "unknown"
+                              },
+                              "user.country": {
+                                  "value": "US"
+                              },
+                              "user.dir": {
+                                  "value": "/"
+                              },
+                              "user.home": {
+                                  "value": "/root"
+                              },
+                              "user.language": {
+                                  "value": "en"
+                              },
+                              "user.name": {
+                                  "value": "root"
+                              },
+                              "user.timezone": {
+                                  "value": "GMT"
+                              }
+                          }
+                      },
+                      {
+                          "name": "systemEnvironment",
+                          "properties": {
+                              "ANT_VERSION": {
+                                  "origin": "System Environment Property \"ANT_VERSION\"",
+                                  "value": "1.10.5"
+                              },
+                              "GDAL_VERSION": {
+                                  "origin": "System Environment Property \"GDAL_VERSION\"",
+                                  "value": "2.3.2"
+                              },
+                              "HOME": {
+                                  "origin": "System Environment Property \"HOME\"",
+                                  "value": "/root"
+                              },
+                              "HOSTNAME": {
+                                  "origin": "System Environment Property \"HOSTNAME\"",
+                                  "value": "a9fc98bd74f7"
+                              },
+                              "JAVA_HOME": {
+                                  "origin": "System Environment Property \"JAVA_HOME\"",
+                                  "value": "/usr/lib/jvm/java-11-amazon-corretto"
+                              },
+                              "LD_LIBRARY_PATH": {
+                                  "origin": "System Environment Property \"LD_LIBRARY_PATH\"",
+                                  "value": "/usr/local/lib:/usr/lib:/usr/lib64"
+                              },
+                              "PATH": {
+                                  "origin": "System Environment Property \"PATH\"",
+                                  "value": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                              },
+                              "STRATUS_ADMIN_ENABLED": {
+                                  "origin": "System Environment Property \"STRATUS_ADMIN_ENABLED\"",
+                                  "value": "true"
+                              },
+                              "STRATUS_CATALOG_REDIS_MANUAL_HOST": {
+                                  "origin": "System Environment Property \"STRATUS_CATALOG_REDIS_MANUAL_HOST\"",
+                                  "value": "172.17.0.2"
+                              },
+                              "STRATUS_WPS_FILE_STORAGE": {
+                                  "origin": "System Environment Property \"STRATUS_WPS_FILE_STORAGE\"",
+                                  "value": "local"
+                              }
+                          }
+                      },
+                      {
+                          "name": "applicationConfig: [classpath:/application.yml] (document #1)",
+                          "properties": {
+                              "spring.profiles": {
+                                  "origin": "class path resource [application.yml]:145:13",
+                                  "value": "lettuce-manual,jedis-manual"
+                              },
+                              "stratus.catalog.redis.manual.database": {
+                                  "origin": "class path resource [application.yml]:153:19",
+                                  "value": "0"
+                              },
+                              "stratus.catalog.redis.manual.host": {
+                                  "origin": "class path resource [application.yml]:151:15",
+                                  "value": "localhost"
+                              },
+                              "stratus.catalog.redis.manual.port": {
+                                  "origin": "class path resource [application.yml]:152:15",
+                                  "value": "6379"
+                              }
+                          }
+                      },
+                      {
+                          "name": "applicationConfig: [classpath:/application.properties]",
+                          "properties": {
+                              "gwc.context.suffix": {
+                                  "origin": "class path resource [application.properties]:1:20",
+                                  "value": "gwc"
+                              }
+                          }
+                      },
+                      {
+                          "name": "applicationConfig: [classpath:/application.yml] (document #0)",
+                          "properties": {
+                              "logback.access.config": {
+                                  "origin": "class path resource [application.yml]:137:11",
+                                  "value": "classpath:logback-access.xml"
+                              },
+                              "logback.access.enabled": {
+                                  "origin": "class path resource [application.yml]:136:12",
+                                  "value": true
+                              },
+                              "logback.access.tomcat.enableRequestAttributes": {
+                                  "origin": "class path resource [application.yml]:140:30",
+                                  "value": true
+                              },
+                              "logback.access.useServerPortInsteadOfLocalPort": {
+                                  "origin": "class path resource [application.yml]:138:36",
+                                  "value": true
+                              },
+                              "logging.level.ROOT": {
+                                  "origin": "class path resource [application.yml]:12:11",
+                                  "value": "WARN"
+                              },
+                              "logging.level.org.springframework.boot.web.embedded.tomcat.TomcatWebServer": {
+                                  "origin": "class path resource [application.yml]:19:67",
+                                  "value": "INFO"
+                              },
+                              "logging.level.stratus.StratusApplication": {
+                                  "origin": "class path resource [application.yml]:13:33",
+                                  "value": "INFO"
+                              },
+                              "logging.level.stratus.cache": {
+                                  "origin": "class path resource [application.yml]:18:20",
+                                  "value": "DEBUG"
+                              },
+                              "logging.level.stratus.redis.config": {
+                                  "origin": "class path resource [application.yml]:15:27",
+                                  "value": "DEBUG"
+                              },
+                              "logging.level.stratus.redis.geoserver": {
+                                  "origin": "class path resource [application.yml]:14:30",
+                                  "value": "INFO"
+                              },
+                              "logging.level.stratus.redis.geoserver.RedisGeoServerLoader": {
+                                  "origin": "class path resource [application.yml]:17:51",
+                                  "value": "INFO"
+                              },
+                              "logging.level.stratus.redis.lock": {
+                                  "origin": "class path resource [application.yml]:16:25",
+                                  "value": "DEBUG"
+                              },
+                              "management.endpoints.web.base-path": {
+                                  "origin": "class path resource [application.yml]:29:18",
+                                  "value": "/rest/manage"
+                              },
+                              "management.endpoints.web.exposure.include": {
+                                  "origin": "class path resource [application.yml]:28:18",
+                                  "value": "*"
+                              },
+                              "management.health.elasticsearch.enabled": {
+                                  "origin": "class path resource [application.yml]:24:16",
+                                  "value": false
+                              },
+                              "management.info.git.mode": {
+                                  "origin": "class path resource [application.yml]:32:13",
+                                  "value": "full"
+                              },
+                              "ribbon.httpclient.enabled": {
+                                  "origin": "class path resource [application.yml]:133:14",
+                                  "value": false
+                              },
+                              "server.compression.enabled": {
+                                  "origin": "class path resource [application.yml]:3:14",
+                                  "value": true
+                              },
+                              "server.servlet.context_parameters.PARTIAL_BUFFER_STRATEGY_SIZE": {
+                                  "origin": "class path resource [application.yml]:8:37",
+                                  "value": 50
+                              },
+                              "server.servlet.context_parameters.serviceStrategy": {
+                                  "origin": "class path resource [application.yml]:7:24",
+                                  "value": "SPEED"
+                              },
+                              "spring.aop.auto": {
+                                  "origin": "class path resource [application.yml]:83:11",
+                                  "value": false
+                              },
+                              "spring.batch.job.enabled": {
+                                  "origin": "class path resource [application.yml]:105:16",
+                                  "value": false
+                              },
+                              "spring.cache.type": {
+                                  "origin": "class path resource [application.yml]:109:11",
+                                  "value": "caffeine"
+                              },
+                              "spring.cloud.discovery.enabled": {
+                                  "origin": "class path resource [application.yml]:119:16",
+                                  "value": false
+                              },
+                              "spring.cloud.features.enabled": {
+                                  "origin": "class path resource [application.yml]:117:16",
+                                  "value": false
+                              },
+                              "spring.cloud.httpclientfactories.apache.enabled": {
+                                  "origin": "class path resource [application.yml]:122:18",
+                                  "value": false
+                              },
+                              "spring.cloud.httpclientfactories.ok.enabled": {
+                                  "origin": "class path resource [application.yml]:124:18",
+                                  "value": false
+                              },
+                              "spring.cloud.refresh.enabled": {
+                                  "origin": "class path resource [application.yml]:112:16",
+                                  "value": false
+                              },
+                              "spring.cloud.service-registry.auto-registration.enabled": {
+                                  "origin": "class path resource [application.yml]:115:18",
+                                  "value": false
+                              },
+                              "spring.freemarker.checkTemplateLocation": {
+                                  "origin": "class path resource [application.yml]:85:28",
+                                  "value": false
+                              },
+                              "spring.http.encoding.charset": {
+                                  "origin": "class path resource [application.yml]:88:16",
+                                  "value": "UTF-8"
+                              },
+                              "spring.http.encoding.enabled": {
+                                  "origin": "class path resource [application.yml]:89:16",
+                                  "value": true
+                              },
+                              "spring.http.encoding.force": {
+                                  "origin": "class path resource [application.yml]:90:14",
+                                  "value": true
+                              },
+                              "spring.jackson.serialization.FAIL_ON_EMPTY_BEANS": {
+                                  "origin": "class path resource [application.yml]:93:28",
+                                  "value": false
+                              },
+                              "spring.main.allow-bean-definition-overriding": {
+                                  "origin": "class path resource [application.yml]:126:39",
+                                  "value": true
+                              },
+                              "spring.metrics.servo.enabled": {
+                                  "origin": "class path resource [application.yml]:129:16",
+                                  "value": false
+                              },
+                              "spring.mvc.contentnegotiation.favor-path-extension": {
+                                  "origin": "class path resource [application.yml]:100:29",
+                                  "value": true
+                              },
+                              "spring.mvc.favicon.enabled": {
+                                  "origin": "class path resource [application.yml]:96:16",
+                                  "value": false
+                              },
+                              "spring.mvc.pathmatch.use-suffix-pattern": {
+                                  "origin": "class path resource [application.yml]:102:27",
+                                  "value": true
+                              },
+                              "spring.mvc.servlet.load-on-startup": {
+                                  "origin": "class path resource [application.yml]:98:24",
+                                  "value": 1
+                              },
+                              "spring.session.store-type": {
+                                  "origin": "class path resource [application.yml]:107:17",
+                                  "value": "redis"
+                              },
+                              "stratus.admin-enabled": {
+                                  "origin": "class path resource [application.yml]:35:18",
+                                  "value": true
+                              },
+                              "stratus.catalog.redis.caching.enable-ows-caching": {
+                                  "origin": "class path resource [application.yml]:54:29",
+                                  "value": true
+                              },
+                              "stratus.catalog.redis.caching.enable-rest-caching": {
+                                  "origin": "class path resource [application.yml]:53:30",
+                                  "value": true
+                              },
+                              "stratus.catalog.redis.caching.use-parallel-queries": {
+                                  "origin": "class path resource [application.yml]:55:31",
+                                  "value": false
+                              },
+                              "stratus.catalog.redis.enable-connection-pooling": {
+                                  "origin": "class path resource [application.yml]:50:34",
+                                  "value": true
+                              },
+                              "stratus.catalog.redis.enable-stratus-1-2-upgrade": {
+                                  "origin": "class path resource [application.yml]:51:35",
+                                  "value": true
+                              },
+                              "stratus.catalog.redis.pool.max-idle": {
+                                  "origin": "class path resource [application.yml]:59:19",
+                                  "value": 50
+                              },
+                              "stratus.catalog.redis.pool.max-total": {
+                                  "origin": "class path resource [application.yml]:57:20",
+                                  "value": 1000
+                              },
+                              "stratus.catalog.redis.pool.min-idle": {
+                                  "origin": "class path resource [application.yml]:58:19",
+                                  "value": 15
+                              },
+                              "stratus.catalog.redis.share-native-lettuce-connection": {
+                                  "origin": "class path resource [application.yml]:49:40",
+                                  "value": false
+                              },
+                              "stratus.gwc.default-file-blob-store": {
+                                  "origin": "class path resource [application.yml]:41:30",
+                                  "value": false
+                              },
+                              "stratus.initializer-timeout": {
+                                  "origin": "class path resource [application.yml]:39:24",
+                                  "value": 240000
+                              },
+                              "stratus.max-wait-for-initializer-check": {
+                                  "origin": "class path resource [application.yml]:38:35",
+                                  "value": 10000
+                              },
+                              "stratus.min-wait-for-initializer-check": {
+                                  "origin": "class path resource [application.yml]:37:35",
+                                  "value": 1000
+                              },
+                              "stratus.proxy-base-url": {
+                                  "origin": "class path resource [application.yml]:36:19",
+                                  "value": ""
+                              },
+                              "stratus.store.overwrite-resources": {
+                                  "origin": "class path resource [application.yml]:61:26",
+                                  "value": false
+                              },
+                              "stratus.store.resource.gwc-gs.xml": {
+                                  "origin": "class path resource [application.yml]:68:19",
+                                  "value": "<GeoServerGWCConfig><version>1.1.0</version><directWMSIntegrationEnabled>true</directWMSIntegrationEnabled><WMSCEnabled>true</WMSCEnabled><TMSEnabled>true</TMSEnabled><securityEnabled>false</securityEnabled><innerCachingEnabled>false</innerCachingEnabled><persistenceEnabled>true</persistenceEnabled><cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass><cacheConfigurations><entry><string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string><InnerCacheConfiguration><hardMemoryLimit>16</hardMemoryLimit><policy>NULL</policy><concurrencyLevel>4</concurrencyLevel><evictionTime>120</evictionTime></InnerCacheConfiguration></entry></cacheConfigurations><cacheLayersByDefault>true</cacheLayersByDefault><cacheNonDefaultStyles>true</cacheNonDefaultStyles><metaTilingX>4</metaTilingX><metaTilingY>4</metaTilingY><gutter>0</gutter><defaultCachingGridSetIds><string>EPSG:4326</string><string>EPSG:900913</string></defaultCachingGridSetIds><defaultCoverageCacheFormats><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>image/png8</string></defaultCoverageCacheFormats><defaultVectorCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultVectorCacheFormats><defaultOtherCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultOtherCacheFormats></GeoServerGWCConfig>"
+                              },
+                              "stratus.store.resource.security/masterpw.xml": {
+                                  "origin": "class path resource [application.yml]:63:30",
+                                  "value": "<masterPassword><providerName>default</providerName></masterPassword>"
+                              },
+                              "stratus.store.resource.security/masterpw/default/config.xml": {
+                                  "origin": "class path resource [application.yml]:64:45",
+                                  "value": "<urlProvider><id>7a1e2288:15647e7504e:-8000</id><name>default</name><className>org.geoserver.security.password.URLMasterPasswordProvider</className><readOnly>false</readOnly><url>file:passwd</url><encrypting>false</encrypting></urlProvider>"
+                              },
+                              "stratus.store.resource.security/masterpw/default/passwd": {
+                                  "origin": "class path resource [application.yml]:65:41",
+                                  "value": "geoserver"
+                              },
+                              "stratus.store.resource.security/rest.properties": {
+                                  "origin": "class path resource [application.yml]:67:33",
+                                  "value": "/rest/manage/health;GET=IS_AUTHENTICATED_ANONYMOUSLY\n/rest/workspaces/**;GET=ROLE_AUTHENTICATED\n/rest/workspaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layers/**;GET=ROLE_AUTHENTICATED\n/rest/layers/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/styles/**;GET=ROLE_AUTHENTICATED\n/rest/styles/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/rest/**;GET=ROLE_AUTHENTICATED\n/gwc/rest/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/namespaces/**;GET=ROLE_AUTHENTICATED\n/rest/namespaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layergroups/**;GET=ROLE_AUTHENTICATED\n/rest/layergroups/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wms/**;GET=ROLE_AUTHENTICATED\n/wms/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wfs/**;GET=ROLE_AUTHENTICATED\n/wfs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wcs/**;GET=ROLE_AUTHENTICATED\n/wcs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wps/**;GET=ROLE_AUTHENTICATED\n/wps/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/csw/**;GET=ROLE_AUTHENTICATED\n/csw/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/ows/**;GET=ROLE_AUTHENTICATED\n/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/**;GET=ROLE_AUTHENTICATED\n/gwc/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/*/*/ows/**;GET=ROLE_AUTHENTICATED\n/*/*/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**/ows/**;GET=ROLE_AUTHENTICATED\n/**/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**;GET=ADMIN,ROLE_ADMINISTRATOR\n/**;POST,DELETE,PUT=ADMIN,ROLE_ADMINISTRATOR"
+                              },
+                              "stratus.store.resource.wcs.xml": {
+                                  "origin": "class path resource [application.yml]:71:16",
+                                  "value": "<wcs><id>wcs</id><name>WCS</name><enabled>true</enabled><maxInputMemory>0</maxInputMemory><maxOutputMemory>0</maxOutputMemory></wcs>"
+                              },
+                              "stratus.store.resource.wfs.xml": {
+                                  "origin": "class path resource [application.yml]:70:16",
+                                  "value": "<wfs><id>wfs</id><name>WFS</name><enabled>true</enabled><serviceLevel>BASIC</serviceLevel><maxFeatures>1000000</maxFeatures></wfs>"
+                              },
+                              "stratus.store.resource.wms.xml": {
+                                  "origin": "class path resource [application.yml]:69:16",
+                                  "value": "<wms><id>wms</id><name>WMS</name><enabled>true</enabled><watermark class=\"org.geoserver.wms.WatermarkInfoImpl\"><enabled>false</enabled><position>BOT_RIGHT</position><transparency>0</transparency></watermark></wms>"
+                              },
+                              "stratus.store.resource.wmts.xml": {
+                                  "origin": "class path resource [application.yml]:72:17",
+                                  "value": "<wmts><id>wmts</id><name>WMTS</name><enabled>true</enabled></wmts>"
+                              },
+                              "stratus.store.resource.wps.xml": {
+                                  "origin": "class path resource [application.yml]:73:16",
+                                  "value": "<wps><id>wps</id><name>WPS</name><enabled>false</enabled></wps>"
+                              },
+                              "stratus.web.enable-redis-sessions": {
+                                  "origin": "class path resource [application.yml]:46:28",
+                                  "value": false
+                              },
+                              "stratus.web.request-logging-filter-enabled": {
+                                  "origin": "class path resource [application.yml]:43:37",
+                                  "value": false
+                              },
+                              "stratus.web.request-logging-filter-log-request-bodies": {
+                                  "origin": "class path resource [application.yml]:44:48",
+                                  "value": false
+                              },
+                              "stratus.web.theme": {
+                                  "origin": "class path resource [application.yml]:45:12",
+                                  "value": "light"
+                              },
+                              "stratus.wps.access-key": {
+                                  "origin": "class path resource [application.yml]:79:16",
+                                  "value": "******"
+                              },
+                              "stratus.wps.file-storage": {
+                                  "origin": "class path resource [application.yml]:75:19",
+                                  "value": "local"
+                              },
+                              "stratus.wps.s3-bucket": {
+                                  "origin": "class path resource [application.yml]:77:16",
+                                  "value": "stratus-wps"
+                              },
+                              "stratus.wps.s3-region": {
+                                  "origin": "class path resource [application.yml]:76:16",
+                                  "value": "US_EAST_1"
+                              },
+                              "stratus.wps.s3-url": {
+                                  "origin": "class path resource [application.yml]:78:13",
+                                  "value": "https://s3.amazonaws.com/"
+                              },
+                              "stratus.wps.secret-key": {
+                                  "origin": "class path resource [application.yml]:80:16",
+                                  "value": "******"
+                              }
+                          }
+                      },
+                      {
+                          "name": "springCloudClientHostInfo",
+                          "properties": {
+                              "spring.cloud.client.hostname": {
+                                  "value": "a9fc98bd74f7"
+                              },
+                              "spring.cloud.client.ip-address": {
+                                  "value": "172.17.0.3"
+                              }
+                          }
+                      },
+                      {
+                          "name": "applicationConfig: [classpath:/bootstrap.yml]",
+                          "properties": {
+                              "logging.level.ROOT": {
+                                  "origin": "class path resource [bootstrap.yml]:68:11",
+                                  "value": "WARN"
+                              },
+                              "logging.level.org.springframework.boot": {
+                                  "origin": "class path resource [bootstrap.yml]:69:31",
+                                  "value": "WARN"
+                              },
+                              "server.port": {
+                                  "origin": "class path resource [bootstrap.yml]:73:9",
+                                  "value": "8080"
+                              },
+                              "server.servlet.context-path": {
+                                  "origin": "class path resource [bootstrap.yml]:75:19",
+                                  "value": "/geoserver"
+                              },
+                              "server.servlet.session.tracking-modes": {
+                                  "origin": "class path resource [bootstrap.yml]:77:23",
+                                  "value": "COOKIE"
+                              },
+                              "spring.application.name": {
+                                  "origin": "class path resource [bootstrap.yml]:3:11",
+                                  "value": "stratus"
+                              },
+                              "spring.autoconfigure.exclude[0]": {
+                                  "origin": "class path resource [bootstrap.yml]:13:9",
+                                  "value": "org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[10]": {
+                                  "origin": "class path resource [bootstrap.yml]:23:9",
+                                  "value": "org.springframework.boot.autoconfigure.session.SessionAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[11]": {
+                                  "origin": "class path resource [bootstrap.yml]:24:9",
+                                  "value": "org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[12]": {
+                                  "origin": "class path resource [bootstrap.yml]:25:9",
+                                  "value": "org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[13]": {
+                                  "origin": "class path resource [bootstrap.yml]:26:9",
+                                  "value": "org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[14]": {
+                                  "origin": "class path resource [bootstrap.yml]:27:9",
+                                  "value": "org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[15]": {
+                                  "origin": "class path resource [bootstrap.yml]:28:9",
+                                  "value": "org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[16]": {
+                                  "origin": "class path resource [bootstrap.yml]:29:9",
+                                  "value": "org.springframework.cloud.netflix.archaius.ArchaiusAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[17]": {
+                                  "origin": "class path resource [bootstrap.yml]:30:9",
+                                  "value": "org.springframework.cloud.netflix.hystrix.HystrixAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[18]": {
+                                  "origin": "class path resource [bootstrap.yml]:31:9",
+                                  "value": "org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[19]": {
+                                  "origin": "class path resource [bootstrap.yml]:32:9",
+                                  "value": "org.springframework.cloud.netflix.eureka.config.EurekaClientConfigServerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[1]": {
+                                  "origin": "class path resource [bootstrap.yml]:14:9",
+                                  "value": "org.springframework.boot.autoconfigure.cloud.CloudServiceConnectorsAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[20]": {
+                                  "origin": "class path resource [bootstrap.yml]:33:9",
+                                  "value": "org.springframework.cloud.netflix.eureka.config.EurekaDiscoveryClientConfigServiceAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[21]": {
+                                  "origin": "class path resource [bootstrap.yml]:34:9",
+                                  "value": "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[22]": {
+                                  "origin": "class path resource [bootstrap.yml]:35:9",
+                                  "value": "org.springframework.cloud.netflix.ribbon.eureka.RibbonEurekaAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[23]": {
+                                  "origin": "class path resource [bootstrap.yml]:36:9",
+                                  "value": "org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[24]": {
+                                  "origin": "class path resource [bootstrap.yml]:37:9",
+                                  "value": "org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[25]": {
+                                  "origin": "class path resource [bootstrap.yml]:38:9",
+                                  "value": "org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[26]": {
+                                  "origin": "class path resource [bootstrap.yml]:39:9",
+                                  "value": "org.springframework.cloud.client.discovery.composite.CompositeDiscoveryClientAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[27]": {
+                                  "origin": "class path resource [bootstrap.yml]:40:9",
+                                  "value": "org.springframework.cloud.commons.httpclient.HttpClientConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[28]": {
+                                  "origin": "class path resource [bootstrap.yml]:41:9",
+                                  "value": "org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[29]": {
+                                  "origin": "class path resource [bootstrap.yml]:43:9",
+                                  "value": "org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[2]": {
+                                  "origin": "class path resource [bootstrap.yml]:15:9",
+                                  "value": "org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[30]": {
+                                  "origin": "class path resource [bootstrap.yml]:44:9",
+                                  "value": "org.springframework.boot.autoconfigure.aop.AopAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[31]": {
+                                  "origin": "class path resource [bootstrap.yml]:45:9",
+                                  "value": "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[32]": {
+                                  "origin": "class path resource [bootstrap.yml]:46:9",
+                                  "value": "org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[33]": {
+                                  "origin": "class path resource [bootstrap.yml]:47:9",
+                                  "value": "org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[34]": {
+                                  "origin": "class path resource [bootstrap.yml]:48:9",
+                                  "value": "org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[35]": {
+                                  "origin": "class path resource [bootstrap.yml]:49:9",
+                                  "value": "org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[36]": {
+                                  "origin": "class path resource [bootstrap.yml]:50:9",
+                                  "value": "org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[37]": {
+                                  "origin": "class path resource [bootstrap.yml]:51:9",
+                                  "value": "org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[38]": {
+                                  "origin": "class path resource [bootstrap.yml]:52:9",
+                                  "value": "org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[39]": {
+                                  "origin": "class path resource [bootstrap.yml]:53:9",
+                                  "value": "org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[3]": {
+                                  "origin": "class path resource [bootstrap.yml]:16:9",
+                                  "value": "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[40]": {
+                                  "origin": "class path resource [bootstrap.yml]:54:9",
+                                  "value": "org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[41]": {
+                                  "origin": "class path resource [bootstrap.yml]:55:9",
+                                  "value": "org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[42]": {
+                                  "origin": "class path resource [bootstrap.yml]:56:9",
+                                  "value": "org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[43]": {
+                                  "origin": "class path resource [bootstrap.yml]:57:9",
+                                  "value": "org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[44]": {
+                                  "origin": "class path resource [bootstrap.yml]:58:9",
+                                  "value": "org.springframework.cloud.client.CommonsClientAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[45]": {
+                                  "origin": "class path resource [bootstrap.yml]:59:9",
+                                  "value": "org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[46]": {
+                                  "origin": "class path resource [bootstrap.yml]:60:9",
+                                  "value": "org.springframework.cloud.client.hypermedia.CloudHypermediaAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[47]": {
+                                  "origin": "class path resource [bootstrap.yml]:61:9",
+                                  "value": "org.springframework.cloud.client.loadbalancer.reactive.ReactiveLoadBalancerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[48]": {
+                                  "origin": "class path resource [bootstrap.yml]:62:9",
+                                  "value": "org.springframework.cloud.commons.util.UtilAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[49]": {
+                                  "origin": "class path resource [bootstrap.yml]:63:9",
+                                  "value": "org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[4]": {
+                                  "origin": "class path resource [bootstrap.yml]:17:9",
+                                  "value": "org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[50]": {
+                                  "origin": "class path resource [bootstrap.yml]:64:9",
+                                  "value": "org.springframework.cloud.netflix.hystrix.security.HystrixSecurityAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[5]": {
+                                  "origin": "class path resource [bootstrap.yml]:18:9",
+                                  "value": "org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[6]": {
+                                  "origin": "class path resource [bootstrap.yml]:19:9",
+                                  "value": "org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[7]": {
+                                  "origin": "class path resource [bootstrap.yml]:20:9",
+                                  "value": "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[8]": {
+                                  "origin": "class path resource [bootstrap.yml]:21:9",
+                                  "value": "org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration"
+                              },
+                              "spring.autoconfigure.exclude[9]": {
+                                  "origin": "class path resource [bootstrap.yml]:22:9",
+                                  "value": "org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration"
+                              },
+                              "spring.mvc.servlet.path": {
+                                  "origin": "class path resource [bootstrap.yml]:6:13",
+                                  "value": "/"
+                              },
+                              "spring.profiles.active": {
+                                  "origin": "class path resource [bootstrap.yml]:8:13",
+                                  "value": "lettuce-manual"
+                              }
+                          }
+                      },
+                      {
+                          "name": "defaultProperties",
+                          "properties": {}
+                      }
+                  ]
+              }

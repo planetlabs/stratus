@@ -1,0 +1,121 @@
+
+# Source: StratusDeployment/templates/stratus-ui.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: stratus-ui-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      namespace: default
+      labels:
+        tier: stratus-ui-backend
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: mydockerkey
+      containers:
+        - name: stratus
+          env:
+            - name: STRATUS_ADMIN_ENABLED
+              value: "true"
+            - name: SPRING_PROFILES_ACTIVE
+              value: lettuce-sentinel
+            - name: GWC_ENABLED
+              value: "false"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_CACHING_CALLBACK
+              value: "true"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_PARALLEL_QUERIES
+              value: "true"
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_HOSTS
+              value: redis-sentinel.default.svc.cluster.local:26379
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_MASTER
+              value: mymaster
+          image: docker.io/gsgsstratus/stratus:1.0.3
+          resources:
+            requests:
+              memory: 1.0G
+              cpu: 500m
+            limits:
+              memory: 4.0G
+              cpu: 4
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          securityContext:
+            privileged: false
+          readinessProbe:
+            httpGet:
+              path: /geoserver/rest/manage/health
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+      volumes:
+---
+# Source: StratusDeployment/templates/stratus-ogc.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: stratus-ogc-deployment
+spec:
+  template:
+    metadata:
+      namespace: default
+      labels:
+        tier: stratus-ogc-backend
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: mydockerkey
+      containers:
+        - name: stratus
+          env:
+            - name: STRATUS_ADMIN_ENABLED
+              value: "false"
+            - name: SPRING_PROFILES_ACTIVE
+              value: lettuce-sentinel
+            - name: GWC_ENABLED
+              value: "false"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_CACHING_CALLBACK
+              value: "true"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_PARALLEL_QUERIES
+              value: "true"
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_HOSTS
+              value: redis-sentinel.default.svc.cluster.local:26379
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_MASTER
+              value: mymaster
+          image: docker.io/gsgsstratus/stratus:1.0.3
+          resources:
+            requests:
+              memory: 1.0G
+              cpu: 500m
+            limits:
+              memory: 4.0G
+              cpu: 4
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          securityContext:
+            privileged: false
+          readinessProbe:
+            httpGet:
+              path: /geoserver/rest/manage/health
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+      volumes:
+---
+# Source: StratusDeployment/templates/stratus-ogc.yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: stratus-ogc-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: stratus-ogc-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80

@@ -1,0 +1,22 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1429136633762",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::027434742980:root",
+                    "arn:aws:iam::797873946194:root",
+                    "arn:aws:iam::127311923021:root",
+                    "arn:aws:iam::985666609251:root",
+                    "arn:aws:iam::033677994240:root"
+                ]
+            },
+            "Action": "s3:PutObject",
+            "Resource": [
+                "arn:aws:s3:::${bucket_name}/AWSLogs/*"
+            ]
+        }
+    ]
+}

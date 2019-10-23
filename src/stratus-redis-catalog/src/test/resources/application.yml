@@ -1,0 +1,12 @@
+stratus:
+    geoserver:
+        redis:
+            minPoolSize: 2
+            maxPoolSize: 128
+            maxWaitTime: 2000
+            port: 16379
+
+spring:
+  cloud:
+    consul:
+      enabled: false

@@ -1,0 +1,43 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "stratusS3",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${artifacts_bucket_name}",
+        "arn:aws:s3:::${artifacts_bucket_name}/*",
+        "arn:aws:s3:::${failover_artifacts_bucket_name}",
+        "arn:aws:s3:::${failover_artifacts_bucket_name}/*",
+        "arn:aws:s3:::${logging_bucket_name}",
+        "arn:aws:s3:::${logging_bucket_name}/*"
+      ]
+    },
+    {
+      "Sid": "Stmt1507833168568",
+      "Action": [
+        "elasticache:DescribeCacheClusters",
+        "elasticache:DescribeReplicationGroups"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ec2:DescribeTags",
+            "ec2:CreateTags"
+        ],
+        "Resource": "*",
+        "Condition": {
+            "StringLike": {
+                "ec2:ResourceTag/deploy_id": "${deploy_id}"
+            }
+        }
+    }
+  ]
+}

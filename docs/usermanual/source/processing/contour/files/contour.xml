@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:Import</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>features</ows:Identifier>
+      <wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wps" method="POST">
+        <wps:Body>
+          	  
+          <wps:Execute version="1.0.0" service="WPS">
+            <ows:Identifier>ras:Contour</ows:Identifier>
+            <wps:DataInputs>
+              <wps:Input>
+                <ows:Identifier>data</ows:Identifier>
+                <wps:Reference mimeType="image/tiff" xlink:href="http://geoserver/wcs" method="POST">
+                  <wps:Body>
+                  		    
+                    <wcs:GetCoverage service="WCS" version="1.1.1">
+                      <ows:Identifier>foo:DEM-utm10</ows:Identifier>
+                      <wcs:DomainSubset>
+                        <ows:BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#3157">
+                          <ows:LowerCorner>360227.420 5343840.255</ows:LowerCorner>
+                          <ows:UpperCorner>499502.420 5499300.255</ows:UpperCorner>
+                        </ows:BoundingBox>
+                      </wcs:DomainSubset>
+                      <wcs:Output format="image/tiff"/>
+                    </wcs:GetCoverage>
+                    		    
+                  </wps:Body>
+                </wps:Reference>
+              </wps:Input>
+              <wps:Input>
+                <ows:Identifier>band</ows:Identifier>
+                <wps:Data>
+                  <wps:LiteralData>GRAY_INDEX</wps:LiteralData>
+                </wps:Data>
+              </wps:Input>
+              <wps:Input>
+                <ows:Identifier>interval</ows:Identifier>
+                <wps:Data>
+                  <wps:LiteralData>100</wps:LiteralData>
+                </wps:Data>
+              </wps:Input>
+              <wps:Input>
+                <ows:Identifier>simplify</ows:Identifier>
+                <wps:Data>
+                  <wps:LiteralData>true</wps:LiteralData>
+                </wps:Data>
+              </wps:Input>
+              <wps:Input>
+                <ows:Identifier>smooth</ows:Identifier>
+                <wps:Data>
+                  <wps:LiteralData>true</wps:LiteralData>
+                </wps:Data>
+              </wps:Input>
+              <wps:Input>
+                <ows:Identifier>roi</ows:Identifier>
+                <wps:Data>
+                  <wps:ComplexData mimeType="application/wkt"><![CDATA[POLYGON((360227.420 5499300.255, 360227.420 5343840.255, 499502.420 5499300.255, 499502.420 5343840.255, 360227.420 5499300.255))]]></wps:ComplexData>
+                </wps:Data>
+              </wps:Input>
+            </wps:DataInputs>
+            <wps:ResponseForm>
+              <wps:RawDataOutput mimeType="text/xml; subtype=wfs-collection/1.0">
+                <ows:Identifier>result</ows:Identifier>
+              </wps:RawDataOutput>
+            </wps:ResponseForm>
+          </wps:Execute>
+	  
+        </wps:Body>
+      </wps:Reference>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>workspace</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>foo</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>store</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>test</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>name</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>contour</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>srs</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>EPSG:4326</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput>
+      <ows:Identifier>layerName</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

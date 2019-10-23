@@ -1,0 +1,10 @@
+<Context docBase="geowebcache.war">
+  <!-- Location of geowebcache configuration-->
+  <Parameter name="GEOSERVER_GWC_CONFIG_DIR"
+             value="/var/opt/stratus/geowebcache/gwc"
+             override="false"/>
+  <!-- The default location of the GWC tile cache -->
+  <Parameter name="GEOWEBCACHE_CACHE_DIR"
+             value="/var/opt/stratus/geowebcache/tilecache"
+             override="false"/>
+</Context>

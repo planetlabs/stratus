@@ -1,0 +1,88 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus Index
+  description: The REST API Index for Stratus
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /index:
+    get:
+      operationId: indexGet
+      summary: Returns the list of REST endpoints
+      description: Returns the HTML list of all top-level REST endpoints supported by this Stratus instance.
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK
+          examples:
+            text/html: |
+              <html>
+              <head>
+              <title> Geoserver Configuration API </title>
+              <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+              </head>
+              <body>
+              <h2>Geoserver Configuration API</h2>
+              <ul>
+              <li><a href="http://localhost:8080/geoserver/rest/about/manifest">about/manifest</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/about/status">about/status</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/about/version">about/version</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/catalog/getWorkspaces">catalog/getWorkspaces</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/catalog/workspace">catalog/workspace</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/catalog/workspaces">catalog/workspaces</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/fonts">fonts</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/index">index</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/layergroups">layergroups</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/layers">layers</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/auditevents">manage/auditevents</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/autoconfig">manage/autoconfig</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/beans">manage/beans</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/configprops">manage/configprops</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/dump">manage/dump</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/env">manage/env</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/features">manage/features</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/health">manage/health</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/heapdump">manage/heapdump</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/info">manage/info</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/loggers">manage/loggers</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/mappings">manage/mappings</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/metrics">manage/metrics</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/manage/trace">manage/trace</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/namespaces">namespaces</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/redis/connection">redis/connection</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/redis/data">redis/data</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/redis/info">redis/info</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/redis/reinitialize">redis/reinitialize</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/redis/terminal">redis/terminal</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/resource">resource</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security">security</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/acl/catalog">security/acl/catalog</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/acl/layers">security/acl/layers</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/acl/rest">security/acl/rest</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/acl/services">security/acl/services</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/authFilters">security/authFilters</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/authProviders">security/authProviders</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/filterChains">security/filterChains</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/masterPasswordProviders">security/masterPasswordProviders</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/masterpw">security/masterpw</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/passwordPolicies">security/passwordPolicies</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/roles">security/roles</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/self/password">security/self/password</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/usergroup/groups">security/usergroup/groups</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/security/usergroup/users">security/usergroup/users</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/services/wcs/settings">services/wcs/settings</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/services/wfs/settings">services/wfs/settings</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/services/wms/settings">services/wms/settings</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/settings">settings</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/settings/contact">settings/contact</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/styles">styles</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/templates">templates</a></li>
+              <li><a href="http://localhost:8080/geoserver/rest/workspaces">workspaces</a></li>
+              </ul>
+              </body>
+              </html>

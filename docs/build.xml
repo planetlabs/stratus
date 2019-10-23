@@ -1,0 +1,68 @@
+<project name="docs" default="build">
+  <import file="./common.xml"/>
+
+  <property name="docs.modules" value="usermanual,geowebcache,geoserver,postgis,openlayers"/>
+
+  <target name="clean" depends="destroy-target" description="Clean project">
+    <foreach list="${docs.modules}" target="clean-mod" param="mod"/>
+  </target>
+
+  <target name="build" description="Build all documentation modules">
+    <foreach list="${docs.modules}" target="build-mod" param="mod"/>
+  </target>
+
+  <target name="clean-mod">
+    <ant dir="${mod}" target="clean"/>
+  </target>
+  <target name="build-mod">
+    <ant dir="${mod}"/>
+  </target>
+
+  <target name="assemble" depends="init" description="Assmble documentation artifact">
+      <property name="doc.dir" value="target/stratus-docs"/>
+      <delete dir="${doc.dir}"/>
+      <mkdir dir="${doc.dir}"/>
+      <copy todir="${doc.dir}">
+        <fileset dir="usermanual/target/html/" includes="**/*"/>
+        <fileset dir="target" includes="version.ini"/>
+      </copy>
+      <mkdir dir="${doc.dir}"/>
+
+      <for list="${docs.modules}" param="mod">
+        <sequential>
+          <if>
+            <and>
+              <not>
+                <equals arg1="@{mod}" arg2="usermanual"/>
+              </not>
+            </and>
+            <then>
+              <copy todir="${doc.dir}/@{mod}">
+                <fileset dir="@{mod}/target/html" includes="**/*"/>
+              </copy>
+            </then>
+          </if>
+        </sequential>
+      </for>
+
+      <mkdir dir="${doc.dir}/api"/>
+      <copy todir="${doc.dir}/api">
+        <fileset dir="usermanual/api" includes="**/*"/>
+      </copy>
+      <copy todir="${doc.dir}/api">
+        <fileset dir="externals/geoserver/doc/en/api" includes="**/*.yaml"/>
+      </copy>
+      
+
+      <zip destfile="target/stratus-docs.zip" basedir="${doc.dir}"/>
+  </target>
+
+  <target name="run" depends="assemble" description="Serve documentation artifact on localhost:8000">
+      <property name="doc.dir" value="target/stratus-docs"/>
+      <echo message="Serving Stratus docs on localhost:8000 ..." />
+      <exec dir="${doc.dir}" executable="python">
+        <arg line="-m"/>
+        <arg line="SimpleHTTPServer"/>
+      </exec>
+  </target>
+</project>

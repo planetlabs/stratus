@@ -1,0 +1,68 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Metrics
+  description: Shows ‘metrics’ information for Stratus.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/metrics:
+    get:
+      operationId: metricsGet
+      summary: Shows ‘metrics’ information for Stratus.
+      description: 
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "names": [
+                      "jvm.threads.states",
+                      "http.server.requests",
+                      "process.files.max",
+                      "jvm.memory.used",
+                      "jvm.gc.memory.promoted",
+                      "jvm.memory.max",
+                      "system.load.average.1m",
+                      "jvm.gc.max.data.size",
+                      "jvm.memory.committed",
+                      "system.cpu.count",
+                      "logback.events",
+                      "tomcat.global.sent",
+                      "jvm.gc.pause",
+                      "jvm.buffer.memory.used",
+                      "tomcat.sessions.created",
+                      "jvm.threads.daemon",
+                      "system.cpu.usage",
+                      "jvm.gc.memory.allocated",
+                      "tomcat.global.request.max",
+                      "tomcat.global.request",
+                      "tomcat.sessions.expired",
+                      "jvm.threads.live",
+                      "jvm.threads.peak",
+                      "tomcat.global.received",
+                      "process.uptime",
+                      "tomcat.sessions.rejected",
+                      "process.cpu.usage",
+                      "tomcat.threads.config.max",
+                      "jvm.classes.loaded",
+                      "jvm.classes.unloaded",
+                      "tomcat.global.error",
+                      "tomcat.sessions.active.current",
+                      "tomcat.sessions.alive.max",
+                      "jvm.gc.live.data.size",
+                      "tomcat.threads.current",
+                      "process.files.open",
+                      "jvm.buffer.count",
+                      "jvm.buffer.total.capacity",
+                      "tomcat.sessions.active.max",
+                      "tomcat.threads.busy",
+                      "process.start.time"
+                  ]
+              }

@@ -1,0 +1,38 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Reinitialize
+  description: Reinitializes the redis catalog
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/reinitialize:
+    get:
+      operationId: reinitializeGet
+      summary: Reinitializes the redis catalog
+      description: |
+        This endpoint will re-execute the initialization sequence and recreate the default GeoServer objects that would normally be generated on a fresh Stratus deployment with an empty Redis instance. 
+        
+        **WARNING**: This should only be performed as a final measure if Stratus is producing unexpected errors. 
+      parameters:
+        - name: verify
+          in: query
+          description: If the verify paremeter is provided, the reinitialization process will be run. Otherwise, an information message is printed.
+          required: false
+          type: string
+          enum:
+           - TRUE
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK
+          examples:
+            text/html: |
+              Stratus Reinitialize
+
+              This endpoint will re-execute the initialization sequence and recreate the default GeoServer objects that would normally be generated on a fresh Stratus deployment with an empty Redis instance. 
+              This should only be performed as a final measure if Stratus is producing unexpected errors. To proceed with this operation, please add the parameter '?verify=TRUE' to the URL.

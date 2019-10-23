@@ -1,0 +1,6 @@
+@import url("default.css");
+
+#logo a {
+ /* background-image: url('chrome/geowebcache-logo.png')*/
+  background-image: url('chrome/server-logo.png')
+}

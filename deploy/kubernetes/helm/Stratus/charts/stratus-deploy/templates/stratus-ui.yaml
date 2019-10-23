@@ -1,0 +1,90 @@
+{{- if .Values.stratus.ui.enabled }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: stratus-ui-deployment
+spec:
+  template:
+    metadata:
+      namespace: default
+      labels:
+        tier: stratus-ui-backend
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: {{ .Values.stratus.secretKey | default "mydockerkey" }}
+      containers:
+        - name: stratus
+          env:
+            - name: STRATUS_ADMIN_ENABLED
+              value: "true"
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.redis.implementation }}-{{ .Values.redis.type }}
+
+{{- if .Values.stratus.persistentVolume.host }}
+            - name: GEOWEBCACHE_CACHE_DIR
+              value: {{ .Values.stratus.persistentVolume.localPath | default "/data" }}/gwc
+{{- end }}
+{{- if .Values.stratus.ui.rootPath }}
+            - name: SERVER_CONTEXTPATH
+              value: "{{ .Values.stratus.ogc.rootPath }}"
+{{- end }}
+            - name: GWC_ENABLED
+              value: "false"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_CACHING_CALLBACK 
+              value: "{{ .Values.redis.cache.enabled }}"
+            - name: STRATUS_CATALOG_REDIS_CACHING_USE_PARALLEL_QUERIES 
+              value: "{{ .Values.redis.cache.parallel }}"
+{{- if .Values.redis.host }}
+            - name: STRATUS_CATALOG_REDIS_MANUAL_HOST
+              value: {{ .Values.redis.host.rw }}
+            - name: STRATUS_CATALOG_REDIS_MANUAL_PORT
+              value: "{{ default 6379 .Values.redis.port.rw }}"
+{{- else if eq .Values.redis.type "cluster" }}
+            - name: STRATUS_CATALOG_REDIS_CLUSTER_HOSTS
+              value: redis-0.redis.{{.Release.Namespace}}.svc.cluster.local:6379,redis-1.redis.{{.Release.Namespace}}.svc.cluster.local:6379,redis-2.redis.{{.Release.Namespace}}.svc.cluster.local:6379,redis-3.redis.{{.Release.Namespace}}.svc.cluster.local:6379,redis-4.redis.{{.Release.Namespace}}.svc.cluster.local:6379,redis-5.redis.{{.Release.Namespace}}.svc.cluster.local:6379           
+{{- else if eq .Values.redis.type "sentinel" }}
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_HOSTS
+              value: redis-sentinel.{{.Release.Namespace}}.svc.cluster.local:26379
+            - name: STRATUS_CATALOG_REDIS_SENTINEL_MASTER
+              value: mymaster
+{{- else }}
+            - name: STRATUS_CATALOG_REDIS_MANUAL_HOST
+              value: redis.{{.Release.Namespace}}.svc.cluster.local
+            - name: STRATUS_CATALOG_REDIS_MANUAL_PORT
+              value: "6379"
+{{- end }}
+          image: {{ .Values.stratus.container.repo }}/{{ .Values.stratus.container.image }}:{{ .Values.stratus.container.tag }}
+          resources:
+            requests:
+              memory: {{ .Values.stratus.ui.resources.mem }}
+              cpu: {{ .Values.stratus.ui.resources.cpu }}
+            limits:
+              memory: {{ .Values.stratus.ui.resources.maxMem }}
+              cpu: {{ .Values.stratus.ui.resources.maxCpu }}
+          imagePullPolicy: {{ default "Always" .Values.stratus.ui.pullPolicy }}
+          ports:
+            - containerPort: 8080
+{{- if .Values.debug }}
+            - port: 5005
+{{- end }}
+          securityContext:
+            privileged: false
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.stratus.ogc.readinessPath }}
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+{{- if .Values.stratus.persistentVolume.host }}
+            - mountPath: {{ .Values.stratus.persistentVolume.localPath | default "/data" }}
+              name: datavol
+{{- end }}
+      volumes:
+{{- if .Values.stratus.persistentVolume.host }}
+        - name: datavol
+          persistentVolumeClaim:
+            claimName: pvc-stratus
+{{- end }}
+{{- end }}

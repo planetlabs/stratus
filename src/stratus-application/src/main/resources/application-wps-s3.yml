@@ -1,0 +1,7 @@
+stratus:
+  wps:
+    file-storage: s3 #anything other than "s3" here defaults to local file storage, which may not work well for multi-instance deployments
+    s3-region: US_EAST_1 #All caps with underscores should be used as the separator here.  See https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/regions/Regions.html
+    s3-bucket: stratus-wps #This bucket will be created if it doesn't already exist
+    access-key: #optional if there is an Amazon credential chain external to Stratus
+    secret-key: #optional if there is an Amazon credential chain external to Stratus

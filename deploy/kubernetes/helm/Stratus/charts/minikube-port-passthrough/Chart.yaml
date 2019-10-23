@@ -1,0 +1,4 @@
+apiVersion: v1
+description: MinikubeLocalPortPassThrough
+name: MinikubeLocalPortPassThrough
+version: 1.0.0

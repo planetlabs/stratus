@@ -1,0 +1,7 @@
+* `10m Countries <http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip>`_
+* `10m Roads <http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_roads.zip>`_
+* `10m Populated Places <http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_populated_places.zip>`_
+
+Also download the following file, originally taken from the `Natural Earth III extra data <http://www.shadedrelief.com/natural3/pages/extra.html>`_:
+
+* `Large grayscale DEM <http://data.boundlessgeo.com/dem_large.zip>`_

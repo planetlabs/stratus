@@ -1,0 +1,21 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Heap Dump
+  description: Performs a heap dump.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/info:
+    get:
+      operationId: heapdumpGet
+      summary: Performs a heap dump.
+      description: Returns a GZip compressed hprof heap dump file.
+      produces:
+        - application/octet-stream;charset=UTF-8
+      responses:
+        200:
+          description: OK

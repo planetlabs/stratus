@@ -1,0 +1,41 @@
+{% if theme_display_version %}
+{% set rootpath = pathto(master_doc) | replace('index.html','') | replace('#','') %}
+{# Add rst-badge after rst-versions for small badge style. #}
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> &nbsp; Component Manuals</span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt></dt>
+        <dd>
+          <ul class="simple">
+            {% if theme_is_community %}
+            <li> <a class="abs-link" href="{{ rootpath }}../geoserver/index.html">GeoServer</a> <span class="component-desc">Spatial Server</span></li>
+            <li> <a class="abs-link" href="{{ rootpath }}../geowebcache/index.html">GeoWebCache</a> <span class="component-desc">Map Tile Cache</span></li>
+            <li> <a class="abs-link" href="{{ rootpath }}../postgis/index.html">PostGIS</a> <span class="component-desc">Spatial Database</span></li>
+            <hr width="200px" />
+            <li> <a class="abs-link" href="{{ rootpath }}../openlayers/index.html">OpenLayers</a> <span class="component-desc">Web Mapping Library</span></li>
+            {% else %}
+            <li> <a class="abs-link" href="{{ rootpath }}geoserver/index.html">GeoServer</a> <span class="component-desc">Spatial Server</span></li>
+            <li> <a class="abs-link" href="{{ rootpath }}geowebcache/index.html">GeoWebCache</a> <span class="component-desc">Map Tile Cache</span></li>
+            <li> <a class="abs-link" href="{{ rootpath }}postgis/index.html">PostGIS</a> <span class="component-desc">Spatial Database</span></li>
+            <hr width="200px" />
+            <li> <a class="abs-link" href="{{ rootpath }}openlayers/index.html">OpenLayers</a> <span class="component-desc">Web Mapping Library</span></li>
+            {% endif %}
+          </ul>
+        </dd>
+    </dl>
+    <hr/>
+    {% if theme_is_community %}
+    <span class="versions-footer">Back to <a href="{{ rootpath }}../index.html">Stratus User Manual</a>
+    {% else %}
+    <span class="versions-footer">Back to <a href="{{ pathto(master_doc) }}">Stratus User Manual</a>
+    {% endif %}
+    <hr/>
+    <span class="versions-footer" style="color: #444; float: right;margin: -4px 0 4px;"><small>Based on <a href="http://github.com/snide/sphinx_rtd_theme" style="color: #555;"><small>RTD theme</small></a></small>.
+
+  </div>
+</div>
+{% endif %}

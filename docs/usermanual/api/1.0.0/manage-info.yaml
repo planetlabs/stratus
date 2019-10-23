@@ -1,0 +1,89 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Info
+  description: Shows Stratus build information.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/info:
+    get:
+      operationId: infoGet
+      summary: Shows Stratus build information.
+      description: 
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "build": {
+                      "artifact": "stratus-application",
+                      "encoding": {
+                          "reporting": "UTF-8",
+                          "source": "UTF-8"
+                      },
+                      "group": "stratus",
+                      "java": {
+                          "source": "1.8",
+                          "target": "1.8"
+                      },
+                      "name": "Stratus",
+                      "time": "2019-08-13T22:29:11.146Z",
+                      "version": "1.4.1-SNAPSHOT"
+                  },
+                  "git": {
+                      "branch": "os-prep",
+                      "build": {
+                          "host": "Torbens-MBP.hitronhub.home",
+                          "time": "2019-08-13T22:29:09Z",
+                          "user": {
+                              "email": "tbarsballe@federal.planet.com",
+                              "name": "Torben Barsballe"
+                          },
+                          "version": "1.4.1-SNAPSHOT"
+                      },
+                      "closest": {
+                          "tag": {
+                              "commit": {
+                                  "count": "194"
+                              },
+                              "name": "v1.3.0"
+                          }
+                      },
+                      "commit": {
+                          "id": {
+                              "abbrev": "fe7a3f8",
+                              "describe": "v1.3.0-194-gfe7a3f8-dirty",
+                              "describe-short": "v1.3.0-194-dirty",
+                              "full": "fe7a3f8047e6153009454c54bf7ac901c7e5aab6"
+                          },
+                          "message": {
+                              "full": "Add GPL license",
+                              "short": "Add GPL license"
+                          },
+                          "time": "2019-08-13T22:26:18Z",
+                          "user": {
+                              "email": "tbarsballe@federal.planet.com",
+                              "name": "Torben Barsballe"
+                          }
+                      },
+                      "dirty": "true",
+                      "remote": {
+                          "origin": {
+                              "url": "https://github.com/planetlabs/stratus.git"
+                          }
+                      },
+                      "tags": "",
+                      "total": {
+                          "commit": {
+                              "count": "2047"
+                          }
+                      }
+                  }
+              }

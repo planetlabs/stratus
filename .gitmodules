@@ -1,0 +1,7 @@
+[submodule "docs/externals/geoserver"]
+        path = docs/externals/geoserver
+        url = https://github.com/geoserver/geoserver.git
+[submodule "docs/externals/geowebcache"]
+        path = docs/externals/geowebcache
+        url = https://github.com/geowebcache/geowebcache.git
+

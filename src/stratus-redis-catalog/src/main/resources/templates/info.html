@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        h3 {
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid #333333;
+            padding: 1px 5px 1px 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <tbody>
+    <tr colspan="2">
+        <h3 th:text="${title}"></h3>
+    </tr>
+    <th:block th:each="entry :${info}">
+        <tr>
+            <th th:text="${entry.key}"></th>
+            <td th:text="${entry.value}"></td>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+
+</body>
+</html>

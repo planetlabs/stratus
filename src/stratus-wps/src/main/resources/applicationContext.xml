@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- For overriding gs-wps XML bean configuration, since this can't be done with annotations (See SPR-7028) -->
+<beans>
+    <bean id="processStatusTracker" class="stratus.wps.executor.ProcessStatusTrackerRedis"/>
+    <bean id="executionManager" class="stratus.wps.executor.StratusWPSExecutionManager">
+        <constructor-arg ref="geoServer" />
+        <constructor-arg ref="wpsResourceManager" />
+        <constructor-arg ref="processStatusTracker"/>
+    </bean>
+    <bean id="wpsResourceManager" class="org.geoserver.wps.resource.WPSResourceManager"/>
+    <bean id="wpsServiceTarget" class="stratus.wps.StratusDefaultWebProcessingService">
+        <constructor-arg ref="geoServer" />
+        <constructor-arg ref="executionManager" />
+        <constructor-arg ref="wpsResourceManager" />
+        <constructor-arg ref="processStatusTracker" />
+    </bean>
+</beans>

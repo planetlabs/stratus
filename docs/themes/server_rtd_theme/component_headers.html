@@ -1,0 +1,37 @@
+<div id="ribbon">
+  <div class="ribbon_container">
+    <div id="disclaimer" style="z-index:3999;">
+      This documentation is from an open source community project.<br/><br/>
+      While every reasonable effort is made to ensure it is correct, it is provided "as is" for reference only, with no guarantees that it is complete, accurate, or current.<br/><br/>
+      {% if theme_display_zendesk %}
+      See an error? Scroll to the bottom to 'Report an Issue'.
+      {% endif %}
+    </div>
+    <div class="base">Community Docs &nbsp; <i class="fa fa-chevron-down"></i></div>
+  </div>
+</div>
+    {% if shorttitle == "PostGIS" %}
+    <div id="header" class="selfclear pg-header">
+      <div class="community_logo pg_logo">
+    {% elif shorttitle == "GeoServer" %}
+    <div id="header" class="selfclear gs-header">
+      <div class="community_logo gs_logo">
+    {% elif shorttitle == "GeoWebCache" %}
+    <div id="header" class="selfclear gwc-header">
+      <div class="community_logo gwc_logo">
+    {% elif shorttitle == "OpenLayers" %}
+    <div id="header" class="selfclear ol-header">
+      <div class="community_logo ol_logo">
+    {% else %}
+    <div id="header" class="selfclear">
+      <div class="server_logo">
+    {% endif %}
+
+      <a href="{{  pathto(master_doc) }}"></a></div>
+    {% if theme_project_version %}
+      <div class="component_version_info">Version {{ theme_project_version }}</div>
+    {% endif %}
+    <div class="back-to-server">
+      <a href="{{  pathto(master_doc) | replace('index.html','') | replace('#','') }}../index.html"><div class="back-to-server-inner"></div></a>
+    </div>
+</div>

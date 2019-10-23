@@ -1,0 +1,16 @@
+<project name="docs.openlayers" default="build">
+
+    <import file="../common.xml"/>
+
+    <target name="clean" depends="destroy-target"
+        description="Clean project"/>
+
+    <target name="build" depends="init"
+        description="Build project">
+        <antcall target="sphinx">
+            <param name="dir" value="src"/>
+            <param name="flags" value="-q"/>
+        </antcall>
+    </target>
+
+</project>

@@ -1,0 +1,49 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Audit Events
+  description: Exposes audit events information for the Stratus.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/auditevents:
+    get:
+      operationId: auditeventsGet
+      summary: Exposes audit events information for the Stratus.
+      description: Returns a list of audit events. By default, this list includes all authentication attempts.
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "events": [
+                      {
+                          "data": {
+                              "details": {
+                                  "remoteAddress": "172.17.0.1",
+                                  "sessionId": "CE2E3DB3ED08365C2788D3EBB9E25C26",
+                                  "userGroupServiceName": "default"
+                              }
+                          },
+                          "principal": "admin",
+                          "timestamp": "2019-08-13T22:42:26.248644Z",
+                          "type": "AUTHENTICATION_SUCCESS"
+                      },
+                      {
+                          "principal": "admin",
+                          "timestamp": "2019-08-13T22:42:26.643391Z",
+                          "type": "AUTHENTICATION_SUCCESS"
+                      },
+                      {
+                          "principal": "admin",
+                          "timestamp": "2019-08-13T22:44:30.131369Z",
+                          "type": "AUTHENTICATION_SUCCESS"
+                      }
+                  ]
+              }

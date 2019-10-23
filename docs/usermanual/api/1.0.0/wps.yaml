@@ -1,0 +1,30 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - WPS Status
+  description: Shows raw WPS status information
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /wps/{executionId}:
+    get:
+      operationId: wpsGet
+      summary: Gets the status of a WPS request
+      description: Returns detailed status about a WPS request given a request id, including the current exectution phase.
+      parameters:
+        - name: executionId
+          in: path
+          description: The executionId of the WPS request.
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              {"processName":"JTS:buffer","executionId":"d5e1c29b-baea-49bf-877b-ade7bfd16231","asynchronous":false,"phase":"SUCCEEDED","progress":100.0,"userName":"admin","creationTime":1541720230088,"completionTime":1541720230834,"lastUpdated":1541720230837,"task":null,"exception":null,"nodeId":"my-mbp.hitronhub.home","simpleProcessName":"JTS:buffer"}

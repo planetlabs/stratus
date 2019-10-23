@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: stratus-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /geoserver/web
+        backend:
+          serviceName: stratus-ui-lb
+          servicePort: 80
+      - path: /geoserver/rest
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/gwc
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wms
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wfs
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wfst
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wmts
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wps
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/j_spring_security_logout
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/j_spring_security_check
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wms
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80
+      - path: /geoserver/wfs
+        backend:
+          serviceName: stratus-ogc-lb
+          servicePort: 80

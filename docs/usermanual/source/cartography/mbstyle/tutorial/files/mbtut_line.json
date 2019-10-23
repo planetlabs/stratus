@@ -1,0 +1,77 @@
+{
+    "version": 8,
+    "name": "roads",
+    "layers": [
+        {
+            "id": "big",
+            "source-layer": "roads",
+            "filter": ["<", "scalerank", 4],
+            "maxzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#333333",
+                "line-width": 1
+            }
+        },
+        {
+            "id": "medium",
+            "source-layer": "roads",
+            "filter": ["all", ["<", "scalerank", 8], ["!=", "expressway", 1], ["!=", "featurecla", "Ferry"]],
+            "minzoom": 6,
+            "maxzoom": 8,
+            "type": "line",
+            "paint": {
+                "line-color": "#333333",
+                "line-width": 1
+            }
+        },
+        {
+            "id": "ferry",
+            "source-layer": "roads",
+            "filter": ["==", "featurecla", "Ferry"],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#00CCFF",
+                "line-width": 2,
+                "line-dasharray": [4, 6]
+            }
+        },
+        {
+            "id": "expressway",
+            "source-layer": "roads",
+            "filter": ["==", "expressway", 1],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#000000",
+                "line-width": 6,
+                "line-gap-width": 4,
+                "line-cap": "round"
+            }
+        },
+        {
+            "id": "inner",
+            "source-layer": "roads",
+            "filter": ["==", "expressway", 1],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#FFCC00",
+                "line-width": 4,
+                "line-cap": "round"
+            }
+        },
+        {
+            "id": "small",
+            "source-layer": "roads",
+            "filter": ["all", ["!=", "expressway", 1], ["!=", "featurecla", "Ferry"]],
+            "minzoom": 8,
+            "type": "line",
+            "paint": {
+                "line-color": "#777777",
+                "line-width": 0.5
+            }
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+.. warning:: When you first install Stratus, you should take the following steps to ensure your installation is secure:
+
+   1. :ref:`Change the admin password <sysadmin.security.adminpwd>`.
+
+   2. :ref:`Change the master password <sysadmin.security.masterpwd>`.
+
+   3. :ref:`Lock down WPS processes <sysadmin.security.wps>`.
+
+   4. :ref:`Enable GWC Data security <sysadmin.security.gwc>`.

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:Transaction
+   version="2.0.0"
+   service="WFS"
+   xmlns:example="http://www.boundlessgeo.com/example"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+                       http://schemas.opengis.net/wfs/2.0/wfs.xsd
+                       http://www.opengis.net/gml/3.2
+                       http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+   <wfs:Insert>
+    <example:boundless_offices>
+      <example:geom>
+        <gml:Point srsName="http://www.opengis.net/def/crs/epsg/0/4326">
+          <gml:coordinates>48.42319,-123.36600</gml:coordinates>
+        </gml:Point>
+      </example:geom>
+      <example:city>Victoria</example:city>
+    </example:boundless_offices>
+   </wfs:Insert>
+</wfs:Transaction>

@@ -1,0 +1,65 @@
+{{- if .Values.stratus.persistentVolume.host }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv-stratus-ogc
+  labels:
+    type: {{ .Values.stratus.persistentVolume.type | default "efs" }}
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    server: {{ .Values.stratus.persistentVolume.host }} 
+    path: {{ .Values.stratus.persistentVolume.path | default "/" }}
+{{- end }}
+---
+{{- if .Values.stratus.persistentVolume.host }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-stratus-ogc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+{{- end }}
+---
+{{- if .Values.stratus.ui.enabled }}
+{{- if .Values.stratus.persistentVolume.host }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv-stratus-ui
+  labels:
+    type: {{ .Values.stratus.persistentVolume.type | default "efs" }}
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    server: {{ .Values.stratus.persistentVolume.host }} 
+    path: {{ .Values.stratus.persistentVolume.path | default "/" }}
+{{- end }}
+---
+{{- if .Values.stratus.persistentVolume.host }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-stratus-ui
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+{{- end }}
+{{- end }}

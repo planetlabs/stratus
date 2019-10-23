@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-hpa
+  namespace: ec
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: ReplicationController
+    name: redis
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-sentinel-hpa
+  namespace: ec
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: ReplicationController
+    name: redis-sentinel
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50

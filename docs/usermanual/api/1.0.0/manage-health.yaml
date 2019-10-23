@@ -1,0 +1,39 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Spring Boot Actuator Health
+  description: Shows health information for the Stratus application, Redis, and disk space.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /manage/health:
+    get:
+      operationId: healthGet
+      summary: Shows health information for the Stratus application, Redis, and disk space.
+      description: 
+      produces:
+        - application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+      responses:
+        200:
+          description: OK
+          examples:
+            application/vnd.spring-boot.actuator.v1+json;charset=UTF-8: |
+              {
+                  "stratus": {
+                      "status": "UP"
+                  },
+                  "diskSpace": {
+                      "free": 45384499200,
+                      "status": "UP",
+                      "threshold": 10485760,
+                      "total": 63381999616
+                  },
+                  "redis": {
+                      "status": "UP",
+                      "version": "4.0.9"
+                  },
+                  "status": "UP"
+              }

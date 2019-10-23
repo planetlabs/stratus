@@ -1,0 +1,21 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Info
+  description: Shows information about the redis server
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/info:
+    get:
+      operationId: infoGet
+      summary: Shows information about the redis server
+      description: Lists redis server information, including memory, cpu utilization, and replication. Equivalent to what is returned by the redis info command.
+      produces:
+        - text/html
+      responses:
+        200:
+          description: OK

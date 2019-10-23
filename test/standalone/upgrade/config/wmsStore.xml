@@ -1,0 +1,16 @@
+<wmsStore>
+  <name>mosaicCascade</name>
+  <type>WMS</type>
+  <workspace>
+    <name>test</name>
+  </workspace>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="useConnectionPooling">true</entry>
+  </metadata>
+  <__default>false</__default>
+  <capabilitiesURL>http://localhost:8080/geoserver/test/mosaic/wms?request=GetCapabilities</capabilitiesURL>
+  <maxConnections>6</maxConnections>
+  <readTimeout>60</readTimeout>
+  <connectTimeout>30</connectTimeout>
+</wmsStore>

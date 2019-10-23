@@ -1,0 +1,6 @@
+<FileBlobStore default="true">
+<id>default</id>
+<enabled>true</enabled>
+<baseDirectory>/tmp/gwc</baseDirectory>
+<fileSystemBlockSize>4096</fileSystemBlockSize>
+</FileBlobStore>

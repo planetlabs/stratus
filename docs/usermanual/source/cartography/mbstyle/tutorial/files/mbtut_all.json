@@ -1,0 +1,244 @@
+{
+    "version": 8,
+    "name": "places",
+    "sprite": "http://localhost:8080/geoserver/styles/sprites",
+    "sources": {
+        "tutorial": {
+            "type": "vector",
+            "tiles": [
+              "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=tutorial&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector&TILECOL={x}&TILEROW={y}"
+            ],
+            "minZoom": 0,
+            "maxZoom": 14
+        },
+        "tutorial-dem": {
+            "type": "raster",
+            "tiles": [
+              "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=tutorial:DEM&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=image/png&TILECOL={x}&TILEROW={y}"
+            ],
+            "minZoom": 0,
+            "maxZoom": 14
+        }
+    },
+    "layers": [
+        {
+            "id": "dem",
+            "source": "tutorial-dem",
+            "source-layer": "DEM",
+            "type": "raster",
+            "paint": {
+                "raster-opacity": 1,
+                "raster-contrast": 0.5,
+                "raster-brighness-max": 0.25
+            }
+        },
+        {
+            "type": "fill",
+            "source": "tutorial",
+            "source-layer": "countries",
+            "id": "countries-fill",
+            "paint": {
+                "fill-color": {
+                    "property": "mapcolor7",
+                    "type": "categorical",
+                    "stops": [
+                        [1, "#FFC3C3"],
+                        [2, "#FFE3C3"],
+                        [3, "#FFFFC3"],
+                        [4, "#C3FFE3"],
+                        [5, "#C3FFFF"],
+                        [6, "#C3C3FF"],
+                        [7, "#FFC3FF"]
+                    ]
+                },
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "type": "line",
+            "id": "countries-line",
+            "source": "tutorial",
+            "source-layer": "countries",
+            "paint": {
+                "line-color": "#777777",
+                "line-width": 0.5,
+                "line-dasharray": [4, 4]
+            }
+        },
+        {
+            "type": "symbol",
+            "id": "countries-symbol",
+            "source": "tutorial",
+            "source-layer": "countries",
+            "layout": {
+                "text-field": "{name}",
+                "text-transform": "uppercase",
+                "text-size": 14,
+                "text-font": ["Padauk"],
+                "text-max-width": 100
+            },
+            "paint": {
+                "text-color": "#333333"
+            }
+        },
+        {
+            "id": "big",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["<", "scalerank", 4],
+            "maxzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#333333",
+                "line-width": 1
+            }
+        },
+        {
+            "id": "medium",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["all", ["<", "scalerank", 8], ["!=", "expressway", 1], ["!=", "featurecla", "Ferry"]],
+            "minzoom": 6,
+            "maxzoom": 8,
+            "type": "line",
+            "paint": {
+                "line-color": "#333333",
+                "line-width": 1
+            }
+        },
+        {
+            "id": "ferry",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["==", "featurecla", "Ferry"],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#00CCFF",
+                "line-width": 2,
+                "line-dasharray": [4, 6]
+            }
+        },
+        {
+            "id": "expressway",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["==", "expressway", 1],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#000000",
+                "line-width": 6,
+                "line-gap-width": 4,
+                "line-cap": "round"
+            }
+        },
+        {
+            "id": "inner",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["==", "expressway", 1],
+            "minzoom": 6,
+            "type": "line",
+            "paint": {
+                "line-color": "#FFCC00",
+                "line-width": 4,
+                "line-cap": "round"
+            }
+        },
+        {
+            "id": "small",
+            "source": "tutorial",
+            "source-layer": "roads",
+            "filter": ["all", ["!=", "expressway", 1], ["!=", "featurecla", "Ferry"]],
+            "minzoom": 8,
+            "type": "line",
+            "paint": {
+                "line-color": "#777777",
+                "line-width": 0.5
+            }
+        },
+        {
+            "id": "capitals-circle",
+            "source": "tutorial",
+            "source-layer": "places",
+            "maxzoom": 2,
+            "filter": ["==", "ADM0CAP", 1],
+            "type": "circle",
+            "paint": {
+                "circle-color": "#777777",
+                "circle-stroke-color": "#000000",
+                "circle-radius": 3,
+                "circle-stroke-width": 1
+            }
+        },
+        {
+            "id": "capitals-star",
+            "source": "tutorial",
+            "source-layer": "places",
+            "minzoom": 2,
+            "filter": ["==", "ADM0CAP", 1],
+            "type": "symbol",
+            "layout": {
+                "icon-image": "capital",
+                "icon-size": {
+                    "property": "POP_MAX",
+                    "type": "exponential",
+                    "stops": [
+                        [0, 0.3],
+                        [40000000, 0.8]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "capitals-label",
+            "source": "tutorial",
+            "source-layer": "places",
+            "minzoom": 3,
+            "filter": ["==", "ADM0CAP", 1],
+            "type": "symbol",
+            "layout": {
+                "text-field": "{NAME}",
+                "text-font": ["PT Serif"],
+                "text-anchor": "bottom-left",
+                "text-offset": [3,2]
+            }
+        },
+        {
+            "id": "places-circle",
+            "source": "tutorial",
+            "source-layer": "places",
+            "minzoom": 2,
+            "filter": ["!=", "ADM0CAP", 1],
+            "type": "circle",
+            "paint": {
+                "circle-color": "#777777",
+                "circle-stroke-color": "#000000",
+                "circle-radius": {
+                    "property": "POP_MAX",
+                    "type": "exponential",
+                    "stops": [
+                        [0, 2],
+                        [1562500, 5]
+                    ]
+                },
+                "circle-stroke-width": 1
+            }
+        },
+        {
+            "id": "places-label",
+            "source": "tutorial",
+            "source-layer": "places",
+            "minzoom": 4,
+            "filter": ["!=", "ADM0CAP", 1],
+            "type": "symbol",
+            "layout": {
+                "text-field": "{NAME}",
+                "text-font": ["PT Serif"],
+                "text-anchor": "bottom-left",
+                "text-offset": [3,2]
+            }
+        }
+    ]
+}

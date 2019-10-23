@@ -1,0 +1,214 @@
+/*-----------------------
+Color Overrides
+-----------------------*/
+
+h1, h2, h3, h4, h5, h6 {
+  color: #4D5055;
+}
+
+a:link, a:visited {
+  color: #2980b9;
+}
+
+#header {
+  background-color: #28bce0;
+  color: #CECECE;
+  padding-top: 7.5px;
+  padding-bottom: 7.5px;
+}
+
+#header label {
+  color: #CECECE;
+}
+
+thead th {
+  background: #28bce0;
+  color: #fff;
+  border-color: #00A78D;
+}
+
+thead th a:link, 
+thead th a:visited {
+  color: #fff;
+}
+
+tr.even td, tr.even th {
+  background: #ccede8;
+}
+
+tr:hover td,
+tr.even:hover td,
+tr.even:hover th {
+  background: #fffaeb;
+}
+
+.paginator a,
+.paginator em {
+  border: 1px solid #28bce0;
+}
+
+.paginator a:hover {
+  background: #ccede8;
+}
+
+.button-group a,
+.button-group button,
+input.btnTxt {
+  background-color: #fff;
+  background-image: none;
+  color: #28bce0;
+  border-color: #28bce0;
+}
+
+.button-group a:hover,
+.button-group button:hover,
+input.btnTxt:hover {
+  background: #7EB5D3 url('../img_stratus/button-gradient.png') repeat-x scroll left top;
+}
+
+.status-bar span, 
+.mini-bar span, 
+div.progress-bar span.bar {
+  background-image: url('../img_stratus/status-bar-bg.png');
+}
+
+/*-----------------------
+Themed Layout
+-----------------------*/
+body {
+  font-family: Helvetica, Arial, FreeSans, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica, Arial, FreeSans, sans-serif;
+  font-weight: bold;
+}
+
+#main {
+  background-color: #fafbfc;
+  border-bottom: 1px solid #cfdbe2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  margin: 0 -25px 0 -25px;
+  padding: 10px 10px 10px 15px;
+  height: 20px;
+}
+
+#header h2 a {
+  background-image: url('../img_stratus/logo2-basic.png');
+  margin-left: 15px;
+  height: 87px;
+  width: 330px;
+}
+
+#header .button-group {
+  padding-top: 1.5em;
+}
+
+#main {
+  border-top: 1px solid #28bce0;
+  background-image: none;
+}
+
+#main .wrap {
+  background-image: none;
+}
+
+#sidebar {
+  padding: 30px 20px 0;
+}
+
+#page {
+  background-image: none;
+  zoom: 1;
+  margin: 0 -20px -250px 19em;
+  padding: 0 20px 250px 19px;
+  -webkit-box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+  -moz-box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+  box-shadow: 0px -1px 1px 0px rgba(214,214,214,0.8);
+}
+
+#page::before {
+  content: " ";
+  background: 
+  	url("../img_stratus/content-shadow.png") 0 -271px no-repeat,
+  	url("../img_stratus/content-shadow.png") right 0 no-repeat;
+  position: absolute;
+  top: 0;
+  left: 217px;
+  right: -11px;
+  display: block;
+  height: 270px;
+  z-index: -1;
+}
+
+.page-header {
+  background-image: none;
+}
+
+.navigation-tab {
+	border-width: 1px;
+	border-color: #28bce0;
+}
+.navigation-tab-single, .navigation-tab-header,
+.navigation-tab-single a, .navigation-tab-header a, .navigation-tab-content a {
+  color: #2980b9;
+}
+
+/*---------------------------------
+  Extras needed only in Stratus
+----------------------------------*/
+
+/* 
+  Note, the resource pointed is a copy of the one in the GeoServer web-core jar. However, I could
+  not find any working way of referencing it from there, so I ended up just copying the resource
+*/
+.srs-link {
+background: transparent url(../silk/shape_square_blue.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+form div.group {
+overflow: auto;
+} 
+
+div.group li:first-child{
+clear: both;
+float: left;
+}
+div.group li:last-child{
+display:block;
+float:right;
+margin:0 0 0.3em;
+padding:4px 5px 2px 0;
+width:35%;
+}
+div.group li:last-child input.text{
+width:10em;
+}
+
+form a.expanded {
+background-image: url(../silk/bullet_arrow_down.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
+
+form a.collapsed {
+background-image: url(../silk/bullet_arrow_right.png);
+background-repeat: no-repeat;
+background-position: 0px 0px;
+padding-left: 16px;
+height: 18px;
+font-weight: bold;
+}
+
+.button-group.inactive a, .button-group.inactive button, input.btnTxt {
+  border-color: #aaa; 
+  color: #aaa;
+  background: none; 
+  font-weight: normal; 
+  font-style: italic;
+  cursor: default;
+}

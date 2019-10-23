@@ -1,0 +1,44 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Stratus - Redis Exec
+  description: Executes arbitrary commands
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/rest
+paths:
+  /redis/exec:
+    post:
+      operationId: execPost
+      summary: Executes arbitrary commands
+      description: |
+        Takes a redis command, executes it against redis, and returns the response.
+
+        **WARNING**: You can change the contents of redis with this endpoint, which may corrupt the Stratus catalog or configuration. Use with **extreme** caution.
+      parameters:
+       - name: command
+         in: body
+         description: The redis command
+         required: true
+         schema:
+           type: string
+           description: The redis command
+           example: "keys ServiceInfo:id*"
+      consumes:
+       - text/plain
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              [
+                  "1) ServiceInfo:id:ServiceInfo.5aeeec77:164427928ee:-7ff7",
+                  "2) ServiceInfo:id:ServiceInfo.5aeeec77:164427928ee:-7ff8",
+                  "3) ServiceInfo:id:ServiceInfo.5aeeec77:164427928ee:-7ffb",
+                  "4) ServiceInfo:id:ServiceInfo.5aeeec77:164427928ee:-7ff9",
+                  "5) ServiceInfo:id:ServiceInfo.5aeeec77:164427928ee:-7ffa"
+              ]

@@ -1,0 +1,16 @@
+# memory
+-Xms=256m -Xmx=756m
+
+# memory management
+-XX:SoftRefLRUPolicyMSPerMB=36000
+
+# performance
+-XX:-UsePerfData
+
+# geoserver
+-Dorg.geotools.referencing.forceXY=true
+
+# geoserver recommended
+-Dorg.geotoools.render.lite.scale.unitCompensation=true
+
+# geowebcache

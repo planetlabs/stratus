@@ -1,0 +1,21 @@
+<project name="docs.postgis" default="build">
+
+    <import file="../common.xml"/>
+
+    <property name="doc.dir" value="target/html/postgis"/>
+
+    <target name="build" depends="init">
+        <antcall target="sphinx">
+            <param name="dir" value="src"/>
+            <param name="flags" value="-q"/>
+        </antcall>
+
+        <mkdir dir="${doc.dir}"/>
+        <gunzip src="doc-html-${pg.version}.tar.gz"/>
+        <untar src="doc-html-${pg.version}.tar" dest="${doc.dir}"/>
+        <copy file="style.css" todir="${doc.dir}/html" overwrite="true"/>
+    </target>
+
+    <target name="clean" depends="destroy"/>
+
+</project>

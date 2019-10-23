@@ -1,0 +1,176 @@
+server:
+  compression:
+    enabled: true
+    #mime-types: "text/.*,.*xml.*,application/json,application/x-javascript"
+  servlet:
+    context_parameters:
+      serviceStrategy: "SPEED"
+      PARTIAL_BUFFER_STRATEGY_SIZE: 50
+
+logging:
+  level:
+    ROOT: WARN
+    stratus.StratusApplication: INFO
+    stratus.redis.geoserver: INFO
+    stratus.redis.config: DEBUG
+    stratus.redis.lock: DEBUG
+    stratus.redis.geoserver.RedisGeoServerLoader: INFO
+    stratus.cache: DEBUG
+    org.springframework.boot.web.embedded.tomcat.TomcatWebServer: INFO
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /rest/manage
+  info:
+    git:
+      mode: "full"
+
+stratus:
+  admin-enabled: true
+  proxy-base-url: ${proxybaseurl:}
+  min-wait-for-initializer-check: 1000
+  max-wait-for-initializer-check: 10000
+  initializer-timeout: 240000
+  gwc:
+    default-file-blob-store: false #For local development, when s3 is unavailable
+  web:
+    request-logging-filter-enabled: false
+    request-logging-filter-log-request-bodies: false
+    theme: light
+    enable-redis-sessions: false
+  catalog:
+    redis:
+      share-native-lettuce-connection: false
+      enable-connection-pooling: true
+      enable-stratus-1-2-upgrade: true
+      caching:
+        enable-rest-caching: true
+        enable-ows-caching: true
+        use-parallel-queries: false
+      pool:
+        max-total: 1000
+        min-idle: 15
+        max-idle: 50
+  store:
+    overwrite-resources: false
+    resource:  # quotes are required on the below resource values for \n characters to be properly handled
+      security/masterpw.xml: "<masterPassword><providerName>default</providerName></masterPassword>"
+      security/masterpw/default/config.xml: "<urlProvider><id>7a1e2288:15647e7504e:-8000</id><name>default</name><className>org.geoserver.security.password.URLMasterPasswordProvider</className><readOnly>false</readOnly><url>file:passwd</url><encrypting>false</encrypting></urlProvider>"
+      security/masterpw/default/passwd: geoserver # stratus won't start without something set for this value
+      #security/rest.properties: "/rest/manage/health;GET=IS_AUTHENTICATED_ANONYMOUSLY\n/**;GET,POST,DELETE,PUT=ADMIN"
+      security/rest.properties: "/rest/manage/health;GET=IS_AUTHENTICATED_ANONYMOUSLY\n/rest/workspaces/**;GET=ROLE_AUTHENTICATED\n/rest/workspaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layers/**;GET=ROLE_AUTHENTICATED\n/rest/layers/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/styles/**;GET=ROLE_AUTHENTICATED\n/rest/styles/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/rest/**;GET=ROLE_AUTHENTICATED\n/gwc/rest/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/namespaces/**;GET=ROLE_AUTHENTICATED\n/rest/namespaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layergroups/**;GET=ROLE_AUTHENTICATED\n/rest/layergroups/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wms/**;GET=ROLE_AUTHENTICATED\n/wms/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wfs/**;GET=ROLE_AUTHENTICATED\n/wfs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wcs/**;GET=ROLE_AUTHENTICATED\n/wcs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wps/**;GET=ROLE_AUTHENTICATED\n/wps/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/csw/**;GET=ROLE_AUTHENTICATED\n/csw/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/ows/**;GET=ROLE_AUTHENTICATED\n/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/**;GET=ROLE_AUTHENTICATED\n/gwc/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/*/*/ows/**;GET=ROLE_AUTHENTICATED\n/*/*/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**/ows/**;GET=ROLE_AUTHENTICATED\n/**/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**;GET=ADMIN,ROLE_ADMINISTRATOR\n/**;POST,DELETE,PUT=ADMIN,ROLE_ADMINISTRATOR"
+      gwc-gs.xml: "<GeoServerGWCConfig><version>1.1.0</version><directWMSIntegrationEnabled>true</directWMSIntegrationEnabled><WMSCEnabled>true</WMSCEnabled><TMSEnabled>true</TMSEnabled><securityEnabled>false</securityEnabled><innerCachingEnabled>false</innerCachingEnabled><persistenceEnabled>true</persistenceEnabled><cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass><cacheConfigurations><entry><string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string><InnerCacheConfiguration><hardMemoryLimit>16</hardMemoryLimit><policy>NULL</policy><concurrencyLevel>4</concurrencyLevel><evictionTime>120</evictionTime></InnerCacheConfiguration></entry></cacheConfigurations><cacheLayersByDefault>true</cacheLayersByDefault><cacheNonDefaultStyles>true</cacheNonDefaultStyles><metaTilingX>4</metaTilingX><metaTilingY>4</metaTilingY><gutter>0</gutter><defaultCachingGridSetIds><string>EPSG:4326</string><string>EPSG:900913</string></defaultCachingGridSetIds><defaultCoverageCacheFormats><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>image/png8</string></defaultCoverageCacheFormats><defaultVectorCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultVectorCacheFormats><defaultOtherCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultOtherCacheFormats></GeoServerGWCConfig>"
+      wms.xml: "<wms><id>wms</id><name>WMS</name><enabled>true</enabled><watermark class=\"org.geoserver.wms.WatermarkInfoImpl\"><enabled>false</enabled><position>BOT_RIGHT</position><transparency>0</transparency></watermark></wms>"
+      wfs.xml: "<wfs><id>wfs</id><name>WFS</name><enabled>true</enabled><serviceLevel>BASIC</serviceLevel><maxFeatures>1000000</maxFeatures></wfs>"
+      wcs.xml: "<wcs><id>wcs</id><name>WCS</name><enabled>true</enabled><maxInputMemory>0</maxInputMemory><maxOutputMemory>0</maxOutputMemory></wcs>"
+      wmts.xml: "<wmts><id>wmts</id><name>WMTS</name><enabled>true</enabled></wmts>"
+      wps.xml: "<wps><id>wps</id><name>WPS</name><enabled>false</enabled></wps>"
+  wps:
+    file-storage: local #anything other than "s3" here defaults to local file storage, which may not work well for multi-instance deployments
+    s3-region: US_EAST_1 #All caps with underscores should be used as the separator here.  See https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/regions/Regions.html
+    s3-bucket: stratus-wps #This bucket will be created if it doesn't already exist
+    s3-url: https://s3.amazonaws.com/
+    access-key: #optional if there is an Amazon credential chain external to Stratus
+    secret-key: #optional if there is an Amazon credential chain external to Stratus
+spring:
+  aop:
+    auto: false
+  freemarker:
+    checkTemplateLocation: false
+  http:
+    encoding:
+      charset: "UTF-8"
+      enabled: true
+      force: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  mvc:
+    favicon:
+      enabled: false
+    servlet:
+      load-on-startup: 1
+    contentnegotiation:
+      favor-path-extension: true # required to support content type extensions in rest endpoints (eg .json)
+    pathmatch:
+      use-suffix-pattern: true # required to support content type extensions in rest endpoints (eg .json)
+  batch:
+    job:
+      enabled: false
+  session:
+    store-type: redis
+  cache:
+    type: caffeine
+  cloud:
+    refresh:
+      enabled: false # conflicts with regular application startup
+    service-registry:
+      auto-registration:
+        enabled: false
+    features:
+      enabled: false
+    discovery:
+      enabled: false
+    httpclientfactories:
+      apache:
+        enabled: false
+      ok:
+        enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  metrics:
+    servo:
+      enabled: false
+
+ribbon:
+  httpclient:
+    enabled: false
+
+logback.access:
+  enabled: true
+  config: "classpath:logback-access.xml"
+  useServerPortInsteadOfLocalPort: true
+  tomcat:
+    enableRequestAttributes: true
+
+---
+# this profile allows you to manually specify redis endpoint information
+spring:
+  profiles: lettuce-manual,jedis-manual
+
+stratus:
+  catalog:
+    redis:
+      manual:
+        host: ${redis-host:localhost}
+        port: ${redis-port:6379}
+        database: ${redis-database:0}
+
+---
+# profile for cluster
+spring:
+  profiles: lettuce-cluster,jedis-cluster
+
+stratus:
+  catalog:
+    redis:
+      cluster:
+        hosts: ${cluster-hosts:localhost:6379}
+
+---
+# profile for sentinel
+spring:
+  profiles: lettuce-sentinel,jedis-sentinel
+
+stratus:
+  catalog:
+    redis:
+      sentinel:
+        master: ${sentinel-master:mymaster}
+        hosts: ${sentinel-hosts:localhost:26379}
