@@ -1,0 +1,23 @@
+sudo: false
+dist: trusty
+cache:
+  directories:
+    - "$HOME/.m2"
+language: java
+install: true
+env:
+  global:
+    - MAVEN_OPTS=-Xmx756m
+before_script:
+  - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.0/apache-maven-3.6.0-bin.tar.gz
+  - tar zxf apache-maven-3.6.0-bin.tar.gz
+  - export M2_HOME=$PWD/apache-maven-3.6.0
+  - export PATH=$M2_HOME/bin:$PATH
+script:
+  - mvn -f src/pom.xml -B -fae clean install
+notifications:
+  email: false
+  on_failure: never
+matrix:
+  include:
+    - jdk: openjdk11
