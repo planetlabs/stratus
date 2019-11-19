@@ -8,7 +8,7 @@ RUN yum -y upgrade \
   && yum -y install kernel-headers gcc-c++ openjpeg openjpeg-devel proj-4.0.0 proj-devel-4.8.0 curl-devel make swig wget tar gzip \
   && mkdir /mnt/efs
 
-ENV ANT_VERSION "1.10.5"
+ENV ANT_VERSION "1.10.6"
 ENV GDAL_VERSION "2.3.2"
 ENV LD_LIBRARY_PATH "/usr/local/lib:/usr/lib:/usr/lib64"
 
