@@ -6,6 +6,7 @@ package stratus.rest.xml;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.LogoutFilterConfig;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="securityConfig")

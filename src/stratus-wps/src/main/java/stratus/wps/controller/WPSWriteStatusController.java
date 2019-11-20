@@ -4,13 +4,13 @@
  */
 package stratus.wps.controller;
 
-import stratus.wps.model.StratusExecutionStatus;
-import stratus.wps.redis.repository.StratusExecutionStatusRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import stratus.wps.model.StratusExecutionStatus;
+import stratus.wps.redis.repository.StratusExecutionStatusRepository;
 
 import java.util.logging.Logger;
 

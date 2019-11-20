@@ -18,14 +18,14 @@
   <import resource="geowebcache-virtualearth-context.xml"/>
   <import resource="geowebcache-wmsservice-context.xml"/>
   <import resource="geowebcache-wmtsservice-context.xml"/>
-
   <import resource="geowebcache-diskquota-context.xml"/>
     
   <!--
     This mappings are different from the standalone gwc ones in that they prepend the /gwc prefix to the context so it
     ends up being, for example, /geoserver/gwc/*
   -->
-  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+  <!--<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
     <property name="ignoreUnresolvablePlaceholders" value="true" />
     <property name="location">
       <value>classpath:application.properties</value>

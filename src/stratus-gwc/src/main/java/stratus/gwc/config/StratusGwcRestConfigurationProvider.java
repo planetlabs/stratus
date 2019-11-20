@@ -4,14 +4,14 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.GeoServerTileLayerRedisInfoImpl;
-import stratus.gwc.redis.data.RegexParameterFilterRedis;
 import com.thoughtworks.xstream.XStream;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geowebcache.config.ContextualConfigurationProvider;
 import org.geowebcache.config.Info;
 import org.springframework.stereotype.Component;
+import stratus.gwc.redis.data.GeoServerTileLayerRedisInfoImpl;
+import stratus.gwc.redis.data.RegexParameterFilterRedis;
 
 /**
  * Tells XStream to process the annotations found in the GeoServerTileLayer classes.

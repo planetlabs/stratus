@@ -96,10 +96,11 @@ spring:
       enabled: false
     servlet:
       load-on-startup: 1
-    contentnegotiation:
-      favor-path-extension: true # required to support content type extensions in rest endpoints (eg .json)
+    #contentnegotiation:
+      #favor-path-extension: true # required to support content type extensions in rest endpoints (eg .json)
     pathmatch:
       use-suffix-pattern: true # required to support content type extensions in rest endpoints (eg .json)
+      #use-registered-suffix-pattern: true
   batch:
     job:
       enabled: false

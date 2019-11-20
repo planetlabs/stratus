@@ -4,11 +4,11 @@
  */
 package stratus.redis.lock;
 
-import stratus.commons.lock.StratusLockProvider;
-import stratus.commons.lock.LockingInitializerConfig;
-import stratus.redis.repository.RedisRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import stratus.commons.lock.LockingInitializerConfig;
+import stratus.commons.lock.StratusLockProvider;
+import stratus.redis.repository.RedisRepository;
 
 /**
  * @author joshfix

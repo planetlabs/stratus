@@ -4,9 +4,10 @@
  */
 package stratus;
 
-import stratus.commons.event.GeoServerInitializedEvent;
 import it.geosolutions.jaiext.JAIExt;
 import lombok.extern.slf4j.Slf4j;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.image.ImageWorker;
@@ -15,6 +16,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import stratus.commons.PostGeoServerInitializer;
+import stratus.commons.event.GeoServerInitializedEvent;
+import stratus.gwc.GwcLoader;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -29,25 +33,51 @@ public class StratusInitializer implements ApplicationRunner {
     @Autowired
 	private ConfigurableApplicationContext app;
 
-    @Autowired(required=false)
-	private Collection<Initializer> initializers;
+    @Autowired
+	private GeoServer geoServer;
+
+    @Autowired(required = false)
+	private GwcLoader gwcLoader;
+
+	@Autowired(required=false)
+	private Collection<GeoServerInitializer> initializers;
+
+	@Autowired(required=false)
+	private Collection<PostGeoServerInitializer> postInitializers;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		log.info("Finalizing Stratus initialization.");
 
 		log.debug("Initializing GWC.");
+		if (gwcLoader != null) {
+			try {
+				gwcLoader.initialize();
+			} catch (Throwable t) {
+				log.error("Failed to initialize GWC", t);
+				throw (t);
+			}
+		}
 
 		if (initializers!=null) {
-            for (Initializer initializer : initializers) {
+            for (GeoServerInitializer initializer : initializers) {
                 try {
-                    initializer.init();
-                } catch (InitializationException e) {
-                    log.error(e.getMessage());
-                    throw (e);
+                    initializer.initialize(geoServer);
+                } catch (Throwable t) {
+                    log.error("Failed to run initializer " + initializer, t);
                 }
             }
         }
+
+		if (postInitializers!=null) {
+			for (PostGeoServerInitializer initializer : postInitializers) {
+				try {
+					initializer.initialize();
+				} catch (Throwable t) {
+					log.error("Failed to run initializer " + initializer, t);
+				}
+			}
+		}
 
 		log.debug("Configuring JAI.");
 	    configureJai();

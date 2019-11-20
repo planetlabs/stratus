@@ -4,10 +4,10 @@
  */
 package stratus.redis.rest.catalog.workspace;
 
-import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
 
 import java.util.List;
 

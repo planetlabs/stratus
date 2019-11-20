@@ -4,9 +4,6 @@
  */
 package stratus.wms;
 
-import stratus.ows.OWSCachingException;
-import stratus.ows.OWSCachingHandler;
-import stratus.redis.index.RedisLayerIndexFacade;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpUtils;
@@ -22,6 +19,9 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import stratus.ows.OWSCachingException;
+import stratus.ows.OWSCachingHandler;
+import stratus.redis.index.RedisLayerIndexFacade;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;

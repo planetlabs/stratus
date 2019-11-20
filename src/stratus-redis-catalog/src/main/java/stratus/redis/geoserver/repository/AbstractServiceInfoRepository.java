@@ -4,8 +4,8 @@
  */
 package stratus.redis.geoserver.repository;
 
-import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 import org.springframework.data.repository.CrudRepository;
+import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 
 import java.util.List;
 import java.util.Optional;

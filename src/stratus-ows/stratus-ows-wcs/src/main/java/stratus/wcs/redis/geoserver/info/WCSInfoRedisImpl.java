@@ -4,13 +4,13 @@
  */
 package stratus.wcs.redis.geoserver.info;
 
-import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 import lombok.Data;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 
 import java.util.ArrayList;
 import java.util.List;

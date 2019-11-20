@@ -4,8 +4,8 @@
  */
 package stratus.wps.redis.repository;
 
-import stratus.wps.model.StratusExecutionStatus;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import stratus.wps.model.StratusExecutionStatus;
 
 public interface StratusExecutionStatusRepository extends PagingAndSortingRepository<StratusExecutionStatus, String> {
 }

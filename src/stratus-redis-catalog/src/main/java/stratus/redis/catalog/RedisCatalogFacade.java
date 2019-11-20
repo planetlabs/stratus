@@ -4,13 +4,6 @@
  */
 package stratus.redis.catalog;
 
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.catalog.impl.CatalogInfoConvert;
-import stratus.redis.catalog.info.LayerInfoRedisImpl;
-import stratus.redis.catalog.info.NamespaceInfoRedisImpl;
-import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
-import stratus.redis.catalog.repository.*;
-import stratus.redis.repository.RedisRepository;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.*;
@@ -19,6 +12,8 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geotools.filter.AndImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.IsEqualsToImpl;
@@ -31,6 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.convert.RedisCustomConversions;
 import org.springframework.stereotype.Service;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.catalog.impl.CatalogInfoConvert;
+import stratus.redis.catalog.info.LayerInfoRedisImpl;
+import stratus.redis.catalog.info.NamespaceInfoRedisImpl;
+import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
+import stratus.redis.catalog.repository.*;
+import stratus.redis.repository.RedisRepository;
 
 import java.lang.reflect.Proxy;
 import java.util.*;
@@ -254,6 +256,19 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         checkChangeCanBeReadTransaction(info, (Class<? extends T>)info.getClass(), (redisInfo, classRepo)->{
             return classRepo.save(redisInfo);
         });
+    }
+
+    protected <T> T resolveProxy(Catalog catalog, T info) {
+        T resolvedInfo;
+        if (Dispatcher.REQUEST.get() != null) {
+            Request req = Dispatcher.REQUEST.get();
+            Dispatcher.REQUEST.set(null);
+            resolvedInfo = ResolvingProxy.resolve(catalog, info);
+            Dispatcher.REQUEST.set(req);
+        } else {
+            resolvedInfo = ResolvingProxy.resolve(catalog, info);
+        }
+        return resolvedInfo;
     }
 
     private final <T extends CatalogInfo> T resolveAndProxy(T info, Class<T> clazz) {
@@ -1281,11 +1296,6 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortOrder) {
-        return list(of, filter, offset, count, sortOrder != null ? new SortBy[]{sortOrder} : null);
-    }
-
-    @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortOrder) {
         return new CloseableIteratorAdapter<>(getList(of, filter, offset, count, sortOrder).iterator());
     }
@@ -1341,7 +1351,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         }
         setId(layer);
 
-        ResourceInfo resource = ResolvingProxy.resolve(catalog, layer.getResource());
+        ResourceInfo resource = resolveProxy(catalog, layer.getResource());
         if (resource != null) {
             resource = unwrap(resource);
             layer.setResource(resource);
@@ -1350,7 +1360,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
             layer.setResource(null);
         }
 
-        StyleInfo style = ResolvingProxy.resolve(catalog, layer.getDefaultStyle());
+        StyleInfo style = resolveProxy(catalog, layer.getDefaultStyle());
         if (style != null) {
             style = unwrap(style);
             layer.setDefaultStyle(style);
@@ -1361,7 +1371,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
 
         LinkedHashSet<StyleInfo> styles = new LinkedHashSet<>();
         for (StyleInfo s : layer.getStyles()) {
-            s = ResolvingProxy.resolve(catalog, s);
+            s = resolveProxy(catalog, s);
             s = unwrap(s);
             styles.add(s);
         }
@@ -1397,9 +1407,9 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
             PublishedInfo l = lg.getLayers().get(i);
             PublishedInfo resolved;
             if (l instanceof LayerGroupInfo) {
-                resolved = unwrap(ResolvingProxy.resolve(catalog, (LayerGroupInfo) l));
+                resolved = unwrap(resolveProxy(catalog, (LayerGroupInfo) l));
             } else {
-                resolved = unwrap(ResolvingProxy.resolve(catalog, (LayerInfo) l));
+                resolved = unwrap(resolveProxy(catalog, (LayerInfo) l));
             }
 
             lg.getLayers().set(i, resolved != null ? resolved : l);
@@ -1408,13 +1418,13 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         for (int i = 0; i < lg.getStyles().size(); i++) {
             StyleInfo s = lg.getStyles().get(i);
             if (s != null) {
-                StyleInfo resolved = unwrap(ResolvingProxy.resolve(catalog, s));
+                StyleInfo resolved = unwrap(resolveProxy(catalog, s));
                 lg.getStyles().set(i, resolved);
             }
         }
 
         // resolve the workspace -- not sure why this isn't happening in supermethod?
-        WorkspaceInfo resolvedWI = ResolvingProxy.resolve(catalog, layerGroup.getWorkspace());
+        WorkspaceInfo resolvedWI = resolveProxy(catalog, layerGroup.getWorkspace());
         if (resolvedWI != null) {
             resolvedWI = unwrap(resolvedWI);
             layerGroup.setWorkspace(resolvedWI);
@@ -1424,7 +1434,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         }
 
         // resolve the root layer -- not sure why this isn't happening in supermethod?
-        LayerInfo resolvedRl = ResolvingProxy.resolve(catalog, layerGroup.getRootLayer());
+        LayerInfo resolvedRl = resolveProxy(catalog, layerGroup.getRootLayer());
         if (resolvedRl != null) {
             resolvedRl = unwrap(resolvedRl);
             layerGroup.setRootLayer(resolvedRl);
@@ -1434,7 +1444,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         }
 
         // resolve the root layer style -- not sure why this isn't happening in supermethod?
-        StyleInfo resolvedRls = ResolvingProxy.resolve(catalog, layerGroup.getRootLayerStyle());
+        StyleInfo resolvedRls = resolveProxy(catalog, layerGroup.getRootLayerStyle());
         if (resolvedRls != null) {
             resolvedRls = unwrap(resolvedRls);
             layerGroup.setRootLayerStyle(resolvedRls);
@@ -1466,7 +1476,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         setId(style);
 
         // resolve the workspace -- not sure why this isn't happening in supermethod?
-        WorkspaceInfo resolved = ResolvingProxy.resolve(catalog, style.getWorkspace());
+        WorkspaceInfo resolved = resolveProxy(catalog, style.getWorkspace());
         if (resolved != null) {
             resolved = unwrap(resolved);
             style.setWorkspace(resolved);
@@ -1496,7 +1506,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         StoreInfoImpl s = (StoreInfoImpl) store;
 
         // resolve the workspace
-        WorkspaceInfo resolved = ResolvingProxy.resolve(catalog, s.getWorkspace());
+        WorkspaceInfo resolved = resolveProxy(catalog, s.getWorkspace());
         if (resolved != null) {
             resolved = unwrap(resolved);
             s.setWorkspace(resolved);
@@ -1517,7 +1527,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         ResourceInfoImpl r = (ResourceInfoImpl) resource;
 
         // resolve the store
-        StoreInfo store = ResolvingProxy.resolve(catalog, r.getStore());
+        StoreInfo store = resolveProxy(catalog, r.getStore());
         if (store != null) {
             store = unwrap(store);
             r.setStore(store);
@@ -1527,7 +1537,7 @@ public class RedisCatalogFacade extends AbstractCatalogFacade {
         }
 
         // resolve the namespace
-        NamespaceInfo namespace = ResolvingProxy.resolve(catalog, r.getNamespace());
+        NamespaceInfo namespace = resolveProxy(catalog, r.getNamespace());
         if (namespace != null) {
             namespace = unwrap(namespace);
             r.setNamespace(namespace);

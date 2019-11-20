@@ -4,10 +4,10 @@
  */
 package stratus.redis.upgrade.stratus_1_2;
 
-import stratus.redis.upgrade.Upgradable;
 import org.geoserver.catalog.impl.WrappingProxy;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
+import stratus.redis.upgrade.Upgradable;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

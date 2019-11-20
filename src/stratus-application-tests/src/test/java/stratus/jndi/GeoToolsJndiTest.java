@@ -4,8 +4,6 @@
  */
 package stratus.jndi;
 
-import stratus.config.StratusConfigProps;
-import stratus.config.TomcatConfig;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.geotools.data.DataAccess;
 import org.geotools.jdbc.JDBCDataStore;
@@ -21,10 +19,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.vfny.geoserver.util.DataStoreUtils;
+import stratus.config.StratusConfigProps;
+import stratus.config.TomcatConfig;
 
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +64,7 @@ public class GeoToolsJndiTest {
         return "2.2";
     }
 
-    @Before
+    //@Before
     public void init() throws Exception {
         //Do a hard reset of the DB - shutdown, delete all files, startup again
         server = Server.createPgServer("-pgPort", JNDI_SOURCE_PORT, "-pgDaemon", "-baseDir", "./");
@@ -83,6 +81,8 @@ public class GeoToolsJndiTest {
 
     @Test
     public void testJndi() throws Exception {
+        init();
+
         Map<String, String> params = new HashMap<>();
         params.put(JNDI_REFERENCE_NAME_KEY, JNDI_REFERENCE_NAME);
         params.put(DB_TYPE_KEY, DB_TYPE);
@@ -102,9 +102,11 @@ public class GeoToolsJndiTest {
         assertThat(basicDataSource.getUrl(), is(jndiSource.getProperties().get(JNDI_SOURCE_URL_KEY)));
         assertThat(basicDataSource.getUsername(), is(jndiSource.getProperties().get(JNDI_SOURCE_USERNAME_KEY)));
         assertThat(basicDataSource.getPassword(), is(jndiSource.getProperties().get(JNDI_SOURCE_PASSWORD_KEY)));
+
+        after();
     }
 
-    @After
+    //@After
     public void after() {
         server.stop();
     }

@@ -4,9 +4,9 @@
  */
 package org.geoserver.catalog.impl;
 
+import org.geoserver.catalog.CatalogFacade;
 import stratus.redis.cache.CachingCatalogFacade;
 import stratus.redis.catalog.RedisCatalogFacade;
-import org.geoserver.catalog.CatalogFacade;
 
 public class RedisCatalogFacadeFactory {
     /**

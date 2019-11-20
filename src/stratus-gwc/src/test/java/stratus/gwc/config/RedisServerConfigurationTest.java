@@ -5,12 +5,6 @@
 package stratus.gwc.config;
 
 
-import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.apache.commons.io.FileUtils;
 import org.geowebcache.config.*;
 import org.geowebcache.grid.GridSetBroker;
@@ -20,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
+import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.File;
 import java.net.URL;
@@ -60,17 +60,19 @@ public class RedisServerConfigurationTest extends ServerConfigurationTest {
                 new XMLFileResourceProvider(XMLConfiguration.DEFAULT_CONFIGURATION_FILE_NAME,
                         (WebApplicationContext)null, configDir.getAbsolutePath(), null);
         XMLConfiguration config = new XMLConfiguration(null, configProvider);
-        GridSetBroker gridSetBroker = new GridSetBroker(true, true);
+        GridSetBroker gridSetBroker = new GridSetBroker();
         config.setGridSetBroker(gridSetBroker);
-        config.afterPropertiesSet();
+        //config.afterPropertiesSet();
+
         //copy from XMLConfig
         ServerConfigurationRedisImpl configurationInternal = new ServerConfigurationRedisImpl(config);
         this.config.setConfiguration(configurationInternal);
+
         this.config.afterPropertiesSet();
 
         //manually set the version so that the test passes
         configurationInternal = this.config.getConfiguration();
-        configurationInternal.setVersion("1.13.0");
+        configurationInternal.setVersion("1.16.0");
         this.config.setConfiguration(configurationInternal);
 
         return this.config;

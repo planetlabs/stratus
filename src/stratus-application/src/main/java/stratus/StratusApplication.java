@@ -4,15 +4,18 @@
  */
 package stratus;
 
-import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.rest.RestConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ImportResource;
+import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
 
 
 /**
@@ -22,6 +25,7 @@ import org.springframework.context.annotation.*;
 @Slf4j
 @Configuration
 @EnableAutoConfiguration
+@ConfigurationPropertiesScan
 @ComponentScan(basePackages = {"stratus", "org.geoserver.rest"},
         excludeFilters = {
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = RestConfiguration.class)
@@ -31,7 +35,12 @@ import org.springframework.context.annotation.*;
                 + "!file:gs-rest,!bean:demoMenuPage,!bean:bruteForceListener,!bean:secureCatalog,!bean:wpstimerFactory,"
                 + "!beanClass:org.geoserver.wps.executor.WPSExecutionManager,"
                 + "!beanClass:org.geoserver.wps.executor.ProcessStatusTracker,"
-                + "!beanClass:org.geoserver.wps.DefaultWebProcessingService"
+                + "!beanClass:org.geoserver.wps.DefaultWebProcessingService,"
+                + "!beanClass:org.geoserver.config.GeoServerLoaderProxy,"       //Handled by RedisGeoServerLoader
+                + "!beanClass:org.geoserver.wps.WPSInitializer,"                //Handled by custom BSE impl
+                + "!beanClass:org.geoserver.gwc.config.GWCInitializer,"         //Handled by custom BSE impl
+                + "!beanClass:org.geoserver.config.LockProviderInitializer,"    //Handled by RedisGeoServerLoader
+                + "!beanClass:org.geoserver.logging.LoggingInitializer"         //Logging handled differently by BSE
 },
         reader = FilteringBeanDefinitionLoader.class)
 public class StratusApplication {

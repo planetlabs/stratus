@@ -4,7 +4,6 @@
  */
 package stratus.rest;
 
-import stratus.StratusApplicationTestSupport;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -12,6 +11,7 @@ import net.sf.json.JSONSerializer;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import stratus.StratusApplicationTestSupport;
 
 import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
 import static org.junit.Assert.assertEquals;

@@ -12,7 +12,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.ResolvingProxy;
-import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.opengis.util.ProgressListener;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
@@ -36,7 +36,7 @@ public class WMTSLayerInfoRedisImpl extends ResourceInfoRedisImpl implements WMT
     private transient WMTSStoreInfo store;
 
     @Override
-    public Layer getWMTSLayer(ProgressListener listener) throws IOException {
+    public WMTSLayer getWMTSLayer(ProgressListener listener) throws IOException {
         return catalog.getResourcePool().getWMTSLayer(this);
     }
 

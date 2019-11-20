@@ -216,12 +216,6 @@ public class LayerGroupInfoRedisImpl implements LayerGroupInfo, Serializable {
     }
 
     @Override
-    @Deprecated
-    public String getPrefixedName() {
-        return prefixedName();
-    }
-
-    @Override
     public List<LayerInfo> layers() {
         throw new UnsupportedOperationException();
     }

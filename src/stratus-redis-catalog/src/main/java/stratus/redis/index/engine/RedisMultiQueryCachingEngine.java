@@ -4,10 +4,6 @@
  */
 package stratus.redis.index.engine;
 
-import stratus.redis.cache.Cache;
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.cache.CatalogCache;
-import stratus.redis.geoserver.CachingGeoServerFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.ResolvingProxy;
@@ -18,6 +14,10 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.convert.RedisConverter;
+import stratus.redis.cache.Cache;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.cache.CatalogCache;
+import stratus.redis.geoserver.CachingGeoServerFacade;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;

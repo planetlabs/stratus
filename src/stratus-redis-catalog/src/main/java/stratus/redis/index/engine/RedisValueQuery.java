@@ -6,10 +6,10 @@ package stratus.redis.index.engine;
 
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
-import stratus.redis.catalog.impl.CatalogInfoConvert;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.convert.RedisConverter;
 import org.springframework.data.redis.core.convert.RedisData;
+import stratus.redis.catalog.impl.CatalogInfoConvert;
 
 import java.util.Collections;
 import java.util.List;

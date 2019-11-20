@@ -4,12 +4,12 @@
  */
 package stratus.redis.upgrade.stratus_1_2;
 
-import stratus.redis.upgrade.StratusUpgradingDeserializingConverter;
 import org.geoserver.wms.WMSInfoImpl;
 import org.junit.Test;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import stratus.redis.upgrade.StratusUpgradingDeserializingConverter;
 
 import java.io.BufferedReader;
 import java.io.IOException;

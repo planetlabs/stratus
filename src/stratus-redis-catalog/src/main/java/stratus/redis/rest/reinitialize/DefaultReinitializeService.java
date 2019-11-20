@@ -4,10 +4,10 @@
  */
 package stratus.redis.rest.reinitialize;
 
-import stratus.redis.geoserver.RedisGeoServerLoader;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import stratus.redis.geoserver.RedisGeoServerLoader;
 
 import static stratus.redis.geoserver.RedisGeoServerLoader.GEOSERVER_INITIALIZATION_KEY;
 

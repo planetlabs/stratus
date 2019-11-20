@@ -26,34 +26,45 @@ import java.util.List;
 
 @Slf4j
 @Service("resourceStoreImpl")
-@Lazy
+//@Lazy
 public class RedisResourceStore implements ResourceStore {
 
     protected File cacheDir;
     protected LockProvider lockProvider = new NullLockProvider();
 
-    private ResourceDataService dataService;
+    private final ResourceDataService dataService;
     
-    private RedisNotificationDispatcher resourceNotificationDispatcher;
+    private final RedisNotificationDispatcher resourceNotificationDispatcher;
 
-    public RedisResourceStore() {
+    public RedisResourceStore(ResourceDataService dataService,
+                              RedisNotificationDispatcher resourceNotificationDispatcher) {
+        this.dataService = dataService;
+        this.resourceNotificationDispatcher = resourceNotificationDispatcher;
         try {
             cacheDir = Files.createTempDirectory("redis.resourcestore.cache").toFile();
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
-
+/*
+    private RedisResourceStore() {
+        try {
+            cacheDir = Files.createTempDirectory("redis.resourcestore.cache").toFile();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+*/
     @Autowired
-    @Lazy
+    //@Lazy
     public void setDataService(ResourceDataService dataService) {
-		this.dataService = dataService;
+		//this.dataService = dataService;
 	}
 
     @Autowired
     @Lazy
 	public void setResourceNotificationDispatcher(RedisNotificationDispatcher resourceNotificationDispatcher) {
-		this.resourceNotificationDispatcher = resourceNotificationDispatcher;
+	//	this.resourceNotificationDispatcher = resourceNotificationDispatcher;
 	}
 
 	public ResourceDataService getDataService() {

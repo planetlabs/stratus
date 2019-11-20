@@ -4,17 +4,17 @@
  */
 package stratus.redis.config;
 
-import stratus.redis.RedisFacadeTestSupport;
-import stratus.redis.cache.CachingFilter;
-import stratus.redis.index.LayerIndexListener;
-import stratus.redis.repository.RedisRepository;
-import stratus.redis.store.RedisNotificationDispatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import stratus.redis.RedisFacadeTestSupport;
+import stratus.redis.cache.CachingFilter;
+import stratus.redis.index.LayerIndexListener;
+import stratus.redis.repository.RedisRepository;
+import stratus.redis.store.RedisNotificationDispatcher;
 
 /**
  * Configuration for a Stratus instance with an embedded

@@ -93,16 +93,6 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
     }
 
     @Override
-    public void setContact(ContactInfo contactInfo) {
-        getSettings().setContact(contactInfo);
-    }
-
-    @Override
-    public ContactInfo getContact() {
-        return getSettings().getContact();
-    }
-
-    @Override
     public JAIInfo getJAI() {
         if (jai == null) {
             byte[] jaiBytes = Base64.getDecoder().decode(jaiBytesBase64);
@@ -184,11 +174,6 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
 
     public boolean isVerboseExceptions() {
         return getSettings().isVerboseExceptions();
-    }
-
-    @Override
-    public void setVerboseExceptions(boolean verboseExceptions) {
-        getSettings().setVerboseExceptions(verboseExceptions);
     }
 
     @Override
@@ -452,10 +437,6 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
         }
 
         //handle deprecated members, forward values onto the setter methods
-        if (contact != null) {
-            setContact(contact);
-            contact = null;
-        }
         if (charset != null) {
             setCharset(charset);
             charset = null;
@@ -483,10 +464,6 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
         if (verbose != null) {
             setVerbose(verbose);
             verbose = null;
-        }
-        if (verboseExceptions != null) {
-            setVerboseExceptions(verboseExceptions);
-            verboseExceptions = null;
         }
 
         return this;

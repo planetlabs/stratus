@@ -4,11 +4,11 @@
  */
 package stratus.redis.cache.rest.preloaders;
 
+import org.geoserver.catalog.*;
+import org.springframework.stereotype.Component;
 import stratus.redis.cache.rest.Preloader;
 import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
 import stratus.redis.index.engine.RedisValuesQuery;
-import org.geoserver.catalog.*;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 

@@ -4,12 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.repository.GridSetRepository;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geowebcache.config.GridSetConfiguration;
 import org.geowebcache.config.GridSetConfigurationTest;
 import org.geowebcache.grid.GridSet;
@@ -26,6 +20,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.gwc.redis.repository.GridSetRepository;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

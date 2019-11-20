@@ -6,8 +6,6 @@ package stratus.wps;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import stratus.StratusApplicationTestSupport;
-import stratus.wps.config.WPSConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
@@ -18,6 +16,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import stratus.StratusApplicationTestSupport;
+import stratus.wps.config.WPSConfigurationProperties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

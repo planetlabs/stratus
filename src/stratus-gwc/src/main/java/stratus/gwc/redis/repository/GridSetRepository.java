@@ -4,8 +4,8 @@
  */
 package stratus.gwc.redis.repository;
 
-import stratus.gwc.redis.data.GridSetRedisImpl;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import stratus.gwc.redis.data.GridSetRedisImpl;
 
 /**
  * SpringData repository for GridSet objects

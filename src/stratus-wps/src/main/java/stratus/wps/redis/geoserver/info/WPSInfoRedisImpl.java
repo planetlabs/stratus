@@ -4,7 +4,6 @@
  */
 package stratus.wps.redis.geoserver.info;
 
-import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 import lombok.Data;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
@@ -12,6 +11,7 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 
 import java.util.ArrayList;
 

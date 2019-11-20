@@ -4,13 +4,13 @@
  */
 package stratus.gwc.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import stratus.gwc.redis.repository.BlobStoreRepository;
 import stratus.gwc.redis.repository.GeoServerTileLayerRepository;
 import stratus.gwc.redis.repository.GridSetRepository;
 import stratus.gwc.redis.repository.ServerRepository;
 import stratus.redis.config.RedisConfigProps;
 import stratus.redis.repository.RedisRepositoryImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Utility class for Redis GWC tests
@@ -21,7 +21,6 @@ public class RedisGWCTestSupport {
 
     @Autowired
     public RedisConfigProps configProps;
-
     @Autowired
     public RedisRepositoryImpl repository;
     @Autowired
@@ -32,4 +31,5 @@ public class RedisGWCTestSupport {
     public GridSetRepository gsRepository;
     @Autowired
     public BlobStoreRepository bsRepository;
+
 }

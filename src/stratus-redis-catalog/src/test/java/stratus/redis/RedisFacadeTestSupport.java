@@ -4,15 +4,6 @@
  */
 package stratus.redis;
 
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.catalog.repository.*;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.geoserver.CachingGeoServerFacade;
-import stratus.redis.geoserver.RedisGeoServerFacade;
-import stratus.redis.geoserver.ServiceInfoRegisteringBean;
-import stratus.redis.geoserver.repository.*;
-import stratus.redis.repository.RedisRepository;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -23,6 +14,15 @@ import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.test.GeoServerTestApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.catalog.repository.*;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.geoserver.CachingGeoServerFacade;
+import stratus.redis.geoserver.RedisGeoServerFacade;
+import stratus.redis.geoserver.ServiceInfoRegisteringBean;
+import stratus.redis.geoserver.repository.*;
+import stratus.redis.repository.RedisRepository;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;

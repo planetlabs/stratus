@@ -4,10 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.GeoServerTileLayerRedisInfoImpl;
-import stratus.gwc.redis.repository.GeoServerTileLayerRepository;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.repository.RedisRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.*;
 import org.geoserver.gwc.GWC;
@@ -24,6 +20,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import stratus.gwc.redis.data.GeoServerTileLayerRedisInfoImpl;
+import stratus.gwc.redis.repository.GeoServerTileLayerRepository;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -56,12 +56,6 @@ public class RedisGeoServerTileLayerConfiguration extends BaseRedisConfiguration
         this.catalog = catalog;
     }
 
-    @Deprecated
-    @Override
-    public List<? extends TileLayer> getTileLayers() {
-        return (List<? extends TileLayer>)getLayers();
-    }
-
     @Override
     public Collection<? extends TileLayer> getLayers() {
         List<GeoServerTileLayer> layers = new ArrayList<>();
@@ -88,38 +82,14 @@ public class RedisGeoServerTileLayerConfiguration extends BaseRedisConfiguration
         }
     }
 
-    @Deprecated
-    @Override
-    public TileLayer getTileLayer(String layerName) {
-        return getLayer(layerName).orElse(null);
-    }
-
-    @Deprecated
-    @Override
-    public TileLayer getTileLayerById(String layerId) {
-        return getTileLayer(layerId);
-    }
-
     @Override
     public int getLayerCount() {
         return new Long(tlRepository.count()).intValue();
     }
 
-    @Deprecated
-    @Override
-    public int getTileLayerCount() {
-        return getLayerCount();
-    }
-
     @Override
     public Set<String> getLayerNames() {
         return getLayers().stream().map(TileLayer::getName).collect(Collectors.toSet());
-    }
-
-    @Deprecated
-    @Override
-    public Set<String> getTileLayerNames() {
-        return getLayerNames();
     }
 
     @Transactional

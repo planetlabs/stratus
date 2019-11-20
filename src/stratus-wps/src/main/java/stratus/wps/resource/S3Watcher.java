@@ -5,12 +5,12 @@
 package stratus.wps.resource;
 
 import com.amazonaws.services.s3.AmazonS3;
-import stratus.wps.s3.S3Connector;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import stratus.wps.s3.S3Connector;
 
 import java.util.Collections;
 import java.util.List;

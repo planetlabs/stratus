@@ -62,18 +62,6 @@ public class StyleInfoRedisImpl implements StyleInfo, Serializable {
     }
 
     @Override
-    @Deprecated
-    public Version getSLDVersion() {
-        return getFormatVersion();
-    }
-
-    @Override
-    @Deprecated
-    public void setSLDVersion(Version v) {
-        setFormatVersion(v);
-    }
-
-    @Override
     public Version getFormatVersion() {
         return new Version(languageVersion);
     }

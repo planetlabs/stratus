@@ -5,6 +5,7 @@
 package stratus.rest.xml;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.geoserver.security.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="requestFilterChain")
 public class JaxbRequestFilterChain {

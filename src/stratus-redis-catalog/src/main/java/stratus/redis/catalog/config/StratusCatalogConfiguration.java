@@ -4,14 +4,6 @@
  */
 package stratus.redis.catalog.config;
 
-import stratus.redis.cache.CachingFilter;
-import stratus.redis.cache.rest.RestCachingInterceptor;
-import stratus.redis.converter.BytesToSerializableConverter;
-import stratus.redis.converter.BytesToVirtualTableConverter;
-import stratus.redis.converter.SerializableToBytesConverter;
-import stratus.redis.converter.VirtualTableToBytesConverter;
-import stratus.redis.index.LayerIndexListener;
-import stratus.redis.rest.CatalogRestInterceptor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,6 +12,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.convert.RedisCustomConversions;
 import org.springframework.web.servlet.handler.MappedInterceptor;
+import stratus.redis.cache.CachingFilter;
+import stratus.redis.cache.rest.RestCachingInterceptor;
+import stratus.redis.converter.BytesToSerializableConverter;
+import stratus.redis.converter.BytesToVirtualTableConverter;
+import stratus.redis.converter.SerializableToBytesConverter;
+import stratus.redis.converter.VirtualTableToBytesConverter;
+import stratus.redis.index.LayerIndexListener;
+import stratus.redis.rest.CatalogRestInterceptor;
 
 import java.util.Arrays;
 

@@ -4,11 +4,6 @@
  */
 package stratus.redis.rest;
 
-import stratus.redis.config.EmbeddedRedisConfig;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.rest.terminal.DefaultTerminalService;
-import stratus.redis.rest.terminal.TerminalModel;
-import stratus.redis.rest.terminal.TerminalViewController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import stratus.redis.config.EmbeddedRedisConfig;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.redis.rest.terminal.DefaultTerminalService;
+import stratus.redis.rest.terminal.TerminalModel;
+import stratus.redis.rest.terminal.TerminalViewController;
 
 import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

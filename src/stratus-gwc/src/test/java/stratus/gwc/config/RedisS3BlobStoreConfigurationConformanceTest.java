@@ -4,11 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geowebcache.config.BlobStoreConfiguration;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.s3.S3BlobStoreInfo;
@@ -18,6 +13,11 @@ import org.junit.Assume;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import static org.hamcrest.Matchers.*;
 

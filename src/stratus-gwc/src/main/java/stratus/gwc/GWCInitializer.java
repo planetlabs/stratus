@@ -4,13 +4,13 @@
  */
 package stratus.gwc;
 
-import stratus.gwc.config.RedisServerConfiguration;
-import stratus.redis.geoserver.RedisMasterCatalogInitializer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.geowebcache.config.ServerConfiguration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import stratus.gwc.config.RedisServerConfiguration;
+import stratus.redis.geoserver.RedisMasterCatalogInitializer;
 
 /**
  * Performs one-time redis initialization the first time a Stratus instance is started
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Primary
 @Service
 @AllArgsConstructor
-public class GWCInitializer implements RedisMasterCatalogInitializer {
+public class GwcInitializer implements RedisMasterCatalogInitializer {
 
     private final RedisServerConfiguration serverConfiguration;
 

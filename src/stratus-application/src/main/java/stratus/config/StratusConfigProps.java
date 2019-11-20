@@ -4,10 +4,10 @@
  */
 package stratus.config;
 
-import stratus.jndi.JndiSource;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import stratus.jndi.JndiSource;
 
 import java.util.ArrayList;
 import java.util.List;

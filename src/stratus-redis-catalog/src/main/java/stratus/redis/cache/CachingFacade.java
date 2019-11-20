@@ -4,8 +4,8 @@
  */
 package stratus.redis.cache;
 
-import stratus.redis.geoserver.CachingGeoServerFacade;
 import org.geoserver.catalog.Info;
+import stratus.redis.geoserver.CachingGeoServerFacade;
 
 /**
  * Generic CachingFacade interface, defining some basic shared utility methods for

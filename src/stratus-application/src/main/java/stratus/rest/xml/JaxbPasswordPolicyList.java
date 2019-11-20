@@ -6,6 +6,7 @@
 package stratus.rest.xml;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="passwordPolicies")
 public class JaxbPasswordPolicyList {

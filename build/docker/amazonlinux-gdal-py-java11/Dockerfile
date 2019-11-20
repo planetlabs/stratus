@@ -23,7 +23,7 @@ RUN wget http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar
   && make \
   && make install \
   && cd /tmp \
-  && wget http://apache.mirrors.pair.com/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz -O /tmp/ant.tar.gz \
+  && wget https://archive.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz -O /tmp/ant.tar.gz \
   && tar xzf /tmp/ant.tar.gz -C /tmp \
   && rm /tmp/ant.tar.gz \
   && ln -s /tmp/apache-ant-${ANT_VERSION}/bin/ant /usr/local/bin/ant \

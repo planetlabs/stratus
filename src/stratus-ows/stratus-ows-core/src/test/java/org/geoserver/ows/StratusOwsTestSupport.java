@@ -4,11 +4,11 @@
  */
 package org.geoserver.ows;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.test.GeoServerTestApplicationContext;
 import stratus.ows.OWSCachingCallback;
 import stratus.ows.OWSCachingException;
 import stratus.ows.OWSCachingHandler;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestApplicationContext;
 
 import java.lang.reflect.Field;
 import java.util.List;

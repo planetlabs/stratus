@@ -4,7 +4,6 @@
  */
 package stratus.wps;
 
-import stratus.wps.executor.StratusWPSExecutionManager;
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.OutputDefinitionType;
@@ -14,6 +13,7 @@ import org.geoserver.wps.WPSInfo;
 import org.geoserver.wps.executor.ExecuteRequest;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
+import stratus.wps.executor.StratusWPSExecutionManager;
 
 import java.util.logging.Logger;
 

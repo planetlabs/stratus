@@ -4,12 +4,12 @@
  */
 package stratus.wps.redis.geoserver.info;
 
-import stratus.redis.geoserver.RedisGeoServerFacade;
-import stratus.redis.geoserver.ServiceInfoRegisteringBean;
-import stratus.wps.redis.repository.WPSInfoRepository;
 import org.geoserver.wps.WPSInfo;
 import org.geoserver.wps.WPSInfoImpl;
 import org.springframework.stereotype.Component;
+import stratus.redis.geoserver.RedisGeoServerFacade;
+import stratus.redis.geoserver.ServiceInfoRegisteringBean;
+import stratus.wps.redis.repository.WPSInfoRepository;
 
 /**
  * Registers the {@link WPSInfoRepository} with the {@link org.geoserver.config.GeoServerFacade}

@@ -4,7 +4,6 @@
  */
 package stratus.redis.store;
 
-import stratus.redis.repository.RedisRepository;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.platform.resource.Resource;
@@ -15,6 +14,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Service;
+import stratus.redis.repository.RedisRepository;
 
 import java.io.IOException;
 import java.io.OutputStream;

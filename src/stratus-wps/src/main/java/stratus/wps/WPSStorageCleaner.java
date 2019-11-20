@@ -5,7 +5,6 @@
 package stratus.wps;
 
 import com.amazonaws.SdkClientException;
-import org.geoserver.wcs.response.WCSStorageCleaner;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;

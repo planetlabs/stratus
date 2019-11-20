@@ -7,10 +7,10 @@ package stratus.wfs.xml.v1_0_0;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
-import stratus.wfs.xml.WfsXmlParserHelper;
 import org.geoserver.wfs.xml.v1_0_0.WfsXmlReader;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
+import stratus.wfs.xml.WfsXmlParserHelper;
 
 import java.io.Reader;
 import java.util.Map;

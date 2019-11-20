@@ -9,9 +9,9 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import stratus.redis.catalog.impl.CatalogInfoConvert;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.redis.catalog.impl.CatalogInfoConvert;
 
 import java.io.Serializable;
 import java.util.ArrayList;

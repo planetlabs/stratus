@@ -50,7 +50,6 @@ spring:
       - org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
       - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
       - org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
-      - org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration
       - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
       - org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
       - org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration
@@ -62,12 +61,15 @@ spring:
       - org.springframework.cloud.commons.util.UtilAutoConfiguration
       - org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration
       - org.springframework.cloud.netflix.hystrix.security.HystrixSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
+      - org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration
 
 logging:
   level:
     ROOT: WARN
     org.springframework.boot: WARN
 
+debug: true
 
 server:
   port: ${port:8080}

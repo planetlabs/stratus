@@ -4,10 +4,6 @@
  */
 package stratus.redis.rest;
 
-import stratus.redis.config.EmbeddedRedisConfig;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.rest.command.DefaultRedisCommandService;
-import stratus.redis.rest.command.RedisCommandController;
 import io.lettuce.core.protocol.CommandType;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import stratus.redis.config.EmbeddedRedisConfig;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.redis.rest.command.DefaultRedisCommandService;
+import stratus.redis.rest.command.RedisCommandController;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
@@ -65,7 +65,7 @@ public class RedisCommandControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(CommandType.KEYS + " *"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_STRING_KEY))))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_SET_KEY))))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_HASH_KEY))));
@@ -79,7 +79,7 @@ public class RedisCommandControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(CommandType.GET + " " + TEST_STRING_KEY))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_STRING_VALUE))));
     }
 
@@ -91,7 +91,7 @@ public class RedisCommandControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(CommandType.SMEMBERS + " " + TEST_SET_KEY))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_SET_MEMBER_1))))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_SET_MEMBER_2))));
     }
@@ -104,7 +104,7 @@ public class RedisCommandControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(CommandType.HGET + " " + TEST_HASH_KEY + " " + TEST_HASH_FIELD))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_HASH_VALUE))));
 
         mockMvc.perform(
@@ -113,7 +113,7 @@ public class RedisCommandControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(CommandType.HGETALL + " " + TEST_HASH_KEY))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_HASH_FIELD))))
                 .andExpect(jsonPath("$[*]", hasItems(containsString(TEST_HASH_VALUE))));
     }

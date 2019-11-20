@@ -17,18 +17,15 @@ import org.geoserver.rest.converters.*;
 import org.geotools.util.Version;
 import org.geowebcache.rest.converter.GWCConverter;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationStrategy;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 import org.xml.sax.EntityResolver;
 
@@ -36,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -151,6 +147,7 @@ public class CommunityRestMvcConfigurer implements WebMvcConfigurer {
         //Force MVC to use /restng endpoint. If we need something more advanced, we should make a custom PathHelper
         configurer.setUrlPathHelper(new GeoServerUrlPathHelper());
         configurer.getUrlPathHelper().setAlwaysUseFullPath(true);
+        //configurer.setUseRegisteredSuffixPatternMatch(true);
         //configurer.setUseSuffixPatternMatch(true);
     }
 

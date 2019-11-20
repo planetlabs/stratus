@@ -4,12 +4,12 @@
  */
 package stratus.gwc.redis.data;
 
-import stratus.redis.geoserver.RedisGeoServerFacade;
-import stratus.redis.geoserver.ServiceInfoRegisteringBean;
-import stratus.gwc.redis.repository.WMTSInfoRepository;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.gwc.wmts.WMTSInfoImpl;
 import org.springframework.stereotype.Component;
+import stratus.gwc.redis.repository.WMTSInfoRepository;
+import stratus.redis.geoserver.RedisGeoServerFacade;
+import stratus.redis.geoserver.ServiceInfoRegisteringBean;
 
 /**
  * Registers the {@link WMTSInfoRepository} with the {@link org.geoserver.config.GeoServerFacade}

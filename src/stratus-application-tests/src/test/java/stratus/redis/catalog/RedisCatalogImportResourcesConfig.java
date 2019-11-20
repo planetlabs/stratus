@@ -4,11 +4,11 @@
  */
 package stratus.redis.catalog;
 
-import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
-import stratus.config.GeoServerSystemImportResourcesConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
+import stratus.config.GeoServerSystemImportResourcesConfig;
 
 import java.util.Arrays;
 import java.util.List;

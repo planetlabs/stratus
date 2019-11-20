@@ -4,11 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -31,6 +26,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -107,8 +107,7 @@ public class RedisLayerConfigurationConformanceTest extends LayerConfigurationTe
         LayerInfo layerInfo = EasyMock.createMock(LayerInfo.class); 
         GWCConfig gwcConfig = EasyMock.createMock(GWCConfig.class);
         GridSetBroker gsBroker = EasyMock.createMock(GridSetBroker.class);
-        
-        EasyMock.expect(ftInfo.getPrefixedName()).andStubReturn(id);
+
         EasyMock.expect(ftInfo.prefixedName()).andStubReturn(id);
         
         Map<String, Serializable> metadata = new HashMap<>();

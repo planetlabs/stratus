@@ -4,10 +4,6 @@
  */
 package stratus.redis.cache.rest;
 
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.geoserver.CachingGeoServerFacade;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
@@ -20,6 +16,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.geoserver.CachingGeoServerFacade;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

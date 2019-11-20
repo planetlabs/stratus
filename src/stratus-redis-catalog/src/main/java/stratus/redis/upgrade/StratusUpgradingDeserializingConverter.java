@@ -4,10 +4,10 @@
  */
 package stratus.redis.upgrade;
 
-import stratus.redis.upgrade.stratus_1_2.Stratus_1_2_Deserializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializationFailedException;
+import stratus.redis.upgrade.stratus_1_2.Stratus_1_2_Deserializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.InvalidClassException;

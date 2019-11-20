@@ -4,24 +4,24 @@
  */
 package org.geoserver.wfs;
 
-import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.wfs.StratusWfsTestSupport;
-import stratus.wfs.WFSConfig;
-import stratus.wfs.WFSHandler;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.StratusOwsTestSupport;
-import stratus.ows.OWSCachingCallback;
 import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.ows.OWSCachingCallback;
+import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.wfs.StratusWfsTestSupport;
+import stratus.wfs.WFSConfig;
+import stratus.wfs.WFSHandler;
+import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

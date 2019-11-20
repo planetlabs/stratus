@@ -4,8 +4,6 @@
  */
 package stratus.redis.store;
 
-import stratus.redis.config.EmbeddedRedisConfig;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geoserver.platform.resource.AbstractResourceNotificationDispatcherTest;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.junit.ClassRule;
@@ -17,6 +15,8 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
+import stratus.redis.config.EmbeddedRedisConfig;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 /**
  * Run the base GeoServer notification tests

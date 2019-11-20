@@ -89,14 +89,25 @@ public class FilteringBeanDefinitionLoader extends XmlBeanDefinitionReader {
         return resourceLoader;
     }
 
+    /**
+     * This is an extra safety measure to ensure that no web components will be included if this node is not an
+     * admin/UI node.
+     * @param blacklistPatterns
+     */
     public static void blacklistAdminDependencies(Set<String> blacklistPatterns) {
         blacklistPatterns.add("gs-backup-restore");
         blacklistPatterns.add("gs-web");
     }
 
+    /**
+     * The stratus-gwc module needs to define custom beans and configuration for GWC.  The bean definitions found in the
+     * community gs-gwc module therefore need to be excluded as they cause conflicts.
+     * @param blacklistPatterns
+     */
     public static void blacklistGwcDependencies(Set<String> blacklistPatterns) {
         blacklistPatterns.add("gs-gwc");
     }
+
     public static Set<Resource> filterResources(Set<Resource> resources, Set<String> blackListPatterns) {
         blackListPatterns.forEach(blackListPattern -> resources.removeIf(resource -> {
             try {

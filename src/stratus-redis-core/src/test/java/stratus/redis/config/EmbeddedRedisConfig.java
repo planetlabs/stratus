@@ -4,7 +4,6 @@
  */
 package stratus.redis.config;
 
-import stratus.redis.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.embedded.RedisServer;
-import redis.embedded.RedisServerBuilder;
+import stratus.redis.repository.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

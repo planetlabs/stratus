@@ -4,16 +4,6 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.commons.event.GeoServerInitializedEvent;
-import stratus.commons.lock.InitializationProvider;
-import stratus.commons.lock.LockingInitializer;
-import stratus.commons.lock.LockingInitializerConfig;
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.catalog.RedisCatalogUtils;
-import stratus.redis.catalog.config.StratusCatalogConfigProps;
-import stratus.redis.lock.RedisStratusLockProvider;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.store.RedisResourceInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
@@ -34,6 +24,16 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import stratus.commons.event.GeoServerInitializedEvent;
+import stratus.commons.lock.InitializationProvider;
+import stratus.commons.lock.LockingInitializer;
+import stratus.commons.lock.LockingInitializerConfig;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.catalog.RedisCatalogUtils;
+import stratus.redis.catalog.config.StratusCatalogConfigProps;
+import stratus.redis.lock.RedisStratusLockProvider;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.redis.store.RedisResourceInitializer;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -197,19 +197,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
 
     @Override
     protected void loadInitializers(GeoServer geoServer) throws Exception {
-        // load initializer extensions
-        List<GeoServerInitializer> initializers =
-                GeoServerExtensions.extensions(GeoServerInitializer.class);
-        for (GeoServerInitializer initer : initializers) {
-            try {
-                if (initer instanceof ApplicationContextAware) {
-                    ((ApplicationContextAware) initer).setApplicationContext(applicationContext);
-                }
-                initer.initialize(geoServer);
-            } catch (Throwable t) {
-                log.error("Failed to run initializer " + initer, t);
-            }
-        }
+        //Skip this - handled by BSEInitializer instead, since these need to run on every node
     }
 
     @Override

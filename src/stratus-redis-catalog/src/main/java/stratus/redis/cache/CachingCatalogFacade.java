@@ -4,7 +4,6 @@
  */
 package stratus.redis.cache;
 
-import stratus.redis.catalog.RedisCatalogFacade;
 import com.google.common.base.Preconditions;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.*;
@@ -15,6 +14,7 @@ import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
+import stratus.redis.catalog.RedisCatalogFacade;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationHandler;
@@ -1193,11 +1193,6 @@ public class CachingCatalogFacade extends AbstractCatalogFacade  implements Cach
         return styles;
     }
 
-    @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortOrder) {
-        return list(of, filter, offset, count, sortOrder != null ? new SortBy[]{sortOrder}:null);
-    }
-
     /**
      * Get a list of CatalogInfo objects based on a {@link Filter}.
      * Some basic filter parsing is applied to see if we can directly query the cache, or need to back off to the facade.
@@ -2064,11 +2059,6 @@ public class CachingCatalogFacade extends AbstractCatalogFacade  implements Cach
         @Override
         public boolean canSort(Class<? extends CatalogInfo> type, String propertyName) {
             return false;
-        }
-
-        @Override
-        public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortOrder) {
-            return null;
         }
 
         @Override

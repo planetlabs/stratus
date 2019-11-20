@@ -4,7 +4,6 @@
  */
 package stratus.rest;
 
-import stratus.rest.xml.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -18,6 +17,7 @@ import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import stratus.rest.xml.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;

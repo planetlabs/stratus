@@ -4,7 +4,6 @@
  */
 package stratus.wms.redis.upgrade.stratus_1_2;
 
-import stratus.redis.upgrade.Upgradable;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -14,6 +13,7 @@ import org.geoserver.wms.CacheConfiguration;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.WatermarkInfoImpl;
+import stratus.redis.upgrade.Upgradable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;

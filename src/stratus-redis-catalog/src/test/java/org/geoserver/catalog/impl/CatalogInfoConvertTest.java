@@ -4,10 +4,6 @@
  */
 package org.geoserver.catalog.impl;
 
-import stratus.redis.catalog.impl.CatalogInfoConvert;
-import stratus.redis.catalog.info.FeatureTypeInfoRedisImpl;
-import stratus.redis.catalog.info.LayerGroupInfoRedisImpl;
-import stratus.redis.catalog.info.ResourceInfoRedisImpl;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -19,6 +15,10 @@ import org.geotools.jdbc.VirtualTableParameter.Validator;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPoint;
+import stratus.redis.catalog.impl.CatalogInfoConvert;
+import stratus.redis.catalog.info.FeatureTypeInfoRedisImpl;
+import stratus.redis.catalog.info.LayerGroupInfoRedisImpl;
+import stratus.redis.catalog.info.ResourceInfoRedisImpl;
 
 import java.lang.reflect.Field;
 import java.util.Collections;

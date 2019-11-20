@@ -4,8 +4,6 @@
  */
 package stratus.gwc;
 
-import stratus.Initializer;
-import stratus.redis.catalog.config.StratusCatalogConfigProps;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -20,6 +18,7 @@ import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import stratus.redis.catalog.config.StratusCatalogConfigProps;
 
 /**
  * Performs GWC context initialization each time a node starts up or the catalog is reloaded
@@ -28,9 +27,9 @@ import org.springframework.stereotype.Service;
 @Primary
 @Service
 @AllArgsConstructor
-public class GWCLoader implements Initializer {
+public class GwcLoader {
 
-    private final GWCProperties properties;
+    private final GwcConfigProps properties;
 
     private final GeoServer geoserver;
     private final CatalogImpl catalog;
@@ -49,7 +48,7 @@ public class GWCLoader implements Initializer {
     private final ConfigurableBlobStore blobStore;
 
     //Called by StratusInitializer.run()
-    public void init() {
+    public void initialize() {
         // initialize ConfigurableBlobStore
         blobStore.setChanged(gwc.getConfig(), true);
 

@@ -4,15 +4,15 @@
  */
 package stratus.redis.cache.rest.preloaders;
 
-import stratus.redis.cache.rest.Preloader;
-import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
-import stratus.redis.index.engine.RedisValueQuery;
-import stratus.redis.index.engine.RedisValuesQuery;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.springframework.stereotype.Component;
+import stratus.redis.cache.rest.Preloader;
+import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
+import stratus.redis.index.engine.RedisValueQuery;
+import stratus.redis.index.engine.RedisValuesQuery;
 
 import java.util.Map;
 

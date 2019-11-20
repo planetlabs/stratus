@@ -4,8 +4,6 @@
  */
 package stratus.redis.store;
 
-import stratus.redis.config.EmbeddedRedisConfig;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceMatchers;
@@ -22,6 +20,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
+import stratus.redis.config.EmbeddedRedisConfig;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.IOException;
 import java.io.InputStream;

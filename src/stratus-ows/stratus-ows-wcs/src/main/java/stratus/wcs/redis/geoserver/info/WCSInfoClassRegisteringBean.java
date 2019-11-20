@@ -4,12 +4,12 @@
  */
 package stratus.wcs.redis.geoserver.info;
 
-import stratus.redis.geoserver.RedisGeoServerFacade;
-import stratus.redis.geoserver.ServiceInfoRegisteringBean;
-import stratus.wcs.redis.repository.WCSInfoRepository;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSInfoImpl;
 import org.springframework.stereotype.Component;
+import stratus.redis.geoserver.RedisGeoServerFacade;
+import stratus.redis.geoserver.ServiceInfoRegisteringBean;
+import stratus.wcs.redis.repository.WCSInfoRepository;
 
 /**
  * Registers the {@link WCSInfoRepository} with the {@link org.geoserver.config.GeoServerFacade}

@@ -4,13 +4,13 @@
  */
 package stratus.redis.store;
 
-import stratus.redis.repository.RedisRepository;
-import stratus.redis.repository.RedisRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import stratus.redis.repository.RedisRepository;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.util.*;
 import java.util.regex.Matcher;
