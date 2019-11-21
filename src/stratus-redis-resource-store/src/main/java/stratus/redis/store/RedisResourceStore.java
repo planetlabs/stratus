@@ -7,7 +7,6 @@ package stratus.redis.store;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.*;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -24,7 +23,6 @@ import java.util.List;
 
 @Slf4j
 @Service("resourceStoreImpl")
-@Lazy
 public class RedisResourceStore implements ResourceStore {
 
     protected File cacheDir;

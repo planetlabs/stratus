@@ -706,18 +706,6 @@
                 <artifactId>gwc-aws-s3</artifactId>
                 <version>${geowebcache.version}</version>
             </dependency>
-            <!--
-            <dependency>
-                <groupId>org.geotools</groupId>
-                <artifactId>gt-process-spatialstatistics</artifactId>
-                <version>${gt.spatialstatistics.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.geoserver</groupId>
-                <artifactId>gs-wps-spatialstatistics</artifactId>
-                <version>${gs.spatialstatistics.version}</version>
-            </dependency>
-            -->
             <dependency>
                 <groupId>org.boundlessgeo</groupId>
                 <artifactId>gsr</artifactId>

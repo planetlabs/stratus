@@ -9,6 +9,8 @@ import org.geotools.data.DataAccess;
 import org.geotools.jdbc.JDBCDataStore;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class GeoToolsJndiTest {
         return "2.2";
     }
 
-    //@Before
+    @Before
     public void init() throws Exception {
         //Do a hard reset of the DB - shutdown, delete all files, startup again
         server = Server.createPgServer("-pgPort", JNDI_SOURCE_PORT, "-pgDaemon", "-baseDir", "./");
@@ -79,8 +81,6 @@ public class GeoToolsJndiTest {
 
     @Test
     public void testJndi() throws Exception {
-        init();
-
         Map<String, String> params = new HashMap<>();
         params.put(JNDI_REFERENCE_NAME_KEY, JNDI_REFERENCE_NAME);
         params.put(DB_TYPE_KEY, DB_TYPE);
@@ -100,11 +100,9 @@ public class GeoToolsJndiTest {
         assertThat(basicDataSource.getUrl(), is(jndiSource.getProperties().get(JNDI_SOURCE_URL_KEY)));
         assertThat(basicDataSource.getUsername(), is(jndiSource.getProperties().get(JNDI_SOURCE_USERNAME_KEY)));
         assertThat(basicDataSource.getPassword(), is(jndiSource.getProperties().get(JNDI_SOURCE_PASSWORD_KEY)));
-
-        after();
     }
 
-    //@After
+    @After
     public void after() {
         server.stop();
     }

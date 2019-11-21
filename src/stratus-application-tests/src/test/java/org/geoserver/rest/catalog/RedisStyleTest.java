@@ -268,6 +268,7 @@ public class RedisStyleTest extends StyleControllerTest {
     }
 
     /**
+     * TODO
      * There is currently an issue with using file extensions / suffixes in the URL path, so this test is failing.
      * Just bypass it until a solution is found.  https://github.com/spring-projects/spring-framework/issues/24041
      * @throws Exception

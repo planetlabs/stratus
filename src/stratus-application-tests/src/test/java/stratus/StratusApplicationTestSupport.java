@@ -65,10 +65,7 @@ import stratus.redis.config.RedisConfigProps;
 import stratus.redis.index.CacheProperties;
 import stratus.redis.index.RedisLayerIndexFacade;
 import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.store.RedisNotificationDispatcher;
-import stratus.redis.store.RedisResourceInitializer;
-import stratus.redis.store.ResourceDataService;
-import stratus.redis.store.ResourceInitializationConfigProps;
+import stratus.redis.store.*;
 import stratus.wcs.WCSConfig;
 import stratus.wcs.redis.geoserver.info.WCSInfoClassRegisteringBean;
 import stratus.wfs.WFSConfig;
@@ -107,7 +104,6 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
  *
  * Based on {@link GeoServerSystemTestSupport}, but without any configuration specific to community geoserver
  */
-//@EnableWebSecurity
 @RunWith(SpringRunner.class)
 @ComponentScan(
         basePackages = {"stratus", "org.geoserver.rest"},

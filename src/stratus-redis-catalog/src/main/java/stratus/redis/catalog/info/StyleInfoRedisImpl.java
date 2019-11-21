@@ -27,7 +27,10 @@ import java.io.Serializable;
 @Setter
 @ToString
 @RedisHash("StyleInfo")
-public class StyleInfoRedisImpl implements StyleInfo, Serializable {
+public class
+
+
+StyleInfoRedisImpl implements StyleInfo, Serializable {
 
 	private static final long serialVersionUID = 7579381156988673293L;
 	

@@ -126,20 +126,15 @@ public class CommunityRestMvcConfigurer implements WebMvcConfigurer {
         configurer.mediaType("xslt", MediaType.valueOf("application/xslt+xml"));
         configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
-        //configurer.favorParameter(true);
-
 
         // allow extension point configuration of media types
         List<MediaTypeCallback> callbacks = GeoServerExtensions.extensions(MediaTypeCallback.class);
         for (MediaTypeCallback callback : callbacks) {
             callback.configure(configurer);
         }
-//        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling
-//        configurer.mediaType("properties", MediaType.valueOf("application/prs.gs.psl"));
-
-
+        //configurer.mediaType("properties", MediaType.valueOf("application/prs.gs.psl"));
     }
 
     @Override
@@ -147,8 +142,6 @@ public class CommunityRestMvcConfigurer implements WebMvcConfigurer {
         //Force MVC to use /restng endpoint. If we need something more advanced, we should make a custom PathHelper
         configurer.setUrlPathHelper(new GeoServerUrlPathHelper());
         configurer.getUrlPathHelper().setAlwaysUseFullPath(true);
-        //configurer.setUseRegisteredSuffixPatternMatch(true);
-        //configurer.setUseSuffixPatternMatch(true);
     }
 
     static class GeoServerUrlPathHelper extends UrlPathHelper {
