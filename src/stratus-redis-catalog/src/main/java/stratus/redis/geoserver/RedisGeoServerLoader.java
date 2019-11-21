@@ -16,11 +16,11 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.*;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,6 @@ import stratus.redis.catalog.RedisCatalogUtils;
 import stratus.redis.catalog.config.StratusCatalogConfigProps;
 import stratus.redis.lock.RedisStratusLockProvider;
 import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.store.RedisResourceInitializer;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -46,7 +45,7 @@ import java.util.List;
 @Slf4j
 @Primary
 @Service
-public class RedisGeoServerLoader extends DefaultGeoServerLoader implements ApplicationContextAware {
+public class RedisGeoServerLoader extends DefaultGeoServerLoader /*implements ApplicationContextAware*/ {
 
     private final GeoServerFacade geoServerFacade;
     private final RedisCatalogFacade facade;
@@ -54,10 +53,9 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
     private final GeoServer geoserver;
     private final CatalogImpl catalog;
     private final StratusCatalogConfigProps configProps;
-    private final RedisResourceInitializer resourceInitializer;
     private XStreamPersister xStreamPersister;
 
-    private ApplicationContext applicationContext;
+    //private ApplicationContext applicationContext;
 
     private LockingInitializer initializer;
 
@@ -67,8 +65,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
     public RedisGeoServerLoader(GeoServerResourceLoader resourceLoader,
                                 @Autowired(required=false) RedisGeoServerFacade geoServerFacade,
                                 RedisCatalogFacade facade, RedisRepositoryImpl repository, GeoServer geoserver,
-                                CatalogImpl catalog, StratusCatalogConfigProps configProps,
-                                RedisResourceInitializer resourceInitializer) {
+                                CatalogImpl catalog, StratusCatalogConfigProps configProps) {
         super(resourceLoader);
         this.geoServerFacade = geoServerFacade;
         this.facade = facade;
@@ -76,14 +73,13 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
         this.geoserver = geoserver;
         this.catalog = catalog;
         this.configProps = configProps;
-        this.resourceInitializer = resourceInitializer;
     }
-
+/*
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-
+*/
     @PostConstruct
     public void init() {
         ((GeoServerImpl) geoserver).setFacade(new CachingGeoServerFacade(geoserver, geoServerFacade));
@@ -107,7 +103,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
                 "GeoServerSubSystem", GEOSERVER_INITIALIZATION_KEY);
 
         InitializationProvider initializationProvider = () -> {
-            initializeRedisResourceStore();
+            //initializeRedisResourceStore();
             initializeGeoServer(xStreamPersister);
             initializeExtensions();
             log.info("GeoServer subsystem successfully initialized.");
@@ -124,7 +120,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
             log.info("GeoServer subsystem successfully initialized.");
         }
     }
-
+/*
     private void initializeRedisResourceStore() {
         resourceInitializer.init();
         if (RedisCatalogUtils.isImportStore()) {
@@ -139,7 +135,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
             }
         }
     }
-
+*/
     protected void initializeGeoServer(XStreamPersister xStreamPersister) {
         log.info("Initializing GeoServer subsystem.");
         try {

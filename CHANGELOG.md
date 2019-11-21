@@ -26,11 +26,15 @@
 
 ### Removed Features
 
+* Removed redis discovery configuration
+
 ### Bugfixes
 
 * Fixed NPE issues in catalog when using isolated workspaces
 * Fixed REST issues with security endpoint controllers
 * Move GeoServerInitializers from RedisGeoServerLoader to BSEInitializer so they get run each startup on all nodes
+* Fixed issue where S3 blobstore settings were not properly being saved
+* Certain properties not being honored in bootstrap.yml were moved to application.yml
 
 # 1.5.0
 

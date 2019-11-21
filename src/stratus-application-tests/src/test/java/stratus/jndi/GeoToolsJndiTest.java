@@ -9,8 +9,6 @@ import org.geotools.data.DataAccess;
 import org.geotools.jdbc.JDBCDataStore;
 import org.h2.tools.DeleteDbFiles;
 import org.h2.tools.Server;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

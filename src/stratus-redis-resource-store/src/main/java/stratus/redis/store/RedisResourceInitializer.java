@@ -36,8 +36,6 @@ public class RedisResourceInitializer {
     @Autowired
     private ResourceInitializationConfigProps configProps;
 
-    @Autowired
-    @Lazy        
 	public void setRedisResourceStore(RedisResourceStore store) {
 		this.store = store;
 	}
@@ -79,7 +77,7 @@ public class RedisResourceInitializer {
                 }
 
                 String value = (String) valueObject;
-                String path = key.substring(RESOURCE_PREFIX.length() + 1, key.length());
+                String path = key.substring(RESOURCE_PREFIX.length() + 1);
 
                 Resource resource = store.get(path);
                 if (resource.getType() == Resource.Type.UNDEFINED || configProps.isOverwriteResources()) {

@@ -29,10 +29,9 @@ import java.io.OutputStream;
 import java.util.List;
 
 @RunWith(Theories.class)
-@ContextConfiguration(classes = {EmbeddedRedisConfig.class, RedisMessageListenerContainer.class, RedisNotificationDispatcher.class,
-        RedisRepositoryImpl.class, RedisResourceStore.class,
-        ResourceDataService.class})
-        //RedisLayerIndexFacade.class, CacheProperties.class, CatalogImpl.class, GeoServerImpl.class})
+@ContextConfiguration(classes = {EmbeddedRedisConfig.class, RedisMessageListenerContainer.class,
+        RedisNotificationDispatcher.class, RedisRepositoryImpl.class, RedisResourceStore.class,
+        ResourceDataService.class, RedisResourceInitializer.class, ResourceInitializationConfigProps.class})
 public class RedisResourceTheoryTest extends ResourceTheoryTest {
 
     @ClassRule

@@ -54,6 +54,8 @@ public class S3BlobStoreInfoRedisImpl extends BlobStoreInfoRedisImpl<S3BlobStore
      */
     public S3BlobStoreInfoRedisImpl(S3BlobStoreInfo template) {
         super(template);
+        setAccess(template.getAccess());
+        setUseHTTPS(template.isUseHTTPS());
     }
     
     /**

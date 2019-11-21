@@ -22,9 +22,10 @@ import stratus.redis.repository.RedisRepositoryImpl;
  * Run the base GeoServer notification tests
  */
 @RunWith(Theories.class)
-@ContextConfiguration(classes = {EmbeddedRedisConfig.class, RedisMessageListenerContainer.class, RedisNotificationDispatcher.class,
-        RedisRepositoryImpl.class, RedisResourceStore.class,  ResourceDataService.class, EmbeddedRedisConfig.class})
-        //RedisLayerIndexFacade.class, CacheProperties.class,CatalogImpl.class, GeoServerImpl.class})
+@ContextConfiguration(classes = {EmbeddedRedisConfig.class, RedisMessageListenerContainer.class,
+        RedisNotificationDispatcher.class, RedisRepositoryImpl.class, RedisResourceStore.class,
+        ResourceDataService.class, EmbeddedRedisConfig.class, RedisResourceInitializer.class,
+        ResourceInitializationConfigProps.class})
 public class RedisResourceNotificationTest extends AbstractResourceNotificationDispatcherTest {
 
     @Autowired

@@ -1,4 +1,5 @@
 server:
+  port: ${port:8080}
   compression:
     enabled: true
     #mime-types: "text/.*,.*xml.*,application/json,application/x-javascript"
@@ -6,6 +7,9 @@ server:
     context_parameters:
       serviceStrategy: "SPEED"
       PARTIAL_BUFFER_STRATEGY_SIZE: 50
+    context-path: /geoserver
+    session:
+      tracking-modes: COOKIE
 
 logging:
   level:
@@ -21,6 +25,8 @@ logging:
 management:
   health:
     elasticsearch:
+      enabled: false
+    ldap:
       enabled: false
   endpoints:
     web:
@@ -65,7 +71,7 @@ stratus:
       security/masterpw/default/passwd: geoserver # stratus won't start without something set for this value
       #security/rest.properties: "/rest/manage/health;GET=IS_AUTHENTICATED_ANONYMOUSLY\n/**;GET,POST,DELETE,PUT=ADMIN"
       security/rest.properties: "/rest/manage/health;GET=IS_AUTHENTICATED_ANONYMOUSLY\n/rest/workspaces/**;GET=ROLE_AUTHENTICATED\n/rest/workspaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layers/**;GET=ROLE_AUTHENTICATED\n/rest/layers/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/styles/**;GET=ROLE_AUTHENTICATED\n/rest/styles/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/rest/**;GET=ROLE_AUTHENTICATED\n/gwc/rest/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/namespaces/**;GET=ROLE_AUTHENTICATED\n/rest/namespaces/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/rest/layergroups/**;GET=ROLE_AUTHENTICATED\n/rest/layergroups/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wms/**;GET=ROLE_AUTHENTICATED\n/wms/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wfs/**;GET=ROLE_AUTHENTICATED\n/wfs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wcs/**;GET=ROLE_AUTHENTICATED\n/wcs/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/wps/**;GET=ROLE_AUTHENTICATED\n/wps/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/csw/**;GET=ROLE_AUTHENTICATED\n/csw/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/ows/**;GET=ROLE_AUTHENTICATED\n/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/gwc/**;GET=ROLE_AUTHENTICATED\n/gwc/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/*/*/ows/**;GET=ROLE_AUTHENTICATED\n/*/*/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**/ows/**;GET=ROLE_AUTHENTICATED\n/**/ows/**;POST,DELETE,PUT=ROLE_AUTHENTICATED\n/**;GET=ADMIN,ROLE_ADMINISTRATOR\n/**;POST,DELETE,PUT=ADMIN,ROLE_ADMINISTRATOR"
-      gwc-gs.xml: "<GeoServerGWCConfig><version>1.1.0</version><directWMSIntegrationEnabled>true</directWMSIntegrationEnabled><WMSCEnabled>true</WMSCEnabled><TMSEnabled>true</TMSEnabled><securityEnabled>false</securityEnabled><innerCachingEnabled>false</innerCachingEnabled><persistenceEnabled>true</persistenceEnabled><cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass><cacheConfigurations><entry><string>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</string><InnerCacheConfiguration><hardMemoryLimit>16</hardMemoryLimit><policy>NULL</policy><concurrencyLevel>4</concurrencyLevel><evictionTime>120</evictionTime></InnerCacheConfiguration></entry></cacheConfigurations><cacheLayersByDefault>true</cacheLayersByDefault><cacheNonDefaultStyles>true</cacheNonDefaultStyles><metaTilingX>4</metaTilingX><metaTilingY>4</metaTilingY><gutter>0</gutter><defaultCachingGridSetIds><string>EPSG:4326</string><string>EPSG:900913</string></defaultCachingGridSetIds><defaultCoverageCacheFormats><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>image/png8</string></defaultCoverageCacheFormats><defaultVectorCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultVectorCacheFormats><defaultOtherCacheFormats><string>application/json;type=utfgrid</string><string>image/png</string><string>image/vnd.jpeg-png</string><string>image/jpeg</string><string>application/json;type=geojson</string><string>application/json;type=topojson</string><string>image/png8</string><string>application/vnd.mapbox-vector-tile</string></defaultOtherCacheFormats></GeoServerGWCConfig>"
+      gwc-gs.xml: "<GeoServerGWCConfig><directWMSIntegrationEnabled>false</directWMSIntegrationEnabled><WMSCEnabled>true</WMSCEnabled><WMTSEnabled>true</WMTSEnabled><TMSEnabled>true</TMSEnabled><cacheLayersByDefault>true</cacheLayersByDefault><cacheNonDefaultStyles>true</cacheNonDefaultStyles><metaTilingX>4</metaTilingX><metaTilingY>4</metaTilingY><gutter>0</gutter><defaultCachingGridSetIds><string>EPSG:4326</string><string>EPSG:900913</string></defaultCachingGridSetIds><defaultCoverageCacheFormats><string>image/png</string><string>image/jpeg</string></defaultCoverageCacheFormats><defaultVectorCacheFormats><string>image/png</string><string>image/jpeg</string></defaultVectorCacheFormats><defaultOtherCacheFormats><string>image/png</string><string>image/jpeg</string></defaultOtherCacheFormats></GeoServerGWCConfig>"
       wms.xml: "<wms><id>wms</id><name>WMS</name><enabled>true</enabled><watermark class=\"org.geoserver.wms.WatermarkInfoImpl\"><enabled>false</enabled><position>BOT_RIGHT</position><transparency>0</transparency></watermark></wms>"
       wfs.xml: "<wfs><id>wfs</id><name>WFS</name><enabled>true</enabled><serviceLevel>BASIC</serviceLevel><maxFeatures>1000000</maxFeatures></wfs>"
       wcs.xml: "<wcs><id>wcs</id><name>WCS</name><enabled>true</enabled><maxInputMemory>0</maxInputMemory><maxOutputMemory>0</maxOutputMemory></wcs>"
@@ -78,6 +84,7 @@ stratus:
     s3-url: https://s3.amazonaws.com/
     access-key: #optional if there is an Amazon credential chain external to Stratus
     secret-key: #optional if there is an Amazon credential chain external to Stratus
+
 spring:
   aop:
     auto: false
@@ -96,6 +103,9 @@ spring:
       enabled: false
     servlet:
       load-on-startup: 1
+      path: "/"
+      profiles:
+        active: lettuce-manual
     #contentnegotiation:
       #favor-path-extension: true # required to support content type extensions in rest endpoints (eg .json)
     pathmatch:
@@ -128,6 +138,37 @@ spring:
   metrics:
     servo:
       enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration
+      - org.springframework.boot.autoconfigure.cloud.CloudServiceConnectorsAutoConfiguration
+      - org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
+      - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+      - org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
+      - org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
+      - org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
+      - org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
+      - org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration
+      - org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
+      - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
+      - org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+      - org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
+      - org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
+      - org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
 
 ribbon:
   httpclient:
