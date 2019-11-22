@@ -5,6 +5,7 @@
 package stratus.redis.lock;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import stratus.commons.lock.LockingInitializerConfig;
 import stratus.commons.lock.StratusLockProvider;
@@ -15,6 +16,7 @@ import stratus.redis.repository.RedisRepository;
  * Created on 9/28/17
  */
 @Slf4j
+@Data
 @AllArgsConstructor
 public class RedisStratusLockProvider implements StratusLockProvider {
 
