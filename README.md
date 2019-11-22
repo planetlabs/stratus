@@ -70,8 +70,6 @@ By default, Stratus will start using the redis-manual profile which will attempt
 | lettuce-cluster | Attempts to connect to a Redis Cluster using the Lettuce client |
 | jedis-aws-tag-discovery | Attempts to connect to Redis using metadata provided by AWS tags using the Jedis client |
 | lettuce-aws-tag-discovery | Attempts to connect to Redis using metadata provided by AWS tags using the Lettuce client |
-| jedis-discovery | Attempts to use the Spring discovery client to obtain Redis endpoint information and connect using the Jedis client |
-| lettuce-discovery | Attempts to use the Spring discovery client to obtain Redis endpoint information and connect using the Lettuce client |
 | cloud | Used by PCF to connect to a Redis service |
 
 ### Startup Properties/Parameters
