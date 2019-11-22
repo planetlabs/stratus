@@ -135,6 +135,8 @@ public class CommunityRestMvcConfigurer implements WebMvcConfigurer {
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling
         //configurer.mediaType("properties", MediaType.valueOf("application/prs.gs.psl"));
+
+        configurer.favorPathExtension(true);
     }
 
     @Override
@@ -142,6 +144,7 @@ public class CommunityRestMvcConfigurer implements WebMvcConfigurer {
         //Force MVC to use /restng endpoint. If we need something more advanced, we should make a custom PathHelper
         configurer.setUrlPathHelper(new GeoServerUrlPathHelper());
         configurer.getUrlPathHelper().setAlwaysUseFullPath(true);
+        configurer.setUseRegisteredSuffixPatternMatch(true);
     }
 
     static class GeoServerUrlPathHelper extends UrlPathHelper {
