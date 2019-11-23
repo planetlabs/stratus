@@ -14,7 +14,7 @@ before_script:
   - export M2_HOME=$PWD/apache-maven-3.6.0
   - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -fae clean install
+  - mvn -f src/pom.xml -B -Dmaven.test.redirectTestOutputToFile=true clean install
 notifications:
   email: false
   on_failure: never
