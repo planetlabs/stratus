@@ -38,7 +38,7 @@ import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
                 + "!beanClass:org.geoserver.wps.DefaultWebProcessingService,"
                 + "!beanClass:org.geoserver.config.GeoServerLoaderProxy,"       //Handled by RedisGeoServerLoader
                 + "!beanClass:org.geoserver.wps.WPSInitializer,"                //Handled by custom BSE impl
-                + "!beanClass:org.geoserver.gwc.config.GWCInitializer,"         //Handled by custom BSE impl
+                + "!beanClass:org.geoserver.gwc.config.GwcInitializer,"         //Handled by custom BSE impl
                 + "!beanClass:org.geoserver.config.LockProviderInitializer,"    //Handled by RedisGeoServerLoader
                 + "!beanClass:org.geoserver.logging.LoggingInitializer"         //Logging handled differently by BSE
 },
