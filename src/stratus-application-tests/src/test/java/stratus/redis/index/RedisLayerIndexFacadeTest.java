@@ -4,13 +4,13 @@
  */
 package stratus.redis.index;
 
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.catalog.AbstractRedisCatalogTest;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.CatalogImpl;
-import stratus.redis.catalog.impl.CatalogInfoConvert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.catalog.AbstractRedisCatalogTest;
+import stratus.redis.catalog.impl.CatalogInfoConvert;
 
 import java.util.ArrayList;
 import java.util.Collections;

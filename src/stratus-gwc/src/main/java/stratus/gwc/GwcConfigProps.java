@@ -4,18 +4,27 @@
  */
 package stratus.gwc;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
  * GWC Properties object, populated by application.yml
  */
-@Getter
-@Setter
+@Data
 @Component
 @ConfigurationProperties(prefix = "stratus.gwc")
-public class GWCProperties {
+public class GwcConfigProps {
+
     private boolean defaultFileBlobStore = false;
+    private TransientCache transientCache = new TransientCache();
+
+    @Data
+    public static class TransientCache {
+
+        private int maxTiles = 100;
+        private int maxStorageKB = 1024;
+        private long expireDelay = 2000;
+
+    }
 }

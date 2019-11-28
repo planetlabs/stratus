@@ -9,9 +9,9 @@ import alex.mojaki.s3upload.StreamTransferManager;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import stratus.wps.s3.S3Connector;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.platform.resource.*;
+import stratus.wps.s3.S3Connector;
 
 import java.io.*;
 import java.nio.file.StandardCopyOption;

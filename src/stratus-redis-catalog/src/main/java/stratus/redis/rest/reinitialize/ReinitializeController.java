@@ -4,13 +4,13 @@
  */
 package stratus.redis.rest.reinitialize;
 
-import stratus.redis.rest.RedisCatalogRestConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import stratus.redis.rest.RedisCatalogRestConstants;
 
 import java.util.Map;
 

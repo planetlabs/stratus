@@ -4,11 +4,11 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.redis.catalog.RedisCatalogUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerResourceLoader;
+import stratus.redis.catalog.RedisCatalogUtils;
 
 public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 

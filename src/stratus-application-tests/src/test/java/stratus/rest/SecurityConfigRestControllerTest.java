@@ -4,20 +4,6 @@
  */
 package stratus.rest;
 
-import stratus.config.StratusConfigProps;
-import stratus.controller.GwcServiceController;
-import stratus.gwc.config.*;
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.catalog.RedisCatalogImportResourcesConfig;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.geoserver.RedisGeoServerFacade;
-import stratus.wcs.redis.geoserver.info.WCSInfoClassRegisteringBean;
-import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
-import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.rest.xml.*;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.validation.SecurityConfigException;
@@ -28,6 +14,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.config.StratusConfigProps;
+import stratus.controller.GwcServiceController;
+import stratus.gwc.config.*;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.catalog.RedisCatalogImportResourcesConfig;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.geoserver.RedisGeoServerFacade;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.rest.xml.*;
+import stratus.wcs.redis.geoserver.info.WCSInfoClassRegisteringBean;
+import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
+import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
 
 import java.util.ArrayList;
 import java.util.List;

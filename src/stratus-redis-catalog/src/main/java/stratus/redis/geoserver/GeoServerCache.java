@@ -4,10 +4,10 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.redis.cache.Cache;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.ServiceInfo;
+import stratus.redis.cache.Cache;
 
 /**
  * Extension of {@link GeoServerFacade} intended to support caching.

@@ -4,7 +4,6 @@
  */
 package stratus.redis.store;
 
-import stratus.redis.repository.RedisRepository;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.platform.resource.Resource;
@@ -15,6 +14,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Service;
+import stratus.redis.repository.RedisRepository;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,8 +36,6 @@ public class RedisResourceInitializer {
     @Autowired
     private ResourceInitializationConfigProps configProps;
 
-    @Autowired
-    @Lazy        
 	public void setRedisResourceStore(RedisResourceStore store) {
 		this.store = store;
 	}
@@ -79,7 +77,7 @@ public class RedisResourceInitializer {
                 }
 
                 String value = (String) valueObject;
-                String path = key.substring(RESOURCE_PREFIX.length() + 1, key.length());
+                String path = key.substring(RESOURCE_PREFIX.length() + 1);
 
                 Resource resource = store.get(path);
                 if (resource.getType() == Resource.Type.UNDEFINED || configProps.isOverwriteResources()) {

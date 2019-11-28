@@ -4,7 +4,6 @@
  */
 package org.geoserver.gwc;
 
-import stratus.gwc.config.RedisGeoServerTileLayerConfiguration;
 import org.geoserver.catalog.*;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -17,6 +16,7 @@ import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.storage.BlobStoreAggregator;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
+import stratus.gwc.config.RedisGeoServerTileLayerConfiguration;
 
 /**
  * Extension of the GWC mediator to ovveride instance-of checks for {@link CatalogConfiguration} and other similar
@@ -41,8 +41,13 @@ public class StratusGWCMediator extends GWC {
      * @param jdbcConfigurationStorage GeoServer integrator for GeoWebCache DiskQuota {@link JDBCConfiguration}
      * @param blobStoreAggregator      GeoWebCache BlobStore Aggregator
      */
-    public StratusGWCMediator(GWCConfigPersister gwcConfigPersister, StorageBroker sb, TileLayerDispatcher tld, GridSetBroker gridSetBroker, TileBreeder tileBreeder, DiskQuotaMonitor monitor, Dispatcher owsDispatcher, Catalog catalog, Catalog rawCatalog, DefaultStorageFinder storageFinder, JDBCConfigurationStorage jdbcConfigurationStorage, BlobStoreAggregator blobStoreAggregator) {
-        super(gwcConfigPersister, sb, tld, gridSetBroker, tileBreeder, monitor, owsDispatcher, catalog, rawCatalog, storageFinder, jdbcConfigurationStorage, blobStoreAggregator);
+    public StratusGWCMediator(GWCConfigPersister gwcConfigPersister, StorageBroker sb, TileLayerDispatcher tld,
+                              GridSetBroker gridSetBroker, TileBreeder tileBreeder, DiskQuotaMonitor monitor,
+                              Dispatcher owsDispatcher, Catalog catalog, Catalog rawCatalog,
+                              DefaultStorageFinder storageFinder, JDBCConfigurationStorage jdbcConfigurationStorage,
+                              BlobStoreAggregator blobStoreAggregator) {
+        super(gwcConfigPersister, sb, tld, gridSetBroker, tileBreeder, monitor, owsDispatcher, catalog, rawCatalog,
+                storageFinder, jdbcConfigurationStorage, blobStoreAggregator);
         this.tld = tld;
     }
 

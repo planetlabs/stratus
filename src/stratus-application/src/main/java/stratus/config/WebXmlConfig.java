@@ -4,7 +4,6 @@
  */
 package stratus.config;
 
-import stratus.web.StratusTheme;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.GeoserverInitStartupListener;
@@ -15,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import stratus.web.StratusTheme;
 
 import javax.servlet.http.HttpSessionListener;
 import java.util.Set;
@@ -117,7 +117,6 @@ public class WebXmlConfig {
     public GeoserverInitStartupListener geoserverInitStartupListener() {
         return new GeoserverInitStartupListener();
     }
-
 
     @Bean
     public GeoServerHttpSessionListenerProxy geoServerHttpSessionListenerProxy() {

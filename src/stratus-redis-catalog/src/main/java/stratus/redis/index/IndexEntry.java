@@ -4,9 +4,9 @@
  */
 package stratus.redis.index;
 
-import stratus.redis.catalog.RedisCatalogUtils;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
+import stratus.redis.catalog.RedisCatalogUtils;
 
 import java.io.Serializable;
 

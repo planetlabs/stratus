@@ -262,12 +262,6 @@ public abstract class ResourceInfoRedisImpl implements ResourceInfo, Serializabl
     }
 
     @Override
-    @Deprecated
-    public String getPrefixedName() {
-        return this.prefixedName();
-    }
-
-    @Override
     public String prefixedName() {
         return getNamespace().getPrefix() + ":" + getName();
     }
@@ -288,7 +282,7 @@ public abstract class ResourceInfoRedisImpl implements ResourceInfo, Serializabl
     }
 
     @Override
-    public ReferencedEnvelope boundingBox() throws Exception {
+    public ReferencedEnvelope boundingBox() {
         throw new UnsupportedOperationException(); //no need to implement
     }
 

@@ -4,9 +4,17 @@
  */
 package org.geoserver.wms;
 
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.StratusOwsTestSupport;
+import org.geoserver.platform.GeoServerExtensions;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import stratus.ows.OWSCachingCallback;
 import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
 import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
 import stratus.redis.index.CacheProperties;
 import stratus.redis.index.LayerIndexListener;
 import stratus.redis.index.RedisLayerIndexFacade;
@@ -14,15 +22,7 @@ import stratus.redis.repository.RedisRepositoryImpl;
 import stratus.wms.StratusWmsTestSupport;
 import stratus.wms.WMSConfig;
 import stratus.wms.WMSHandler;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.ows.StratusOwsTestSupport;
-import stratus.ows.OWSCachingCallback;
-import org.geoserver.platform.GeoServerExtensions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -8,11 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,6 +39,7 @@ public class RedisNotificationDispatcher implements MessageListener, ResourceNot
 
     @Autowired
     @Setter
+    @Qualifier("redisMessageListenerContainer")
     private RedisMessageListenerContainer messageContainer;
 
     @Override

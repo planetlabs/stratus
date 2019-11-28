@@ -4,9 +4,9 @@
  */
 package stratus.wcs;
 
+import org.geoserver.ows.Request;
 import stratus.ows.OWSCachingException;
 import stratus.ows.OWSCachingHandler;
-import org.geoserver.ows.Request;
 
 /**
  * Handle catalog caching for WCS requests

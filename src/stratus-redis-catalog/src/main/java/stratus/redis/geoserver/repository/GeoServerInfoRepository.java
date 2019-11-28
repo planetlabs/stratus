@@ -4,8 +4,8 @@
  */
 package stratus.redis.geoserver.repository;
 
-import stratus.redis.geoserver.info.GeoServerInfoRedisImpl;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import stratus.redis.geoserver.info.GeoServerInfoRedisImpl;
 
 /**
  * @author joshfix

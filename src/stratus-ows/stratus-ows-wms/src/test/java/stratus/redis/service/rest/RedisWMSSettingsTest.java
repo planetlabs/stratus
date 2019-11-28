@@ -4,14 +4,6 @@
  */
 package stratus.redis.service.rest;
 
-import stratus.redis.RedisFacadeTestSupport;
-import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.wms.WMSConfig;
-import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
@@ -26,6 +18,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
+import stratus.redis.RedisFacadeTestSupport;
+import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.wms.WMSConfig;
+import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {GeoServerWithEmbeddedRedisConfig.class, SimpleImportResourcesConfig.class,

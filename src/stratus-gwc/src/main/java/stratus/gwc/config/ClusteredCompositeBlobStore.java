@@ -4,13 +4,13 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.cache.ThreadCachingBean;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.*;
+import stratus.redis.cache.ThreadCachingBean;
 
 import java.util.*;
 

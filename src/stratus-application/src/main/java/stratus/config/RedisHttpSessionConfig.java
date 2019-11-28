@@ -4,11 +4,11 @@
  */
 package stratus.config;
 
-import stratus.redis.config.RedisTemplateConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import stratus.redis.config.RedisTemplateConfig;
 
 /**
  * @author joshfix

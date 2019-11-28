@@ -4,7 +4,6 @@
  */
 package stratus.redis.rest.connection;
 
-import stratus.redis.config.RedisConfigProps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +17,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
-import redis.clients.util.Pool;
+import redis.clients.jedis.util.Pool;
+import stratus.redis.config.RedisConfigProps;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

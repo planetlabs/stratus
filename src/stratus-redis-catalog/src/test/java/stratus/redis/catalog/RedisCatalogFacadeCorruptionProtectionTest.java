@@ -4,10 +4,6 @@
  */
 package stratus.redis.catalog;
 
-import stratus.redis.catalog.info.FeatureTypeInfoRedisImpl;
-import stratus.redis.catalog.repository.*;
-import stratus.redis.repository.RedisRepository;
-import stratus.redis.repository.RedisSetRepository;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -24,6 +20,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.internal.util.collections.Sets;
+import stratus.redis.catalog.info.FeatureTypeInfoRedisImpl;
+import stratus.redis.catalog.repository.*;
+import stratus.redis.repository.RedisRepository;
+import stratus.redis.repository.RedisSetRepository;
 
 import java.util.Optional;
 

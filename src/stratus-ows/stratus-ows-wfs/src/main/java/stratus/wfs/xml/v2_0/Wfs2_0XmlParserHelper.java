@@ -9,10 +9,10 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.WFSXmlUtils;
-import stratus.wfs.xml.WfsXmlParserHelper;
 import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xsd.Parser;
+import stratus.wfs.xml.WfsXmlParserHelper;
 
 import java.io.Reader;
 import java.util.Map;

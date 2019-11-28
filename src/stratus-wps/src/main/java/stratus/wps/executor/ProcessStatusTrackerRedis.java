@@ -4,8 +4,6 @@
  */
 package stratus.wps.executor;
 
-import stratus.wps.redis.repository.StratusExecutionStatusRepository;
-import stratus.wps.store.RedisProcessStatusStore;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.ProcessEvent;
@@ -26,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
+import stratus.wps.redis.repository.StratusExecutionStatusRepository;
+import stratus.wps.store.RedisProcessStatusStore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

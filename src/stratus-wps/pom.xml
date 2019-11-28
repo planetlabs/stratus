@@ -8,7 +8,7 @@
     <parent>
         <groupId>stratus</groupId>
         <artifactId>stratus</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -34,6 +34,7 @@
             <artifactId>s3-stream-upload</artifactId>
             <version>1.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-gml3</artifactId>

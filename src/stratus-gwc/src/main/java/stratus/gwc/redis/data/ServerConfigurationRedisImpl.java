@@ -4,7 +4,6 @@
  */
 package stratus.gwc.redis.data;
 
-import stratus.gwc.config.RedisServerConfiguration;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.ServerConfiguration;
@@ -13,6 +12,7 @@ import org.geowebcache.locks.LockProvider;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.gwc.config.RedisServerConfiguration;
 
 import java.io.IOException;
 import java.io.Serializable;

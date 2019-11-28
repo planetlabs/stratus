@@ -4,9 +4,9 @@
  */
 package stratus.redis.config;
 
-import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import stratus.commons.beanfactory.FilteringBeanDefinitionLoader;
 
 /**
  * Simplified version of {@link GeoServerSystemImportResourcesConfig} for use with catalog requests with less strict

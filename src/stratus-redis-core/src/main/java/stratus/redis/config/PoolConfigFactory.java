@@ -6,7 +6,6 @@ package stratus.redis.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Slf4j

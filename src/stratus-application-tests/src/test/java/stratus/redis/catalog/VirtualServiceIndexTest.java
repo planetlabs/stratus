@@ -4,12 +4,12 @@
  */
 package stratus.redis.catalog;
 
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.index.VirtualServiceIndex;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.index.VirtualServiceIndex;
 
 import java.util.Collections;
 import java.util.List;

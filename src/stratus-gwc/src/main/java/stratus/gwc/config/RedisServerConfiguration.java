@@ -4,10 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
-import stratus.gwc.redis.repository.ServerRepository;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.repository.RedisRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.geowebcache.config.ServerConfiguration;
 import org.geowebcache.config.meta.ServiceInformation;
@@ -15,6 +11,10 @@ import org.geowebcache.locks.LockProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
+import stratus.gwc.redis.repository.ServerRepository;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.IOException;
 import java.util.Optional;

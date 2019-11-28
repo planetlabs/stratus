@@ -4,21 +4,21 @@
  */
 package org.geoserver.wfs.v1_1;
 
-import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.wfs.StratusWfsTestSupport;
-import stratus.wfs.WFSConfig;
 import org.geoserver.data.test.SystemTestData;
-import stratus.ows.OWSCachingCallback;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import stratus.ows.OWSCachingCallback;
+import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.wfs.StratusWfsTestSupport;
+import stratus.wfs.WFSConfig;
+import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
 
 @WebAppConfiguration
 @RunWith(SpringRunner.class)

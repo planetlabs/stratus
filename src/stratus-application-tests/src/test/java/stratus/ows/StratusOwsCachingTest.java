@@ -4,11 +4,6 @@
  */
 package stratus.ows;
 
-import stratus.StratusApplicationTestSupport;
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.cache.CachingFilter;
-import stratus.redis.index.LayerIndexListener;
-import stratus.redis.index.RedisLayerIndexFacade;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -18,9 +13,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import stratus.StratusApplicationTestSupport;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.cache.CachingFilter;
+import stratus.redis.index.LayerIndexListener;
+import stratus.redis.index.RedisLayerIndexFacade;
 
 import javax.servlet.Filter;
-import javax.xml.namespace.QName;
 import java.util.Collections;
 import java.util.List;
 

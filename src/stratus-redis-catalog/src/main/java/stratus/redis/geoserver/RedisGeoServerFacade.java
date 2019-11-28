@@ -4,11 +4,6 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.redis.catalog.RedisCatalogUtils;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.geoserver.info.*;
-import stratus.redis.geoserver.repository.*;
-import stratus.redis.upgrade.StratusUpgradingDeserializingConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Info;
@@ -27,6 +22,11 @@ import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import stratus.redis.catalog.RedisCatalogUtils;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.geoserver.info.*;
+import stratus.redis.geoserver.repository.*;
+import stratus.redis.upgrade.StratusUpgradingDeserializingConverter;
 
 import java.lang.reflect.Proxy;
 import java.util.*;

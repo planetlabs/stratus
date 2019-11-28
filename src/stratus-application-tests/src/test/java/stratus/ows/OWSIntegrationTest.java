@@ -4,11 +4,11 @@
  */
 package stratus.ows;
 
-import stratus.StratusApplicationTestSupport;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import stratus.StratusApplicationTestSupport;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

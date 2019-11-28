@@ -4,12 +4,12 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
-import stratus.redis.repository.RedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
+import stratus.redis.repository.RedisRepository;
 
 /**
  * Configuration for a Stratus instance with GWC, GS, and an embedded
@@ -22,8 +22,10 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableRedisRepositories({"stratus.redis.catalog.repository",
         "stratus.redis.geoserver.repository", "stratus.gwc.redis.repository"})
 public class GWCWithEmbeddedRedisConfig extends GeoServerWithEmbeddedRedisConfig {
+
     @Bean
     public RedisGWCTestSupport redisGWCTestSupport() {
         return new RedisGWCTestSupport();
     }
+
 }

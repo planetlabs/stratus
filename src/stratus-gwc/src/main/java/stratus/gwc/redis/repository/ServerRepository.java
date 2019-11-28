@@ -4,8 +4,8 @@
  */
 package stratus.gwc.redis.repository;
 
-import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
 import org.springframework.data.repository.CrudRepository;
+import stratus.gwc.redis.data.ServerConfigurationRedisImpl;
 
 /**
  * SpringData repository for server configuration objects

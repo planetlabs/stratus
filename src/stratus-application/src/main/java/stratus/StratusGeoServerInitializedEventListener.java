@@ -4,12 +4,12 @@
  */
 package stratus;
 
-import stratus.commons.event.GeoServerInitializedEvent;
-import stratus.health.StratusHealthIndicator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import stratus.commons.event.GeoServerInitializedEvent;
+import stratus.health.StratusHealthIndicator;
 
 /**
  * Created by aaryno on 1/13/17.

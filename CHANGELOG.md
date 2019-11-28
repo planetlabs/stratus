@@ -1,3 +1,41 @@
+# Unreleased
+
+## Summary
+
+## Changes
+
+### New Features
+
+### Removed Features
+
+### Bugfixes
+
+# 1.6.0
+
+## Summary
+
+* Upgrade to GeoServer 2.16.0
+* Upgrade to GeoTools 22.0
+* Upgrade to Spring Boot 2.2.1
+
+## Changes
+
+### New Features
+
+* Added configuration properties for TransientCache constructor parameters
+
+### Removed Features
+
+* Removed redis discovery configuration
+
+### Bugfixes
+
+* Fixed NPE issues in catalog when using isolated workspaces
+* Fixed REST issues with security endpoint controllers
+* Move GeoServerInitializers from RedisGeoServerLoader to BSEInitializer so they get run each startup on all nodes
+* Fixed issue where S3 blobstore settings were not properly being saved
+* Certain properties not being honored in bootstrap.yml were moved to application.yml
+
 # 1.5.0
 
 ## Summary

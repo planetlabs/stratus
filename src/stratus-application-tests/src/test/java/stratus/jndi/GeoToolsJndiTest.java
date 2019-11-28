@@ -4,8 +4,6 @@
  */
 package stratus.jndi;
 
-import stratus.config.StratusConfigProps;
-import stratus.config.TomcatConfig;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.geotools.data.DataAccess;
 import org.geotools.jdbc.JDBCDataStore;
@@ -21,10 +19,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.vfny.geoserver.util.DataStoreUtils;
+import stratus.config.StratusConfigProps;
+import stratus.config.TomcatConfig;
 
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 

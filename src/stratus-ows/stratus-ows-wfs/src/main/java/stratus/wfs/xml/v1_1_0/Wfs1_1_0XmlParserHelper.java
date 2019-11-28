@@ -8,10 +8,10 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSXmlUtils;
-import stratus.wfs.xml.WfsXmlParserHelper;
 import org.geoserver.wfs.xml.v1_1_0.WfsXmlReader;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
+import stratus.wfs.xml.WfsXmlParserHelper;
 
 import java.io.Reader;
 import java.util.Map;
@@ -31,9 +31,8 @@ public class Wfs1_1_0XmlParserHelper extends WfsXmlParserHelper {
 
     @Override
     public Object parse(Object request, Reader reader, Map kvp) throws ServiceException {
-        configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
-
         Parser parser = new Parser(configuration);
+        parser.setStrict(false);
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
 
         initRequestParser(parser, kvp);

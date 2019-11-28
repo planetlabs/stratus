@@ -4,8 +4,8 @@
  */
 package stratus.redis.index.engine;
 
-import stratus.redis.catalog.RedisCatalogUtils;
 import org.geoserver.catalog.Info;
+import stratus.redis.catalog.RedisCatalogUtils;
 
 /**
  * Default implementations for {@link RedisQueryKey}

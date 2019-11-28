@@ -4,7 +4,6 @@
  */
 package stratus.wps;
 
-import stratus.wps.executor.StratusWPSExecutionManager;
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import org.geoserver.config.GeoServer;
@@ -13,6 +12,7 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.resource.WPSResourceManager;
+import stratus.wps.executor.StratusWPSExecutionManager;
 
 public class StratusDefaultWebProcessingService extends DefaultWebProcessingService {
     public StratusDefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager,

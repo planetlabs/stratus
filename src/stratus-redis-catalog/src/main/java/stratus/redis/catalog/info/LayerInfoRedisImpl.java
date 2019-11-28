@@ -5,9 +5,6 @@
 package stratus.redis.catalog.info;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.ResolvingProxy;
@@ -184,12 +181,6 @@ public class LayerInfoRedisImpl implements LayerInfo, Serializable {
     @Override
     public boolean isOpaque() {
         return this.opaque != null && this.opaque;
-    }
-
-    @Override
-    @Deprecated
-    public String getPrefixedName() {
-        return prefixedName();
     }
 
     @Override

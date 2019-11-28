@@ -1,5 +1,5 @@
 # Stratus
-Stratus is a Spring Boot packaging of Geoserver (currently targeting 2.15) that is designed for Enterprise/Cloud deployments. Due to the magic of Spring and Maven, Stratus doesn't actually change any of the core code of the GeoServer community project. It instead declares (some) of those modules as dependencies and rewires parts of the runtime configuration to use custom pieces. 
+Stratus is a Spring Boot packaging of Geoserver (currently targeting 2.16) that is designed for Enterprise/Cloud deployments. Due to the magic of Spring and Maven, Stratus doesn't actually change any of the core code of the GeoServer community project. It instead declares (some) of those modules as dependencies and rewires parts of the runtime configuration to use custom pieces. 
 
 Stratus has the following main differences from community GeoServer:
 
@@ -70,8 +70,6 @@ By default, Stratus will start using the redis-manual profile which will attempt
 | lettuce-cluster | Attempts to connect to a Redis Cluster using the Lettuce client |
 | jedis-aws-tag-discovery | Attempts to connect to Redis using metadata provided by AWS tags using the Jedis client |
 | lettuce-aws-tag-discovery | Attempts to connect to Redis using metadata provided by AWS tags using the Lettuce client |
-| jedis-discovery | Attempts to use the Spring discovery client to obtain Redis endpoint information and connect using the Jedis client |
-| lettuce-discovery | Attempts to use the Spring discovery client to obtain Redis endpoint information and connect using the Lettuce client |
 | cloud | Used by PCF to connect to a Redis service |
 
 ### Startup Properties/Parameters
@@ -210,6 +208,14 @@ Any custom Docker images used by these deployments can be found in [build/docker
 
 ## Upgrade Procedures
 
-- Ensure the methods in [CommunityRestConfiguration](./stratus-application/src/main/java/com/gsstratus/stratus/config/CommunityRestConfiguration.java)
+- Ensure the methods in [CommunityRestConfiguration](./src/stratus-application/src/main/java/com/gsstratus/stratus/config/CommunityRestConfiguration.java)
 are up to date with the current [RestConfiguration](https://github.com/geoserver/geoserver/blob/master/src/rest/src/main/java/org/geoserver/rest/RestConfiguration.java) class
 found in community GeoServer (note: community extends WebMvcConfigurationSupport and Stratus should extend WebMvcConfigurerAdapter)
+
+- Ensure all of the context XML files in the [stratus-gwc](./src/stratus-gwc/src/main/resources) are updated with any 
+changes made in the corresponding [GeoServer GWC](https://github.com/geoserver/geoserver/blob/master/src/gwc/src/main/resources)
+context files.  Note there are exceptions for context files that contain important custom configurations.  These  
+files are:
+    * [applicationContext.xml](./src/stratus-gwc/src/main/resources/applicationContext.xml) 
+    * [geowebcache-rest-context.xml](./src/stratus-gwc/src/main/resources/geowebcache-rest-context.xml)
+    * [geowebcache-wmtsservice-context.xml](./src/stratus-gwc/src/main/resources/geowebcache-wmtsservice-context.xml)

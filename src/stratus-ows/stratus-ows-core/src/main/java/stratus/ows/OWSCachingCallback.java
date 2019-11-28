@@ -4,10 +4,6 @@
  */
 package stratus.ows;
 
-import stratus.ows.OWSCachingException;
-import stratus.ows.OWSCachingHandler;
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.index.RedisLayerIndexFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.DispatcherCallback;
@@ -19,6 +15,8 @@ import org.geotools.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.index.RedisLayerIndexFacade;
 
 import java.io.BufferedReader;
 import java.util.HashMap;

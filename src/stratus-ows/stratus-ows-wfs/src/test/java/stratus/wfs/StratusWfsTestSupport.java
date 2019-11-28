@@ -4,14 +4,14 @@
  */
 package stratus.wfs;
 
-import stratus.redis.RedisFacadeTestSupport;
-import stratus.redis.index.LayerIndexListener;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.StratusOwsTestSupport;
-import stratus.ows.OWSCachingCallback;
 import org.geoserver.test.GeoServerTestApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import stratus.ows.OWSCachingCallback;
+import stratus.redis.RedisFacadeTestSupport;
+import stratus.redis.index.LayerIndexListener;
 
 @Component
 public class StratusWfsTestSupport {

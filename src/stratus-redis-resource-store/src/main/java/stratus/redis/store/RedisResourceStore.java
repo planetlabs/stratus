@@ -7,8 +7,6 @@ package stratus.redis.store;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,7 +16,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  *
  * @author joshfix, Niels Charlier
@@ -26,7 +23,6 @@ import java.util.List;
 
 @Slf4j
 @Service("resourceStoreImpl")
-@Lazy
 public class RedisResourceStore implements ResourceStore {
 
     protected File cacheDir;
@@ -34,27 +30,25 @@ public class RedisResourceStore implements ResourceStore {
 
     private ResourceDataService dataService;
     
-    private RedisNotificationDispatcher resourceNotificationDispatcher;
+    private final RedisNotificationDispatcher resourceNotificationDispatcher;
 
-    public RedisResourceStore() {
+    public RedisResourceStore(ResourceDataService dataService,
+                              RedisNotificationDispatcher resourceNotificationDispatcher,
+                              RedisResourceInitializer initializer) {
+        this.dataService = dataService;
+        this.resourceNotificationDispatcher = resourceNotificationDispatcher;
         try {
             cacheDir = Files.createTempDirectory("redis.resourcestore.cache").toFile();
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        initializer.setRedisResourceStore(this);
+        initializer.init();
     }
 
-    @Autowired
-    @Lazy
     public void setDataService(ResourceDataService dataService) {
-		this.dataService = dataService;
-	}
-
-    @Autowired
-    @Lazy
-	public void setResourceNotificationDispatcher(RedisNotificationDispatcher resourceNotificationDispatcher) {
-		this.resourceNotificationDispatcher = resourceNotificationDispatcher;
-	}
+        this.dataService = dataService;
+    }
 
 	public ResourceDataService getDataService() {
 		return dataService;

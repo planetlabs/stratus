@@ -4,19 +4,6 @@
  */
 package org.geoserver.gwc;
 
-import stratus.config.GeoServerSystemImportResourcesConfig;
-import stratus.gwc.GWCLoader;
-import stratus.gwc.GWCProperties;
-import stratus.gwc.config.*;
-import stratus.redis.RedisFacadeTestSupport;
-import stratus.redis.catalog.config.StratusCatalogConfigProps;
-import stratus.redis.config.RedisConfigProps;
-import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
-import stratus.gwc.redis.data.WMTSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.wms.WMSConfig;
 import org.geoserver.catalog.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -42,7 +29,6 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.s3.S3BlobStoreInfo;
 import org.geowebcache.storage.BlobStoreAggregator;
-import org.geowebcache.storage.CompositeBlobStore;
 import org.geowebcache.storage.DefaultStorageFinder;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -51,6 +37,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.config.GeoServerSystemImportResourcesConfig;
+import stratus.gwc.GwcConfigProps;
+import stratus.gwc.GwcLoader;
+import stratus.gwc.config.*;
+import stratus.gwc.redis.data.WMTSInfoClassRegisteringBean;
+import stratus.redis.RedisFacadeTestSupport;
+import stratus.redis.catalog.config.StratusCatalogConfigProps;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
+import stratus.wms.WMSConfig;
+import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -69,9 +68,11 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = {GWCWithEmbeddedRedisConfig.class, GeoServerSystemImportResourcesConfig.class,
         RedisRepositoryImpl.class, RedisConfigProps.class, RedisLayerIndexFacade.class, CacheProperties.class,
         RedisServerConfiguration.class, RedisGeoServerTileLayerConfiguration.class, RedisGridSetConfiguration.class,
-        RedisBlobStoreConfiguration.class, StratusDefaultingConfiguration.class, GWCLoader.class, GWCProperties.class,
-        WMTSInfoClassRegisteringBean.class, WMSInfoClassRegisteringBean.class, WMSConfig.class, StratusCatalogConfigProps.class},
+        RedisBlobStoreConfiguration.class, StratusDefaultingConfiguration.class, GwcLoader.class, GwcConfigProps.class,
+        WMTSInfoClassRegisteringBean.class, WMSInfoClassRegisteringBean.class, WMSConfig.class,
+        StratusCatalogConfigProps.class},
         properties = {"stratus.gwc.default-file-blob-store=true", "spring.main.allow-bean-definition-overriding=true"})
+
 public class RedisGWCIntegrationTest extends GWCIntegrationTest {
 
     @Autowired
@@ -83,7 +84,9 @@ public class RedisGWCIntegrationTest extends GWCIntegrationTest {
     @Autowired
     private DefaultStorageFinder storageFinder;
     @Autowired
-    GWCLoader gwcLoader;
+    GwcLoader gwcLoader;
+
+    public static final String DEFAULT_STORE_DEFAULT_TEST_ID = "_DEFAULT_STORE_TEST_";
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -117,7 +120,7 @@ public class RedisGWCIntegrationTest extends GWCIntegrationTest {
 
         //add a default blobstore to handle caching
         FileBlobStoreInfo config = new FileBlobStoreInfo();
-        config.setName(CompositeBlobStore.DEFAULT_STORE_DEFAULT_ID);
+        config.setName(DEFAULT_STORE_DEFAULT_TEST_ID);
         config.setEnabled(true);
         config.setDefault(true);
         config.setBaseDirectory(new File(getResourceLoader().getBaseDirectory(), "gwc").getPath());
@@ -128,6 +131,9 @@ public class RedisGWCIntegrationTest extends GWCIntegrationTest {
 
         gwc.getConfig().getDefaultCoverageCacheFormats().add("image/png");
         gwc.getConfig().getDefaultVectorCacheFormats().add("image/jpeg");
+
+        //gwc.removeTileLayers(new ArrayList<>(gwc.getTileLayerNames()));
+
         //Copy the layers from catalog into the tile catalog
         for (LayerInfo layer : getCatalog().getLayers()) {
             //Only tile layers with geometry
@@ -255,25 +261,25 @@ public class RedisGWCIntegrationTest extends GWCIntegrationTest {
         final String path = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
         final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
         final GeoServerTileLayer tileLayer = (GeoServerTileLayer) gwc.getTileLayerByName(qualifiedName);
-        tileLayer.getLayerInfo().getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, "true");
-        tileLayer.getLayerInfo().getResource().getMetadata().put(ResourceInfo.CACHE_AGE_MAX, 3456);
-        getCatalog().save(tileLayer.getLayerInfo().getResource());
+        ((LayerInfo)tileLayer.getPublishedInfo()).getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, "true");
+        ((LayerInfo)tileLayer.getPublishedInfo()).getResource().getMetadata().put(ResourceInfo.CACHE_AGE_MAX, 3456);
+        getCatalog().save(((LayerInfo)tileLayer.getPublishedInfo()).getResource());
 
         MockHttpServletResponse response = getAsServletResponse(path);
         String cacheControl = response.getHeader("Cache-Control");
         assertEquals("max-age=3456", cacheControl);
         assertNotNull(response.getHeader("Last-Modified"));
 
-        tileLayer.getLayerInfo().getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, "false");
-        getCatalog().save(tileLayer.getLayerInfo().getResource());
+        ((LayerInfo)tileLayer.getPublishedInfo()).getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, "false");
+        getCatalog().save(((LayerInfo)tileLayer.getPublishedInfo()).getResource());
 
         response = getAsServletResponse(path);
         cacheControl = response.getHeader("Cache-Control");
         assertEquals("no-cache", cacheControl);
 
         // make sure a boolean is handled, too - see comment in CachingWebMapService
-        tileLayer.getLayerInfo().getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, Boolean.FALSE);
-        getCatalog().save(tileLayer.getLayerInfo().getResource());
+        ((LayerInfo)tileLayer.getPublishedInfo()).getResource().getMetadata().put(ResourceInfo.CACHING_ENABLED, Boolean.FALSE);
+        getCatalog().save(((LayerInfo)tileLayer.getPublishedInfo()).getResource());
 
         response = getAsServletResponse(path);
         cacheControl = response.getHeader("Cache-Control");

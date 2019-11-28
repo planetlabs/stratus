@@ -4,9 +4,9 @@
  */
 package stratus.redis.index.engine;
 
-import stratus.redis.catalog.RedisCatalogUtils;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
+import stratus.redis.catalog.RedisCatalogUtils;
 
 /**
  * A {@link RedisDelegatingQueryKey} whose id is static, and whose value is obtained from a {@link RedisValueQuery}

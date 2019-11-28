@@ -4,10 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.GridSetRedisImpl;
-import stratus.gwc.redis.repository.GridSetRepository;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.config.GridSetConfiguration;
 import org.geowebcache.grid.GridSet;
@@ -15,6 +11,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import stratus.gwc.redis.data.GridSetRedisImpl;
+import stratus.gwc.redis.repository.GridSetRepository;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;

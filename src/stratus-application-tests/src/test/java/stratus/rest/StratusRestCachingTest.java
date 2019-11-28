@@ -4,16 +4,16 @@
  */
 package stratus.rest;
 
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import stratus.StratusApplicationTestSupport;
 import stratus.redis.cache.CachingCatalogFacade;
 import stratus.redis.cache.CachingFilter;
 import stratus.redis.cache.rest.RestCachingInterceptor;
 import stratus.redis.index.LayerIndexListener;
 import stratus.redis.index.RedisLayerIndexFacade;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.geoserver.data.test.CiteTestData.BRIDGES;
 import static org.geoserver.data.test.CiteTestData.DEFAULT_VECTOR_STYLE;

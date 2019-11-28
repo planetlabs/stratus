@@ -4,8 +4,6 @@
  */
 package stratus.wps.store;
 
-import stratus.wps.model.StratusExecutionStatus;
-import stratus.wps.redis.repository.StratusExecutionStatusRepository;
 import net.opengis.wps10.ExecuteType;
 import org.apache.commons.beanutils.BeanComparator;
 import org.geoserver.wps.CompositeComparator;
@@ -16,6 +14,8 @@ import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import stratus.wps.model.StratusExecutionStatus;
+import stratus.wps.redis.repository.StratusExecutionStatusRepository;
 
 import java.util.*;
 import java.util.logging.Level;

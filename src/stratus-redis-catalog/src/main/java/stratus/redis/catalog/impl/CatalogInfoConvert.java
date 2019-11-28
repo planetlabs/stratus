@@ -4,10 +4,10 @@
  */
 package stratus.redis.catalog.impl;
 
-import stratus.redis.catalog.info.*;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.*;
 import org.springframework.beans.BeanUtils;
+import stratus.redis.catalog.info.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

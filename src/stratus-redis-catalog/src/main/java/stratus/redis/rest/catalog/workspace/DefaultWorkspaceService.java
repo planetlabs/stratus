@@ -4,9 +4,6 @@
  */
 package stratus.redis.rest.catalog.workspace;
 
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
-import stratus.redis.catalog.repository.WorkspaceRepository;
 import lombok.AllArgsConstructor;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -14,6 +11,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.catalog.info.WorkspaceInfoRedisImpl;
+import stratus.redis.catalog.repository.WorkspaceRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

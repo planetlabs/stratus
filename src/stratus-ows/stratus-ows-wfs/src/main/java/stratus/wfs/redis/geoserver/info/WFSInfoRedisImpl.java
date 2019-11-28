@@ -4,12 +4,12 @@
  */
 package stratus.wfs.redis.geoserver.info;
 
-import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 import lombok.Data;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

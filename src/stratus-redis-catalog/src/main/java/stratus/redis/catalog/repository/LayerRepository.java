@@ -4,9 +4,9 @@
  */
 package stratus.redis.catalog.repository;
 
-import stratus.redis.catalog.info.LayerInfoRedisImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import stratus.redis.catalog.info.LayerInfoRedisImpl;
 
 import java.util.List;
 

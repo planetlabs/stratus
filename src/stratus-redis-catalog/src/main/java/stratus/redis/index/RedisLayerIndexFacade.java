@@ -4,10 +4,6 @@
  */
 package stratus.redis.index;
 
-import stratus.redis.cache.CachingCatalogFacade;
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.index.engine.DefaultRedisQueryKey;
-import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -17,6 +13,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.convert.RedisConverter;
 import org.springframework.stereotype.Service;
+import stratus.redis.cache.CachingCatalogFacade;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.index.engine.DefaultRedisQueryKey;
+import stratus.redis.index.engine.RedisMultiQueryCachingEngine;
 
 import java.util.*;
 

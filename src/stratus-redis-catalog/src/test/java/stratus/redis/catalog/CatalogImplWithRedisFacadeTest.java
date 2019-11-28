@@ -5,12 +5,6 @@
 package stratus.redis.catalog;
 
 
-import stratus.redis.RedisFacadeTestSupport;
-import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
-import stratus.redis.config.SimpleImportResourcesConfig;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
 import com.google.common.collect.ImmutableSet;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -28,6 +22,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import stratus.redis.RedisFacadeTestSupport;
+import stratus.redis.config.GeoServerWithEmbeddedRedisConfig;
+import stratus.redis.config.SimpleImportResourcesConfig;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.File;
 import java.util.List;

@@ -4,9 +4,9 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.FileBlobStoreInfoRedisImpl;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.junit.Test;
+import stratus.gwc.redis.data.FileBlobStoreInfoRedisImpl;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;

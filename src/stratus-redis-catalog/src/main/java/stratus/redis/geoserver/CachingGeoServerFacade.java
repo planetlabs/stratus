@@ -4,13 +4,13 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.redis.cache.CachingFacade;
-import stratus.redis.cache.CachingFilter;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.*;
 import org.geoserver.config.impl.GeoServerImpl;
+import stratus.redis.cache.CachingFacade;
+import stratus.redis.cache.CachingFilter;
 
 import java.util.Arrays;
 import java.util.Collection;

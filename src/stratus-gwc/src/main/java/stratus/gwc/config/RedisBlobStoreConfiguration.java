@@ -4,13 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.data.BlobStoreInfoRedisImpl;
-import stratus.gwc.redis.data.FileBlobStoreInfoRedisImpl;
-import stratus.gwc.redis.data.MBTilesInfoRedisImpl;
-import stratus.gwc.redis.data.S3BlobStoreInfoRedisImpl;
-import stratus.gwc.redis.repository.BlobStoreRepository;
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.repository.RedisRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.BlobStoreConfigurationListener;
@@ -25,6 +18,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import stratus.gwc.redis.data.BlobStoreInfoRedisImpl;
+import stratus.gwc.redis.data.FileBlobStoreInfoRedisImpl;
+import stratus.gwc.redis.data.MBTilesInfoRedisImpl;
+import stratus.gwc.redis.data.S3BlobStoreInfoRedisImpl;
+import stratus.gwc.redis.repository.BlobStoreRepository;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import java.io.IOException;
 import java.util.*;

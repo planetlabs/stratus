@@ -4,11 +4,11 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.config.RedisConfigProps;
-import stratus.redis.repository.RedisRepositoryImpl;
 import org.geowebcache.config.BaseConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import stratus.redis.config.RedisConfigProps;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 /**
  * Abstract superclass for all redis implementation of {@link BaseConfiguration}.

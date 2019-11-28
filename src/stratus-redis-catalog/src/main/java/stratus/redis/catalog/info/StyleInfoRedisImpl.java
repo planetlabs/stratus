@@ -27,7 +27,10 @@ import java.io.Serializable;
 @Setter
 @ToString
 @RedisHash("StyleInfo")
-public class StyleInfoRedisImpl implements StyleInfo, Serializable {
+public class
+
+
+StyleInfoRedisImpl implements StyleInfo, Serializable {
 
 	private static final long serialVersionUID = 7579381156988673293L;
 	
@@ -59,18 +62,6 @@ public class StyleInfoRedisImpl implements StyleInfo, Serializable {
     @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
-    }
-
-    @Override
-    @Deprecated
-    public Version getSLDVersion() {
-        return getFormatVersion();
-    }
-
-    @Override
-    @Deprecated
-    public void setSLDVersion(Version v) {
-        setFormatVersion(v);
     }
 
     @Override

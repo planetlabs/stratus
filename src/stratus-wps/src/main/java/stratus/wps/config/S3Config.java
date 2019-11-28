@@ -5,13 +5,13 @@
 package stratus.wps.config;
 
 import com.amazonaws.services.s3.AmazonS3;
-import stratus.wps.WPSStorageCleaner;
-import stratus.wps.s3.S3Connector;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
 import org.springframework.scheduling.concurrent.ScheduledExecutorTask;
+import stratus.wps.WPSStorageCleaner;
+import stratus.wps.s3.S3Connector;
 
 @Configuration
 @AllArgsConstructor

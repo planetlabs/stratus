@@ -4,13 +4,13 @@
  */
 package stratus.redis.cache;
 
-import stratus.redis.geoserver.DefaultGeoServerCache;
-import stratus.redis.geoserver.GeoServerCache;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.impl.DefaultGeoServerFacade;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.platform.GeoServerExtensions;
+import stratus.redis.geoserver.DefaultGeoServerCache;
+import stratus.redis.geoserver.GeoServerCache;
 
 import javax.servlet.*;
 import java.io.IOException;

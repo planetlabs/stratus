@@ -4,11 +4,11 @@
  */
 package stratus.gwc.redis.data;
 
-import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 import lombok.Data;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.springframework.data.redis.core.RedisHash;
+import stratus.redis.geoserver.info.AbstractServiceInfoRedisImpl;
 
 /**
  * Implementation of {@link WMTSInfo} used for serialization to Redis

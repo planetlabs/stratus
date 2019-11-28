@@ -6,10 +6,6 @@ package stratus.wps;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import stratus.Initializer;
-import stratus.wps.config.WPSConfigurationProperties;
-import stratus.wps.executor.StratusWPSExecutionManager;
-import stratus.wps.resource.S3ResourceStore;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
@@ -26,20 +22,21 @@ import org.geoserver.wps.resource.DefaultProcessArtifactsStore;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
-import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Service;
+import stratus.commons.PostGeoServerInitializer;
+import stratus.wps.config.WPSConfigurationProperties;
+import stratus.wps.executor.StratusWPSExecutionManager;
+import stratus.wps.resource.S3ResourceStore;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
-public class WPSInitializerS3 implements Initializer  {
-
-    static final Logger LOGGER = Logging.getLogger(WPSInitializerS3.class);
+public class WPSInitializerS3 implements PostGeoServerInitializer {
 
     public static final String DEFAULT_OUTPUT_DIRECTORY = "temp/wps";
 
@@ -78,7 +75,8 @@ public class WPSInitializerS3 implements Initializer  {
         this.wpsConfigurationProperties = wpsConfigurationProperties;
     }
 
-    public void init() {
+    @Override
+    public void initialize() {
 
         initWPS(geoServer.getService(WPSInfo.class), geoServer);
 
@@ -169,7 +167,13 @@ public class WPSInitializerS3 implements Initializer  {
                     File storage = new File(outputStorageDirectory);
                     // if it's a path relative to the data directory, make it absolute
                     if (!storage.isAbsolute()) {
-                        storage = resourceLoader.url(outputStorageDirectory);
+                        //storage = resourceLoader.url(outputStorageDirectory);
+                        // TODO not sure what the right method is here
+                        try {
+                            storage = resourceLoader.find(outputStorageDirectory);
+                        } catch (IOException e) {
+                            throw new IllegalArgumentException("Invalid wps storage path.", e);
+                        }
                     }
                     if(storage.exists() && !storage.isDirectory()) {
                         throw new IllegalArgumentException("Invalid wps storage path, "

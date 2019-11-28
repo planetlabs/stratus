@@ -4,16 +4,6 @@
  */
 package stratus.redis.geoserver;
 
-import stratus.commons.event.GeoServerInitializedEvent;
-import stratus.commons.lock.InitializationProvider;
-import stratus.commons.lock.LockingInitializer;
-import stratus.commons.lock.LockingInitializerConfig;
-import stratus.redis.catalog.RedisCatalogFacade;
-import stratus.redis.catalog.RedisCatalogUtils;
-import stratus.redis.catalog.config.StratusCatalogConfigProps;
-import stratus.redis.lock.RedisStratusLockProvider;
-import stratus.redis.repository.RedisRepositoryImpl;
-import stratus.redis.store.RedisResourceInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
@@ -26,14 +16,24 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.*;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import stratus.commons.event.GeoServerInitializedEvent;
+import stratus.commons.lock.InitializationProvider;
+import stratus.commons.lock.LockingInitializer;
+import stratus.commons.lock.LockingInitializerConfig;
+import stratus.redis.catalog.RedisCatalogFacade;
+import stratus.redis.catalog.RedisCatalogUtils;
+import stratus.redis.catalog.config.StratusCatalogConfigProps;
+import stratus.redis.lock.RedisStratusLockProvider;
+import stratus.redis.repository.RedisRepositoryImpl;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -46,29 +46,26 @@ import java.util.List;
 @Slf4j
 @Primary
 @Service
-public class RedisGeoServerLoader extends DefaultGeoServerLoader implements ApplicationContextAware {
+public class RedisGeoServerLoader extends DefaultGeoServerLoader {
 
+    private XStreamPersister xStreamPersister;
+    private LockingInitializer initializer;
     private final GeoServerFacade geoServerFacade;
     private final RedisCatalogFacade facade;
     private final RedisRepositoryImpl repository;
     private final GeoServer geoserver;
     private final CatalogImpl catalog;
     private final StratusCatalogConfigProps configProps;
-    private final RedisResourceInitializer resourceInitializer;
-    private XStreamPersister xStreamPersister;
-
-    private ApplicationContext applicationContext;
-
-    private LockingInitializer initializer;
-
+    private final BuildProperties buildProperties;
     public static final String GEOSERVER_INITIALIZATION_KEY = "GeoServer:Initialized";
+    public static final String STRATUS_VERSIONS_KEY = "Stratus:Versions";
 
     @SuppressWarnings("SpringJavaAutowiringInspection")
     public RedisGeoServerLoader(GeoServerResourceLoader resourceLoader,
                                 @Autowired(required=false) RedisGeoServerFacade geoServerFacade,
                                 RedisCatalogFacade facade, RedisRepositoryImpl repository, GeoServer geoserver,
                                 CatalogImpl catalog, StratusCatalogConfigProps configProps,
-                                RedisResourceInitializer resourceInitializer) {
+                                BuildProperties buildProperties) {
         super(resourceLoader);
         this.geoServerFacade = geoServerFacade;
         this.facade = facade;
@@ -76,12 +73,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
         this.geoserver = geoserver;
         this.catalog = catalog;
         this.configProps = configProps;
-        this.resourceInitializer = resourceInitializer;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+        this.buildProperties = buildProperties;
     }
 
     @PostConstruct
@@ -107,7 +99,6 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
                 "GeoServerSubSystem", GEOSERVER_INITIALIZATION_KEY);
 
         InitializationProvider initializationProvider = () -> {
-            initializeRedisResourceStore();
             initializeGeoServer(xStreamPersister);
             initializeExtensions();
             log.info("GeoServer subsystem successfully initialized.");
@@ -115,6 +106,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
 
         initializer = new LockingInitializer(new RedisStratusLockProvider(initializerConfig, repository), initializerConfig);
         initializer.execute(initializationProvider);
+        writeVersion();
     }
 
     public void setGeoServerInitialized() {
@@ -125,19 +117,13 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
         }
     }
 
-    private void initializeRedisResourceStore() {
-        resourceInitializer.init();
-        if (RedisCatalogUtils.isImportStore()) {
-            try {
-                ResourceStore ddResourceStore = new FileSystemResourceStore(RedisCatalogUtils.lookupGeoServerDataDirectory());
-                Resource root = ddResourceStore.get("");
-                for (Resource child : root.list()) {
-                    Resources.copy(child, resourceInitializer.getRedisResourceStore().get(child.name()));
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }
+    /**
+     * Update a redis set containing every Stratus version that has touched this redis catalog.
+     */
+    protected void writeVersion() {
+        String version = buildProperties.getVersion();
+        ((RedisStratusLockProvider)initializer.getLockProvider())
+                .getRepository().getRedisSetRepository().addToSet(STRATUS_VERSIONS_KEY, version);
     }
 
     protected void initializeGeoServer(XStreamPersister xStreamPersister) {
@@ -158,7 +144,6 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
 
     @Override
     protected void loadGeoServer(GeoServer geoServer, XStreamPersister xStreamPersister) throws Exception {
-
         if (!repository.isGeoServerInitialized()) {
             readConfiguration(geoServer, xStreamPersister);
         }
@@ -197,19 +182,7 @@ public class RedisGeoServerLoader extends DefaultGeoServerLoader implements Appl
 
     @Override
     protected void loadInitializers(GeoServer geoServer) throws Exception {
-        // load initializer extensions
-        List<GeoServerInitializer> initializers =
-                GeoServerExtensions.extensions(GeoServerInitializer.class);
-        for (GeoServerInitializer initer : initializers) {
-            try {
-                if (initer instanceof ApplicationContextAware) {
-                    ((ApplicationContextAware) initer).setApplicationContext(applicationContext);
-                }
-                initer.initialize(geoServer);
-            } catch (Throwable t) {
-                log.error("Failed to run initializer " + initer, t);
-            }
-        }
+        //Skip this - handled by BSEInitializer instead, since these need to run on every node
     }
 
     @Override

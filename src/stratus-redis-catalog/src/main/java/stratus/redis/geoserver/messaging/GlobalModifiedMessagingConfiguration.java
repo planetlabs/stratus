@@ -5,6 +5,7 @@
 package stratus.redis.geoserver.messaging;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -29,7 +30,7 @@ public class GlobalModifiedMessagingConfiguration {
     }
 
     @Bean
-    MessageListenerAdapter messageListener(RedisMessageListenerContainer container) {
+    MessageListenerAdapter messageListener(@Qualifier("redisMessageListenerContainer") RedisMessageListenerContainer container) {
         MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(new GlobalModifiedRedisMessageListener());
         container.addMessageListener(messageListenerAdapter, topic());
         return new MessageListenerAdapter(new GlobalModifiedRedisMessageListener());

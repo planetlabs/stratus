@@ -4,7 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.gwc.redis.repository.BlobStoreRepository;
 import org.easymock.EasyMock;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.BlobStoreConfigurationListener;
@@ -19,6 +18,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
+import stratus.gwc.redis.repository.BlobStoreRepository;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

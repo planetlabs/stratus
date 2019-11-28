@@ -4,8 +4,6 @@
  */
 package stratus.gwc.config;
 
-import stratus.redis.cache.CachingFilter;
-import stratus.redis.cache.ThreadCachingBean;
 import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geowebcache.config.BlobStoreInfo;
@@ -19,6 +17,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import stratus.redis.cache.CachingFilter;
+import stratus.redis.cache.ThreadCachingBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

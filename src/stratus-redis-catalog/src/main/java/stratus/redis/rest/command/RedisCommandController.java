@@ -4,7 +4,6 @@
  */
 package stratus.redis.rest.command;
 
-import stratus.redis.rest.RedisCatalogRestConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.MediaType;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import stratus.redis.rest.RedisCatalogRestConstants;
 
 import java.util.List;
 

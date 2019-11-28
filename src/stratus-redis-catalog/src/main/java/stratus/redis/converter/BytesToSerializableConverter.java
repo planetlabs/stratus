@@ -5,11 +5,8 @@
 package stratus.redis.converter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.geotools.jdbc.VirtualTable;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.ConditionalConverter;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.util.SerializationUtils;
 

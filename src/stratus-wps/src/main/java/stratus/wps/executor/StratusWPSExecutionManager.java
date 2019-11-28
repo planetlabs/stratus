@@ -4,7 +4,6 @@
  */
 package stratus.wps.executor;
 
-import stratus.wps.resource.S3ResourceStore;
 import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteResponseType;
 import org.eclipse.emf.common.util.EList;
@@ -34,6 +33,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import stratus.wps.resource.S3ResourceStore;
 
 import java.io.IOException;
 import java.io.OutputStream;

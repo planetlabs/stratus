@@ -4,8 +4,17 @@
  */
 package stratus.wfs;
 
-import stratus.config.StratusConfigProps;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wfs.DescribeFeatureTest;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.w3c.dom.Document;
 import stratus.config.GeoServerSystemImportResourcesConfig;
+import stratus.config.StratusConfigProps;
 import stratus.config.WebXmlConfig;
 import stratus.controller.GwcServiceController;
 import stratus.gwc.config.*;
@@ -16,22 +25,13 @@ import stratus.redis.cache.rest.preloaders.FeatureTypePreloader;
 import stratus.redis.cache.rest.preloaders.FeatureTypesPreloader;
 import stratus.redis.catalog.RedisCatalogImportResourcesConfig;
 import stratus.redis.config.RedisConfigProps;
+import stratus.redis.index.CacheProperties;
+import stratus.redis.index.RedisLayerIndexFacade;
+import stratus.redis.repository.RedisRepositoryImpl;
 import stratus.wcs.redis.geoserver.info.WCSInfoClassRegisteringBean;
 import stratus.wfs.redis.geoserver.info.WFSInfoClassRegisteringBean;
 import stratus.wms.WMSConfig;
 import stratus.wms.redis.geoserver.info.WMSInfoClassRegisteringBean;
-import stratus.redis.index.CacheProperties;
-import stratus.redis.index.RedisLayerIndexFacade;
-import stratus.redis.repository.RedisRepositoryImpl;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.DescribeFeatureTest;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.w3c.dom.Document;
 
 import javax.servlet.Filter;
 import java.util.Collections;

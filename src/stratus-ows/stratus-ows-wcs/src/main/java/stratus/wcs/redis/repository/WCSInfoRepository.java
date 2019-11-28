@@ -4,8 +4,8 @@
  */
 package stratus.wcs.redis.repository;
 
-import stratus.wcs.redis.geoserver.info.WCSInfoRedisImpl;
 import stratus.redis.geoserver.repository.AbstractServiceInfoRepository;
+import stratus.wcs.redis.geoserver.info.WCSInfoRedisImpl;
 
 /**
  * Redis repository for {@link WCSInfoRedisImpl}

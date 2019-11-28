@@ -4,22 +4,22 @@
  */
 package stratus.wfs;
 
-import stratus.ows.OWSCachingException;
-import stratus.ows.OWSCachingHandler;
-import stratus.redis.index.RedisLayerIndexFacade;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
+import org.springframework.beans.factory.annotation.Autowired;
+import stratus.ows.OWSCachingException;
+import stratus.ows.OWSCachingHandler;
+import stratus.redis.index.RedisLayerIndexFacade;
 import stratus.wfs.xml.WfsXmlParserHelper;
 import stratus.wfs.xml.v1_0_0.Wfs1_0_0XmlParserHelper;
 import stratus.wfs.xml.v1_1_0.Wfs1_1_0XmlParserHelper;
 import stratus.wfs.xml.v2_0.Wfs2_0XmlParserHelper;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
