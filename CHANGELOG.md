@@ -17,6 +17,7 @@
 * Upgrade to GeoServer 2.16.0
 * Upgrade to GeoTools 22.0
 * Upgrade to Spring Boot 2.2.1
+* Upgrade to Spring Cloud Hoxton.RELEASE
 
 ## Changes
 
