@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>stratus</groupId>
     <artifactId>stratus</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1-SNAPSHOT</version>
     <!-- note use this command to update incremental version on parent and all sub-modules: mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit -->
     <packaging>pom</packaging>
     <name>Stratus Parent</name>
@@ -817,7 +817,7 @@
 
     <scm>
         <developerConnection>scm:git:git@github.com:planetlabs/stratus</developerConnection>
-      <tag>v1.6.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>
