@@ -70,6 +70,7 @@
         <imageio-ext.version>1.3.2</imageio-ext.version>
         <jna.version>5.4.0</jna.version>
         <aws.version>1.11.678</aws.version>
+        <gdal.version>2.2.1</gdal.version>
     </properties>
 
     <dependencyManagement>

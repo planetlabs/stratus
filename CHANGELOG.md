@@ -2,7 +2,11 @@
 
 ## Summary
 
+* Default docker image to alpine linux with JDK 11
+
 ## Changes
+
+* Default docker base image is now alpine linux with JDK 11; must use `gdal` maven profile to enable GDAL support
 
 ### New Features
 

@@ -45,37 +45,13 @@
 
     <!--
       The following profiles are active by default:
-      gdal,geopkg,gwc,jp2k,mbstyle,vectortiles,wps
+      geopkg,gwc,jp2k,mbstyle,vectortiles,wps
       You can deactivate these profiles by running the build with -Dminimal
 
+      To enable GDAL support, build using `-P gdal` or `-Dgdal`
       -->
     <profiles>
         <!-- default profiles -->
-        <profile>
-            <id>gdal</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.geoserver.extension</groupId>
-                    <artifactId>gs-gdal</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>it.geosolutions.imageio-ext</groupId>
-                            <artifactId>imageio-ext-gdal-bindings</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.gdal</groupId>
-                    <artifactId>gdal</artifactId>
-                    <version>2.2.1</version>
-                </dependency>
-            </dependencies>
-            <activation>
-                <property>
-                    <name>!minimal</name>
-                </property>
-            </activation>
-        </profile>
         <profile>
             <id>geopkg</id>
             <dependencies>
@@ -220,46 +196,34 @@
                 </dependency>
             </dependencies>
         </profile>
-
         <profile>
-            <id>backuprestore</id>
+            <id>gdal</id>
             <dependencies>
                 <dependency>
-                    <groupId>stratus.backuprestore</groupId>
-                    <artifactId>stratus-backup-restore-core</artifactId>
+                    <groupId>org.geoserver.extension</groupId>
+                    <artifactId>gs-gdal</artifactId>
                     <exclusions>
                         <exclusion>
-                            <groupId>org.geoserver</groupId>
-                            <artifactId>gs-gwc</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>org.geowebcache</groupId>
-                            <artifactId>gwc-core</artifactId>
+                            <groupId>it.geosolutions.imageio-ext</groupId>
+                            <artifactId>imageio-ext-gdal-bindings</artifactId>
                         </exclusion>
                     </exclusions>
                 </dependency>
                 <dependency>
-                    <groupId>stratus.backuprestore</groupId>
-                    <artifactId>stratus-backup-restore-rest</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>stratus.backuprestore</groupId>
-                    <artifactId>stratus-backup-restore-web</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>stratus.backuprestore</groupId>
-                    <artifactId>stratus-backup-restore-extension</artifactId>
+                    <groupId>org.gdal</groupId>
+                    <artifactId>gdal</artifactId>
+                    <version>${gdal.version}</version>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <id>oauth2</id>
-            <dependencies>
-                <dependency>
-                    <groupId>stratus</groupId>
-                    <artifactId>stratus-oauth2</artifactId>
-                </dependency>
-            </dependencies>
+            <properties>
+                <!-- https://github.com/planetlabs/stratus/blob/master/build/docker/amazonlinux-gdal-py-java11/Dockerfile -->
+                <docker.baseImage>amazonlinux-gdal-py-java11:latest</docker.baseImage>
+            </properties>
+            <activation>
+                <property>
+                    <name>gdal</name>
+                </property>
+            </activation>
         </profile>
         <profile>
             <id>appschema</id>
@@ -270,7 +234,6 @@
                 </dependency>
             </dependencies>
         </profile>
-
         <profile>
             <id>csw</id>
             <dependencies>
@@ -288,26 +251,13 @@
                 </dependency>
             </dependencies>
         </profile>
-
         <profile>
             <id>elasticgeo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>mil.nga.giat</groupId>
                     <artifactId>gs-web-elasticsearch</artifactId>
-                    <version>2.9.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.elasticsearch</groupId>
-                    <artifactId>elasticsearch</artifactId>
-                    <version>2.3.5</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
+                    <version>2.16.0</version>
                 </dependency>
                 <dependency>
                     <groupId>org.geoserver.web</groupId>
@@ -323,9 +273,6 @@
         </profile>
         <profile>
             <id>geogig</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <dependencies>
               <dependency>
                 <groupId>org.geoserver.community</groupId>
@@ -341,9 +288,6 @@
         </profile>
         <profile>
             <id>mongo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.mongodb</groupId>
@@ -358,9 +302,6 @@
         </profile>
         <profile>
             <id>oracle</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.geoserver.extension</groupId>
@@ -522,16 +463,11 @@
         <configId>minimal</configId>
         <configDirectory>${basedir}/../../../data</configDirectory>
         <webappSourceDirectory>${basedir}/src/main/webapp</webappSourceDirectory>
-        <sde.version>9.3</sde.version>
-        <jetty.port>8080</jetty.port>
-        <jetty.run.daemon>false</jetty.run.daemon>
         <exec.jar.name>${project.build.finalName}-exec.jar</exec.jar.name>
+        <docker.baseImage>adoptopenjdk/openjdk11:alpine-slim</docker.baseImage>
         <docker.jar.name>stratus-application-exec.jar</docker.jar.name>
-        <docker.entryPoint>["java", "-jar", "-Duser.timezone=GMT", "/${docker.jar.name}"]
-        </docker.entryPoint>
-        <!-- https://github.com/planetlabs/stratus/blob/master/build/docker/amazonlinux-gdal-py-java11/Dockerfile -->
-        <docker.baseImage>amazonlinux-gdal-py-java11:latest</docker.baseImage>
-        <docker.imageName>gsstratus/stratus</docker.imageName>
+        <docker.entryPoint>["java", "-jar", "-Duser.timezone=GMT", "/${docker.jar.name}"]</docker.entryPoint>
+        <docker.imageName>stratus/stratus</docker.imageName>
         <stratusMainClass>stratus.StratusApplication</stratusMainClass>
     </properties>
 
