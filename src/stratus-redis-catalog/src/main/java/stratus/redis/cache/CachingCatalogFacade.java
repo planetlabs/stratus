@@ -120,6 +120,10 @@ public class CachingCatalogFacade extends AbstractCatalogFacade  implements Cach
     private void resolveLayerGroup(LayerGroupInfo lg) {
         catalog.resolve(lg);
 
+        // TODO layergroup workspace proxies don't resolve anywhere, so we have to specifically resolve them.  Seems
+        //  something is amiss somewhere.  Until we discover where, this next line will handle the resolution.
+        lg.setWorkspace(ResolvingProxy.resolve(catalog, lg.getWorkspace()));
+
         List<PublishedInfo> layers = lg.getLayers();
         List<StyleInfo> styles = lg.getStyles();
 

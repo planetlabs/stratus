@@ -10,6 +10,8 @@
 
 ### Bugfixes
 
+* Fixed issue where layer group info objects were not properly resolving workspace info objects
+
 # 1.6.0
 
 ## Summary
