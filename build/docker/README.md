@@ -1,15 +1,18 @@
 # Docker Base Images
 
-Docker base images used by Stratus. Typically, you will only every need to build these once, the first time you build Stratus.
+Docker base images used by Stratus. Typically, you will only every need to build these once, the first time you build 
+Stratus.
 
 ## amazonlinux-gdal-py-java11
 
-Base image for stratus-application
+Amazon Linux with GDAL 
+
+Stratus uses `adoptopenjdk/openjdk11:alpine-slim` base image by default.  If GDAL support is desired, you may build a 
+custom base image that contains the GDAL binaries. This image is necessary when using the `gdal` Maven profile while
+building the Stratus docker image using the goal `docker:build` goal in the 
+[stratus-application](../../src/stratus-application) module.
 
 Build with `docker build -t amazonlinux-gdal-py-java11 .`
-
-
-Amazon Linux with GDAL 
 
 ## redis-sentinal
 
