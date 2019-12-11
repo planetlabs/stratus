@@ -25,23 +25,40 @@ Stratus has the following main differences from community GeoServer:
 * Java 8+
 * Docker
 
-### Base image
+### Build
 
-Before building Stratus for the first time, build the docker base image:
-
-    cd build/docker/amazonlinux-gdal-py-java11
-    docker build -t amazonlinux-gdal-py-java11 .
-
-Build Stratus using:
+Build Stratus jar using:
 
     cd src
-    mvn clean install
+    mvn clean install -DskipTests
+    
+If you wish to enable GDAL support in Stratus, build using:
+ 
+    cd src
+    mvn clean install -Dgdal
+    
+Build Stratus docker image using:
+
+    cd src/stratus-application
+    mvn docker:build
+    
+To enable GDAL support while running Strats in docker, you must first build the custom docker base image which includes 
+the GDAL binaries: 
+        
+    cd build/docker/amazonlinux-gdal-py-java11
+    docker build -t amazonlinux-gdal-py-java11 .
+        
+The GDAL-enabled Stratus docker image can then be built using:
+
+    cd src/stratus-application
+    mvn docker:build -Dgdal
 
 For more details on building and developing Stratus, refer to the [stratus-application submodule](./src/stratus-application/README.md).
 
 ### Eclipse:
 
-Stratus makes extensive use of [Lombok](https://projectlombok.org/), download from https://projectlombok.org/download and run `java -jar lombok.jar` to launch the installer. Restart eclipse and run Project/clean/clean all projects.
+Stratus makes extensive use of [Lombok](https://projectlombok.org/), download from https://projectlombok.org/download 
+and run `java -jar lombok.jar` to launch the installer. Restart eclipse and run Project/clean/clean all projects.
 
 ## Running Stratus locally:
 
@@ -51,15 +68,21 @@ The Stratus jar can be executed with the command `java -jar stratus.jar`.
 
 Alternatively, you can run Stratus from source from the `stratus-application` subfolder using `mvn spring-boot:run`.
 
-Redis is the only dependency required for Stratus to run. By default, it will attempt to connect to a Redis server at localhost:6379.
+Redis is the only dependency required for Stratus to run. By default, it will attempt to connect to a Redis server at 
+localhost:6379.
 
-The [deploy/standalone](deploy/standalone) directory contains several useful scripts to start various supporting services, including [Redis](deploy/standalone/redis.sh), [PostGIS](deploy/standalone/postgis.sh), and [Stratus itself](deploy/standalone/single-host-deploy.sh).
+The [deploy/standalone](deploy/standalone) directory contains several useful scripts to start various supporting 
+services, including [Redis](deploy/standalone/redis.sh), [PostGIS](deploy/standalone/postgis.sh), 
+and [Stratus itself](deploy/standalone/single-host-deploy.sh).
 
-By default, Stratus will start with a configuration that excludes all web components and backup/restore dependencies. To enable the web admin UI, be sure to set the property `stratus.admin-enabled` or environment variable `STRATUS_ADMIN_ENABLED` to `true`.
+By default, Stratus will start with a configuration that excludes all web components and backup/restore dependencies. 
+To enable the web admin UI, be sure to set the property `stratus.admin-enabled` or environment variable 
+`STRATUS_ADMIN_ENABLED` to `true`.
 
 ### Profiles
 
-By default, Stratus will start using the redis-manual profile which will attempt to connect to a single Redis host.  The following profiles are available:
+By default, Stratus will start using the redis-manual profile which will attempt to connect to a single Redis host.  
+The following profiles are available:
 
 | Profile | Description |
 |---------|-------------|
@@ -75,7 +98,9 @@ By default, Stratus will start using the redis-manual profile which will attempt
 
 ### Startup Properties/Parameters
 
-By default, running Stratus with no parameters will attempt to connect to a single Redis host on <code>localhost:6379</code>.  The following configuration properties can be specified as command line parameters or environment variables.
+By default, running Stratus with no parameters will attempt to connect to a single Redis host on 
+<code>localhost:6379</code>.  The following configuration properties can be specified as command line parameters or 
+environment variables.
 
 | Property | Shortcut | Profile | Default Value | Description |
 |----------|----------|---------|---------------|-------------|
@@ -86,7 +111,8 @@ By default, running Stratus with no parameters will attempt to connect to a sing
 | stratus.catalog.redis.sentinel.hosts | sentinel-hosts | {jedis/lettuce}-sentinel | localhost:26379 | A list of Sentinel hosts. |
 | stratus.catalog.redis.cluster.hosts | cluster-hosts | {jedis/letuce}-cluster | localhost:6379 | A list of Redis cluster nodes. |
 
-Passing in custom properties depends on how you are running Stratus.  Below are examples using java and maven from the command line:
+Passing in custom properties depends on how you are running Stratus.  Below are examples using java and maven from the 
+command line:
 
 Set the active profile:
  * java: <code>java -jar -Dspring.profiles.active=redis-sentinel stratus.jar</code>
@@ -114,7 +140,8 @@ Example:
 
 ### Update the Changelog
 
-Before performing a release, update the [CHANGELOG](./CHANGELOG.md) and [whatsnew.rst](./docs/usermanual/source/whatsnew.rst) with details of the release.
+Before performing a release, update the [CHANGELOG](./CHANGELOG.md) and 
+[whatsnew.rst](./docs/usermanual/source/whatsnew.rst) with details of the release.
 
 1. Add a new heading for the version being released.
 
@@ -125,7 +152,8 @@ Before performing a release, update the [CHANGELOG](./CHANGELOG.md) and [whatsne
 
 3. If you are performing a patch release, instead just list the changes, without any subsections. This should be pretty short, or else you probably shouldn't be doing a patch release.
 
-4. Update [build.properties](./docs/build.properties) and [banner.txt](./src/stratus-application/src/main/resources/banner.txt) with the version of the new release.
+4. Update [build.properties](./docs/build.properties) and 
+[banner.txt](./src/stratus-application/src/main/resources/banner.txt) with the version of the new release.
 
 5. Push the updated files to master.
 
@@ -139,7 +167,8 @@ When run, this job will:
  * Increment the patch version by one, and add -SNAPSHOT back onto the version.
  * Commit.
  * Push commits and tag to the gsstratus/stratus repository.
- * Trigger a new run of stratus-deploy-all against the released tag, which will create Docker images and push them to Docker Hub.
+ * Trigger a new run of stratus-deploy-all against the released tag, which will create Docker images and push them to 
+ Docker Hub.
 
 Jenkins configuration is managed in [deploy/jenkins](deploy/jenkins).
 
@@ -166,7 +195,9 @@ Where:
 
 (For more information on tagging and version guidlines, refer to [tagging.md](./tagging.md))
 
-This will do everything the `stratus-release` job does except for building and deploying the docker images. To deploy the release, checkout the newly created release tag, cd to the `stratus-application` submodule and follow the instructions for [deploying with docker](./src/stratus-application/README.md#deploying-with-docker).
+This will do everything the `stratus-release` job does except for building and deploying the docker images. To deploy 
+the release, checkout the newly created release tag, cd to the `stratus-application` submodule and follow the 
+instructions for [deploying with docker](./src/stratus-application/README.md#deploying-with-docker).
 
 ### Verify the Release
 
@@ -174,11 +205,13 @@ After running the release job:
 
 1. Verify the new git tag is listed at https://github.com/planetlabs/stratus/releases.
 
-2. Still on GitHub, click `Draft a new release`, selecting the tag you just pushed, and fill in details for this release (Only do this for final releases, not RCs).
+2. Still on GitHub, click `Draft a new release`, selecting the tag you just pushed, and fill in details for this 
+release (Only do this for final releases, not RCs).
 
 3. Verify the new docker tag is listed at https://docker.io/repository/gsstratus/stratus?tab=tags
 
-You can test the release artifacts locally using [single-host-deploy.sh](deploy/standalone/single-host-deploy.sh) in stratus:
+You can test the release artifacts locally using [single-host-deploy.sh](deploy/standalone/single-host-deploy.sh) in 
+stratus:
 
 1. Update `DOCKER_TAG` to the tag you just pushed to docker.io, and ensure that `DOCKER_REPO=docker.io`
 
@@ -186,7 +219,8 @@ You can test the release artifacts locally using [single-host-deploy.sh](deploy/
 
 3. Navigate to http://localhost:8080/geoserver/web and verify the UI shows up.
 
-4. Navigate to http://localhost:8080/geoserver/rest/manage/info and verify that the git commit id matches that of the release tag in git.
+4. Navigate to http://localhost:8080/geoserver/rest/manage/info and verify that the git commit id matches that of the 
+release tag in git.
 
 ## Testing
 
@@ -210,8 +244,9 @@ Any custom Docker images used by these deployments can be found in [build/docker
 ## Upgrade Procedures
 
 - Ensure the methods in [CommunityRestConfiguration](./src/stratus-application/src/main/java/com/gsstratus/stratus/config/CommunityRestConfiguration.java)
-are up to date with the current [RestConfiguration](https://github.com/geoserver/geoserver/blob/master/src/rest/src/main/java/org/geoserver/rest/RestConfiguration.java) class
-found in community GeoServer (note: community extends WebMvcConfigurationSupport and Stratus should extend WebMvcConfigurerAdapter)
+are up to date with the current [RestConfiguration](https://github.com/geoserver/geoserver/blob/master/src/rest/src/main/java/org/geoserver/rest/RestConfiguration.java) 
+class found in community GeoServer (note: community extends WebMvcConfigurationSupport and Stratus should extend 
+WebMvcConfigurerAdapter)
 
 - Ensure all of the context XML files in the [stratus-gwc](./src/stratus-gwc/src/main/resources) are updated with any 
 changes made in the corresponding [GeoServer GWC](https://github.com/geoserver/geoserver/blob/master/src/gwc/src/main/resources)
