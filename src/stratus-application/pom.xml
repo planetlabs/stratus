@@ -1038,6 +1038,13 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.11</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <imageName>${docker.imageName}</imageName>
                     <serverId>docker-hub</serverId>
