@@ -728,30 +728,14 @@
 
     <repositories>
         <repository>
-            <id>boundless</id>
-            <name>Boundless Maven Repository</name>
-            <url>https://repo.boundlessgeo.com/artifactory/main</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>osgeo-release</id>
+            <name>Osgeo Release Maven Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
         <repository>
-            <id>boundless-release</id>
-            <name>Boundless Maven Repository</name>
-            <url>https://repo.boundlessgeo.com/artifactory/release/</url>
-        </repository>
-        <repository>
-            <id>boundless-snapshot</id>
-            <name>Boundless Maven Repository</name>
-            <url>https://repo.boundlessgeo.com/artifactory/snapshot/</url>
-        </repository>
-        <repository>
-            <id>boundless_ext</id>
-            <name>Boundless Maven Repository</name>
-            <url>https://repo.boundlessgeo.com/artifactory/ext-release-local/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>osgeo-snapshot</id>
+            <name>Osgeo Snapshot Maven Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
         </repository>
         <repository>
             <id>central</id>
