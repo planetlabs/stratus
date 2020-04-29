@@ -132,7 +132,7 @@ public class RedisNotificationDispatcher implements MessageListener, ResourceNot
         }
     }
 
-    private void handleNotificationInternal(ResourceNotification notification) {
+    private synchronized void handleNotificationInternal(ResourceNotification notification) {
         List<ResourceListener> originalListeners = handlers.get(notification.getPath());
         //Copy list, since some handlers try to remove themselves on notifications
         if (originalListeners != null) {
