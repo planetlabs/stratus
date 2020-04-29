@@ -50,7 +50,10 @@ public class LayerIndex implements Serializable {
         namespaceId = new IndexEntry(NamespaceInfo.class, info.getResource().getNamespace().getId());
         resourceId = new IndexEntry(CatalogInfoConvert.root(info.getResource().getClass()), info.getResource().getId());
         storeId = new IndexEntry(CatalogInfoConvert.root(info.getResource().getStore().getClass()), info.getResource().getStore().getId());
-        defaultStyleId = new IndexEntry(StyleInfo.class, info.getDefaultStyle().getId());
+
+        if (info.getDefaultStyle() != null) {
+            defaultStyleId = new IndexEntry(StyleInfo.class, info.getDefaultStyle().getId());
+        }
 
         for (StyleInfo s : info.getStyles()) {
             styleIds.add(new IndexEntry(StyleInfo.class, s.getId()));
@@ -70,7 +73,11 @@ public class LayerIndex implements Serializable {
         ids.add(resourceId);
         ids.add(storeId);
         ids.add(defaultStyleId);
-        ids.addAll(styleIds);
+
+        if (defaultStyleId != null) {
+            ids.add(defaultStyleId);
+        }
+
         return ids;
     }
 

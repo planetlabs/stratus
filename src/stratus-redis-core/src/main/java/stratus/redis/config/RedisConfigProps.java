@@ -17,7 +17,6 @@ import java.util.List;
  * @author joshfix
  */
 @Data
-@Getter
 @Component
 @ConfigurationProperties(prefix = "stratus.catalog.redis")
 public class RedisConfigProps {
