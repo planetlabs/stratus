@@ -85,9 +85,7 @@ public final class CatalogInfoConvert {
     public static final <T extends CatalogInfo> T toTraditional(CatalogInfo info) {
         return convert(info, traditionalClass(info.getClass()));
     }
-    
 
-    
     @SuppressWarnings("unchecked")
     private static final <T extends CatalogInfo> Class<T> redisClass(Class<? extends CatalogInfo> clazz) {
         return (Class<T>) INFO_REDIS_CLASS_MAPPINGS.get(root(clazz));
@@ -118,14 +116,7 @@ public final class CatalogInfoConvert {
         }
         
         BeanUtils.copyProperties(info, newInfo);
-        
-        //for featuretypeinfo set reverse relationship right with its attribute info's
-        if (clazz == FeatureTypeInfoImpl.class) {
-            for (AttributeTypeInfo ati : ((FeatureTypeInfo) newInfo).getAttributes()) {
-                ati.setFeatureType((FeatureTypeInfo) newInfo);
-            }
-        }
-        
+
         return newInfo;
     }
 }

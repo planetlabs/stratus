@@ -187,7 +187,7 @@ stratus:
   catalog:
     redis:
       manual:
-        host: ${redis-host:localhost}
+        host: ${redis-host:localhostx}
         port: ${redis-port:6379}
         database: ${redis-database:0}
 

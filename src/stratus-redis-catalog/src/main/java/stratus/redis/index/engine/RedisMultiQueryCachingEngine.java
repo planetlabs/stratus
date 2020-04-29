@@ -413,7 +413,10 @@ public class RedisMultiQueryCachingEngine {
 
             for (LayerInfo layer : query.get()) {
                 List<StyleInfo> styles = new ArrayList<>(layer.getStyles());
-                styles.add(layer.getDefaultStyle());
+                StyleInfo defaultStyle = layer.getDefaultStyle();
+                if (defaultStyle != null) {
+                    styles.add(layer.getDefaultStyle());
+                }
                 for (StyleInfo style : styles) {
                     InvocationHandler h = Proxy.getInvocationHandler(style);
                     if (h instanceof ResolvingProxy) {
