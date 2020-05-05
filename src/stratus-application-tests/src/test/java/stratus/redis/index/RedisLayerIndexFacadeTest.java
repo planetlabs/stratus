@@ -12,9 +12,7 @@ import stratus.redis.cache.CachingCatalogFacade;
 import stratus.redis.catalog.AbstractRedisCatalogTest;
 import stratus.redis.catalog.impl.CatalogInfoConvert;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -103,7 +101,7 @@ public class RedisLayerIndexFacadeTest extends AbstractRedisCatalogTest {
                 assertEquals(info.getId(), ns.getId());
             }
         }
-        assertEquals(uniqueInfos, 63);
-
+        assertEquals(65, uniqueInfos);
+        
     }
 }
