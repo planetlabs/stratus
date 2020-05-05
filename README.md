@@ -1,3 +1,4 @@
+[![Gitter](https://badges.gitter.im/stratus-server/community.svg)](https://gitter.im/stratus-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Build Status](https://travis-ci.org/planetlabs/stratus.svg?branch=master)](https://travis-ci.org/planetlabs/stratus)
 # Stratus
 Stratus is a Spring Boot packaging of Geoserver (currently targeting 2.16) that is designed for Enterprise/Cloud deployments. Due to the magic of Spring and Maven, Stratus doesn't actually change any of the core code of the GeoServer community project. It instead declares (some) of those modules as dependencies and rewires parts of the runtime configuration to use custom pieces. 
