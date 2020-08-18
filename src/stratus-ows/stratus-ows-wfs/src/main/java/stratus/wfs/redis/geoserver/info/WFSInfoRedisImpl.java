@@ -30,6 +30,7 @@ public class WFSInfoRedisImpl extends AbstractServiceInfoRedisImpl implements Se
     protected boolean canonicalSchemaLocation = false;
     protected boolean encodeFeatureMember = false;
     protected boolean hitsIgnoreMaxFeatures = false;
+    protected Boolean allowGlobalQueries = true;
     protected ArrayList<String> srs = new ArrayList<String>();
 
     public Map<Version, GMLInfo> getGML() {
@@ -54,5 +55,15 @@ public class WFSInfoRedisImpl extends AbstractServiceInfoRedisImpl implements Se
 
     public List<String> getSRS() {
         return srs;
+    }
+
+    @Override
+    public Boolean getAllowGlobalQueries() {
+        return allowGlobalQueries == null ? Boolean.TRUE : allowGlobalQueries;
+    }
+
+    @Override
+    public void setAllowGlobalQueries(Boolean allowGlobalQueries) {
+        this.allowGlobalQueries = allowGlobalQueries;
     }
 }
