@@ -41,6 +41,8 @@ public class SettingsInfoRedisImpl implements SettingsInfo, Serializable {
     protected MetadataMap metadata = new MetadataMap();
     protected Map<Object, Object> clientProperties = new HashMap<>();
     private boolean localWorkspaceIncludesPrefix = false;
+    private boolean showCreatedTimeColumnsInAdminList = false;
+    private boolean showModifiedTimeColumnsInAdminList = false;
 
     @Override
     public String getId() {
@@ -276,6 +278,31 @@ public class SettingsInfoRedisImpl implements SettingsInfo, Serializable {
     @Override
     public void setLocalWorkspaceIncludesPrefix(boolean removePrefix) {
         localWorkspaceIncludesPrefix = removePrefix;
+    }
+
+
+    /** @return the showCreatedTimeColumnsInAdminList */
+    @Override
+    public boolean isShowCreatedTimeColumnsInAdminList() {
+        return showCreatedTimeColumnsInAdminList;
+    }
+
+    /** @param showCreatedTimeColumnsInAdminList the showCreatedTimeColumnsInAdminList to set */
+    @Override
+    public void setShowCreatedTimeColumnsInAdminList(boolean showCreatedTimeColumnsInAdminList) {
+        this.showCreatedTimeColumnsInAdminList = showCreatedTimeColumnsInAdminList;
+    }
+
+    /** @return the showModifiedTimeColumnsInAdminList */
+    @Override
+    public boolean isShowModifiedTimeColumnsInAdminList() {
+        return showModifiedTimeColumnsInAdminList;
+    }
+
+    /** @param showModifiedTimeColumnsInAdminList the showModifiedTimeColumnsInAdminList to set */
+    @Override
+    public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList) {
+        this.showModifiedTimeColumnsInAdminList = showModifiedTimeColumnsInAdminList;
     }
 
 }

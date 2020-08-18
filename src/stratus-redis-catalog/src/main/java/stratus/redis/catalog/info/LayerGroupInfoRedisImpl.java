@@ -34,7 +34,9 @@ public class LayerGroupInfoRedisImpl implements LayerGroupInfo, Serializable {
     @Indexed private String name;
     
     private Mode mode = Mode.SINGLE;
+    protected Boolean advertised;
     private Boolean queryDisabled;
+    private Boolean enabled;
     private List<MetadataLinkInfo> metadataLinks = new ArrayList<>();
     private MetadataMap metadata = new MetadataMap();
     private AttributionInfo attribution;    
@@ -171,6 +173,20 @@ public class LayerGroupInfoRedisImpl implements LayerGroupInfo, Serializable {
             }
 		}
     }
+
+    @Override
+    public boolean isAdvertised() {
+        if (this.advertised != null) {
+            return advertised;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void setAdvertised(boolean advertised) {
+        this.advertised = advertised;
+    }
     
     @Override
     public LayerInfo getRootLayer() {
@@ -234,7 +250,18 @@ public class LayerGroupInfoRedisImpl implements LayerGroupInfo, Serializable {
     public PublishedType getType() {
         return PublishedType.GROUP;
     }
-    
+
+    @Override
+    public boolean isEnabled() {
+        if (this.enabled != null) return this.enabled;
+        else return true;
+    }
+
+    @Override
+    public void setEnabled(boolean b) {
+
+    }
+
     @Override
     public String getAbstract() {
         if(abstractTxt == null && metadata != null) {

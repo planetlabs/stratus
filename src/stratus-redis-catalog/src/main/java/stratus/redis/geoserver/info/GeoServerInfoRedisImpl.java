@@ -44,6 +44,7 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
     protected Integer xmlPostRequestLogBufferSize = 1024;
     protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
     protected String lockProviderName;
+    protected Boolean allowStoredQueriesPerWorkspace = true;
     protected WebUIMode webUIMode = WebUIMode.DEFAULT;
 
     @Transient private JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
@@ -106,6 +107,16 @@ public class GeoServerInfoRedisImpl implements GeoServerInfo, Serializable {
         byte[] jaiBytes = serializer.serialize(jai);
         // base 64 encode, otherwise spring data creates a hash field for every entry in the byte array
         jaiBytesBase64 = Base64.getEncoder().encodeToString(jaiBytes);
+    }
+
+    public Boolean isAllowStoredQueriesPerWorkspace() {
+        return allowStoredQueriesPerWorkspace == null
+                ? Boolean.TRUE
+                : allowStoredQueriesPerWorkspace;
+    }
+
+    public void setAllowStoredQueriesPerWorkspace(Boolean allowStoredQueriesPerWorkspace) {
+        this.allowStoredQueriesPerWorkspace = allowStoredQueriesPerWorkspace;
     }
 
     public CoverageAccessInfo getCoverageAccess() {

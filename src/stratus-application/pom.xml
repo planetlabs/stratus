@@ -483,6 +483,11 @@
     </pluginRepositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.joshfix.stac</groupId>
+            <artifactId>stac-gt-datastore</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- necessary for jndi data sources -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
